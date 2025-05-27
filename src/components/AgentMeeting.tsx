@@ -270,8 +270,54 @@ const MeetingInterface: React.FC<{
     }
   };
 
-  const handleDisconnect = () => {
+  const leaveAgent = async () => {
     try {
+      console.log(`Attempting to remove agent from meeting: ${meetingId}`);
+      
+      const response = await fetch('https://d285-103-251-212-247.ngrok-free.app/leave-agent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          meeting_id: meetingId
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Agent left successfully:', data.message);
+        toast({
+          title: "Agent Removed",
+          description: "AI Agent has been removed from the meeting",
+        });
+      } else {
+        const errorData = await response.json();
+        console.error('Error removing agent:', errorData.detail);
+        toast({
+          title: "Warning",
+          description: "Could not remove AI agent from meeting",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error calling leave-agent API:', error);
+      toast({
+        title: "Warning",
+        description: "Could not remove AI agent from meeting",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      // First, remove the agent from the meeting if it's invited
+      if (agentInvited) {
+        await leaveAgent();
+      }
+      
+      // Reset all states
       setRetryAttempts(0);
       setIsRetrying(false);
       setConnectionError(null);
@@ -279,10 +325,12 @@ const MeetingInterface: React.FC<{
       agentInviteAttempted.current = false;
       setAgentInvited(false);
       
+      // Leave the meeting
       leave();
     } catch (error) {
-      console.error("Error leaving meeting:", error);
-      onDisconnect();
+      console.error("Error during disconnect:", error);
+      // Even if agent removal fails, still leave the meeting
+      leave();
     }
   };
 
