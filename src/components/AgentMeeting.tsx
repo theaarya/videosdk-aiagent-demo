@@ -463,12 +463,7 @@ const AgentMeeting: React.FC = () => {
           "Authorization": VIDEOSDK_TOKEN,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          region: "sg001",
-          webhook: {
-            endPoint: null
-          }
-        }),
+
       });
 
       console.log("API Response status:", response.status);
