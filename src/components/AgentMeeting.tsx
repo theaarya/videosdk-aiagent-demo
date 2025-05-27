@@ -109,20 +109,14 @@ const AgentAudioPlayer: React.FC<{ participantId: string }> = ({ participantId }
   );
 };
 
-const MeetingContainer: React.FC<{ 
-  meetingId: string | null; 
-  onConnect: () => void;
+const MeetingInterface: React.FC<{ 
+  meetingId: string;
   onDisconnect: () => void; 
   agentSettings: AgentSettings;
-  isConnecting: boolean;
-  isConnected: boolean;
 }> = ({ 
-  meetingId, 
-  onConnect,
+  meetingId,
   onDisconnect, 
-  agentSettings,
-  isConnecting,
-  isConnected
+  agentSettings
 }) => {
   const [agentInvited, setAgentInvited] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
@@ -233,7 +227,7 @@ const MeetingContainer: React.FC<{
   };
 
   useEffect(() => {
-    if (!joinAttempted.current && meetingId && isConnecting && !isRetrying) {
+    if (!joinAttempted.current && !isRetrying) {
       console.log("Attempting to join meeting:", meetingId);
       
       const timer = setTimeout(() => {
@@ -250,7 +244,7 @@ const MeetingContainer: React.FC<{
 
       return () => clearTimeout(timer);
     }
-  }, [join, meetingId, isConnecting, isRetrying]);
+  }, [join, meetingId, isRetrying]);
 
   const handleToggleMic = () => {
     if (isJoined) {
@@ -441,12 +435,12 @@ const MeetingContainer: React.FC<{
 
           {/* Agent Avatar */}
           <div className={`w-32 h-32 rounded-full mb-8 flex items-center justify-center transition-all duration-300 ${
-            isConnected && isJoined 
+            isJoined 
               ? 'bg-gradient-to-br from-cyan-400 to-blue-600' 
               : 'bg-gray-600 opacity-50'
           }`}>
             <div className={`w-28 h-28 rounded-full transition-all duration-300 ${
-              isConnected && isJoined 
+              isJoined 
                 ? 'bg-gradient-to-br from-cyan-500 to-blue-700' 
                 : 'bg-gray-700'
             }`}></div>
@@ -463,14 +457,6 @@ const MeetingContainer: React.FC<{
                   </div>
                 )}
               </div>
-            ) : !isConnected ? (
-              <div className="text-gray-400 font-medium">
-                Agent is disconnected
-              </div>
-            ) : isConnecting && !isJoined ? (
-              <div className="text-yellow-400 font-medium">
-                {isRetrying ? "Retrying connection..." : "Connecting to meeting..."}
-              </div>
             ) : agentParticipant ? (
               <div className="text-green-400 font-medium">
                 Agent is connected and ready
@@ -484,8 +470,8 @@ const MeetingContainer: React.FC<{
                 Connected - Click "Start Conversation" to invite agent
               </div>
             ) : (
-              <div className="text-gray-400 font-medium">
-                Click "Connect" to start
+              <div className="text-yellow-400 font-medium">
+                {isRetrying ? "Retrying connection..." : "Connecting to meeting..."}
               </div>
             )}
           </div>
@@ -507,25 +493,15 @@ const MeetingContainer: React.FC<{
               )}
             </Button>
 
-            {/* Connect/Disconnect Button */}
-            {!isConnected ? (
-              <Button
-                onClick={onConnect}
-                disabled={isConnecting}
-                className="px-8 py-3 bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50"
-              >
-                {isConnecting ? "Connecting..." : "Connect"}
-              </Button>
-            ) : (
-              <Button
-                onClick={handleDisconnect}
-                variant="destructive"
-                className="px-6 py-3"
-              >
-                <PhoneOff className="w-4 h-4 mr-2" />
-                Disconnect
-              </Button>
-            )}
+            {/* Disconnect Button */}
+            <Button
+              onClick={handleDisconnect}
+              variant="destructive"
+              className="px-6 py-3"
+            >
+              <PhoneOff className="w-4 h-4 mr-2" />
+              Disconnect
+            </Button>
 
             {/* Start/Invite Button */}
             {!agentInvited && isJoined && (
@@ -552,12 +528,153 @@ const MeetingContainer: React.FC<{
 
           {/* Meeting Info */}
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>Meeting ID: {meetingId || 'Not connected'}</p>
-            <p>Participants: {isConnected ? participantsList.length : 0}</p>
-            <p>Status: {isJoined ? 'Connected' : isConnecting ? 'Connecting...' : 'Disconnected'}</p>
+            <p>Meeting ID: {meetingId}</p>
+            <p>Participants: {participantsList.length}</p>
+            <p>Status: {isJoined ? 'Connected' : 'Connecting...'}</p>
             {retryAttempts > 0 && (
               <p>Retry attempts: {retryAttempts}/{maxRetries}</p>
             )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MeetingContainer: React.FC<{ 
+  onConnect: () => void;
+  agentSettings: AgentSettings;
+  isConnecting: boolean;
+}> = ({ 
+  onConnect,
+  agentSettings,
+  isConnecting
+}) => {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <div className="flex">
+        {/* Left Panel - Agent Configuration */}
+        <div className="w-80 bg-[#1a1a1a] border-r border-gray-800 p-6">
+          <div className="mb-8">
+            <h1 className="text-xl font-semibold mb-6">Agent Configuration</h1>
+
+            {/* Model Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-3">Model</label>
+              <div className="space-y-2">
+                {['Haley', 'Samuel', 'Felicia', 'Jules', 'Doug'].map((model) => (
+                  <div
+                    key={model}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                      agentSettings.model === model
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                    }`}
+                  >
+                    {model}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice & Personality */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-medium text-gray-300">Voice</label>
+                <span className="text-sm text-gray-500">Default</span>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-medium text-gray-300">Personality</label>
+                <span className="text-sm text-gray-500">Default</span>
+              </div>
+            </div>
+
+            {/* Sliders */}
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-medium text-gray-300">Temperature</label>
+                  <span className="text-sm text-gray-500">{agentSettings.temperature}</span>
+                </div>
+                <Slider
+                  value={[agentSettings.temperature]}
+                  max={1}
+                  min={0}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-medium text-gray-300">Top_P</label>
+                  <span className="text-sm text-gray-500">{agentSettings.topP}</span>
+                </div>
+                <Slider
+                  value={[agentSettings.topP]}
+                  max={1}
+                  min={0}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <label className="text-sm font-medium text-gray-300">Top_K</label>
+                  <span className="text-sm text-gray-500">{agentSettings.topK}</span>
+                </div>
+                <Slider
+                  value={[agentSettings.topK]}
+                  max={1}
+                  min={0}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Meeting Interface */}
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-semibold mb-2">{agentSettings.model}</h2>
+            <p className="text-gray-400">AI Conversation Agent</p>
+          </div>
+
+          {/* Agent Avatar */}
+          <div className="w-32 h-32 rounded-full mb-8 flex items-center justify-center bg-gray-600 opacity-50">
+            <div className="w-28 h-28 rounded-full bg-gray-700"></div>
+          </div>
+
+          {/* Meeting Status */}
+          <div className="mb-8 text-center">
+            <div className="text-gray-400 font-medium">
+              {isConnecting ? "Creating meeting..." : "Agent is disconnected"}
+            </div>
+          </div>
+
+          {/* Control Panel */}
+          <div className="flex items-center space-x-6">
+            {/* Connect Button */}
+            <Button
+              onClick={onConnect}
+              disabled={isConnecting}
+              className="px-8 py-3 bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              {isConnecting ? "Connecting..." : "Connect"}
+            </Button>
+          </div>
+
+          {/* Meeting Info */}
+          <div className="mt-8 text-center text-sm text-gray-500">
+            <p>Meeting ID: Not connected</p>
+            <p>Participants: 0</p>
+            <p>Status: {isConnecting ? 'Creating meeting...' : 'Disconnected'}</p>
           </div>
         </div>
       </div>
@@ -636,43 +753,37 @@ const AgentMeeting: React.FC = () => {
     setMeetingId(null);
   };
 
-  // Always show the meeting UI directly
-  return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {meetingId && isConnected ? (
-        <MeetingProvider
-          config={{
-            meetingId,
-            micEnabled: true,
-            webcamEnabled: false,
-            name: "User",
-            debugMode: false,
-            multiStream: false,
-          }}
-          token={VIDEOSDK_TOKEN}
-          reinitialiseMeetingOnConfigChange={false}
-          joinWithoutUserInteraction={false}
-        >
-          <MeetingContainer 
-            meetingId={meetingId} 
-            onConnect={handleConnect}
-            onDisconnect={handleDisconnect}
-            agentSettings={agentSettings}
-            isConnecting={isConnecting}
-            isConnected={isConnected}
-          />
-        </MeetingProvider>
-      ) : (
-        <MeetingContainer 
+  // Render different components based on connection state
+  if (meetingId && isConnected) {
+    return (
+      <MeetingProvider
+        config={{
+          meetingId,
+          micEnabled: true,
+          webcamEnabled: false,
+          name: "User",
+          debugMode: false,
+          multiStream: false,
+        }}
+        token={VIDEOSDK_TOKEN}
+        reinitialiseMeetingOnConfigChange={false}
+        joinWithoutUserInteraction={false}
+      >
+        <MeetingInterface 
           meetingId={meetingId} 
-          onConnect={handleConnect}
           onDisconnect={handleDisconnect}
           agentSettings={agentSettings}
-          isConnecting={isConnecting}
-          isConnected={isConnected}
         />
-      )}
-    </div>
+      </MeetingProvider>
+    );
+  }
+
+  return (
+    <MeetingContainer 
+      onConnect={handleConnect}
+      agentSettings={agentSettings}
+      isConnecting={isConnecting}
+    />
   );
 };
 
