@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { MeetingProvider, useMeeting, useParticipant } from '@videosdk.live/react-sdk';
 import { Mic, MicOff, PhoneOff } from 'lucide-react';
@@ -24,6 +25,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 }) => {
   const [agentInvited, setAgentInvited] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
+  const [isJoined, setIsJoined] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+  const joinAttempted = useRef(false);
 
   const {
     join,
@@ -34,6 +38,8 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
   } = useMeeting({
     onMeetingJoined: () => {
       console.log("Meeting joined successfully");
+      setIsJoined(true);
+      setConnectionError(null);
       toast({
         title: "Meeting Started",
         description: "You have joined the conversation",
@@ -41,6 +47,8 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     },
     onMeetingLeft: () => {
       console.log("Meeting left");
+      setIsJoined(false);
+      joinAttempted.current = false;
       onLeave();
     },
     onParticipantJoined: (participant) => {
@@ -57,23 +65,70 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     },
     onSpeakerChanged: (activeSpeakerId) => {
       console.log("Speaker changed:", activeSpeakerId);
+    },
+    onError: (error) => {
+      console.error("Meeting error:", error);
+      setConnectionError(error.message || "Connection failed");
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to the meeting. Please try again.",
+        variant: "destructive",
+      });
     }
   });
 
   useEffect(() => {
-    join();
-  }, [join]);
+    if (!joinAttempted.current && meetingId) {
+      joinAttempted.current = true;
+      console.log("Attempting to join meeting:", meetingId);
+      
+      // Add a small delay to prevent rapid reconnection attempts
+      const timer = setTimeout(() => {
+        try {
+          join();
+        } catch (error) {
+          console.error("Error joining meeting:", error);
+          setConnectionError("Failed to join meeting");
+        }
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [join, meetingId]);
 
   const handleToggleMic = () => {
-    toggleMic();
-    setMicEnabled(!micEnabled);
+    if (isJoined) {
+      toggleMic();
+      setMicEnabled(!micEnabled);
+    } else {
+      toast({
+        title: "Not Connected",
+        description: "Please wait for the meeting to connect first",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDisconnect = () => {
-    leave();
+    try {
+      leave();
+    } catch (error) {
+      console.error("Error leaving meeting:", error);
+      // Force leave by calling onLeave directly
+      onLeave();
+    }
   };
 
   const inviteAgent = async () => {
+    if (!isJoined) {
+      toast({
+        title: "Not Connected",
+        description: "Please wait for the meeting to connect first",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const response = await fetch('https://d285-103-251-212-247.ngrok-free.app/join-agent', {
         method: 'POST',
@@ -213,7 +268,15 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 
           {/* Meeting Status */}
           <div className="mb-8 text-center">
-            {agentParticipant ? (
+            {connectionError ? (
+              <div className="text-red-400 font-medium">
+                Connection Error: {connectionError}
+              </div>
+            ) : !isJoined ? (
+              <div className="text-yellow-400 font-medium">
+                Connecting to meeting...
+              </div>
+            ) : agentParticipant ? (
               <div className="text-green-400 font-medium">
                 Agent is connected and ready
               </div>
@@ -236,6 +299,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
               variant={micEnabled ? "default" : "destructive"}
               size="lg"
               className="w-12 h-12 rounded-full"
+              disabled={!isJoined}
             >
               {micEnabled ? (
                 <Mic className="w-5 h-5" />
@@ -245,7 +309,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
             </Button>
 
             {/* Start/Invite Button */}
-            {!agentInvited && (
+            {!agentInvited && isJoined && (
               <Button
                 onClick={inviteAgent}
                 className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition-colors"
@@ -269,6 +333,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
           <div className="mt-8 text-center text-sm text-gray-500">
             <p>Meeting ID: {meetingId}</p>
             <p>Participants: {participantsList.length}</p>
+            <p>Status: {isJoined ? 'Connected' : 'Connecting...'}</p>
           </div>
         </div>
       </div>
@@ -279,6 +344,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 const AgentMeeting: React.FC = () => {
   const [meetingId, setMeetingId] = useState<string>("");
   const [isInMeeting, setIsInMeeting] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
     model: 'Haley',
     voice: 'Default',
@@ -289,30 +355,52 @@ const AgentMeeting: React.FC = () => {
   });
 
   const createMeeting = async () => {
+    if (isCreating) return; // Prevent multiple creation attempts
+    
+    setIsCreating(true);
+    
     try {
+      console.log("Creating meeting with token:", VIDEOSDK_TOKEN);
+      
       const response = await fetch("https://api.videosdk.live/v2/rooms", {
         method: "POST",
         headers: {
           "Authorization": VIDEOSDK_TOKEN,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          region: "sg001", // Specify region to avoid routing issues
+          webhook: {
+            endPoint: null
+          }
+        }),
       });
+
+      console.log("API Response status:", response.status);
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Meeting created successfully:", data);
         setMeetingId(data.roomId);
         setIsInMeeting(true);
-        console.log("Meeting created:", data.roomId);
+        toast({
+          title: "Meeting Created",
+          description: `Meeting ID: ${data.roomId}`,
+        });
       } else {
-        throw new Error('Failed to create meeting');
+        const errorData = await response.text();
+        console.error("API Error:", response.status, errorData);
+        throw new Error(`API Error: ${response.status} - ${errorData}`);
       }
     } catch (error) {
       console.error("Error creating meeting:", error);
       toast({
         title: "Error",
-        description: "Failed to create meeting. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create meeting. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -330,9 +418,10 @@ const AgentMeeting: React.FC = () => {
             <p className="text-gray-400 mb-8">Start a conversation with an AI agent</p>
             <Button
               onClick={createMeeting}
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition-colors"
+              disabled={isCreating}
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              Create Meeting
+              {isCreating ? "Creating..." : "Create Meeting"}
             </Button>
           </div>
         </Card>
@@ -347,9 +436,12 @@ const AgentMeeting: React.FC = () => {
         micEnabled: true,
         webcamEnabled: false,
         name: "User",
-        debugMode: true,
+        debugMode: false, // Disable debug mode to reduce noise
+        multiStream: false, // Disable multistream to reduce resource usage
       }}
       token={VIDEOSDK_TOKEN}
+      reinitialiseMeetingOnConfigChange={false}
+      joinWithoutUserInteraction={false}
     >
       <MeetingContainer 
         meetingId={meetingId} 
