@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MeetingProvider, useMeeting, useParticipant } from '@videosdk.live/react-sdk';
-import { Mic, MicOff, PhoneOff } from 'lucide-react';
+import { Mic, MicOff, PhoneOff, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -27,7 +27,11 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
   const [micEnabled, setMicEnabled] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [retryAttempts, setRetryAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
   const joinAttempted = useRef(false);
+  const maxRetries = 3;
+  const retryDelay = 5000; // 5 seconds between retries
 
   const {
     join,
@@ -40,6 +44,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
       console.log("Meeting joined successfully");
       setIsJoined(true);
       setConnectionError(null);
+      setRetryAttempts(0);
+      setIsRetrying(false);
+      joinAttempted.current = true;
       toast({
         title: "Meeting Started",
         description: "You have joined the conversation",
@@ -48,6 +55,8 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     onMeetingLeft: () => {
       console.log("Meeting left");
       setIsJoined(false);
+      setRetryAttempts(0);
+      setIsRetrying(false);
       joinAttempted.current = false;
       onLeave();
     },
@@ -68,33 +77,84 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     },
     onError: (error) => {
       console.error("Meeting error:", error);
-      setConnectionError(error.message || "Connection failed");
-      toast({
-        title: "Connection Error",
-        description: "Failed to connect to the meeting. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Handle specific error types
+      if (error.message?.includes("Insufficient resources")) {
+        setConnectionError("Server is currently overloaded. Please try again in a few minutes.");
+        
+        // Stop any further connection attempts for insufficient resources
+        if (retryAttempts < maxRetries && !isRetrying) {
+          setIsRetrying(true);
+          setTimeout(() => {
+            handleRetryConnection();
+          }, retryDelay);
+        } else {
+          toast({
+            title: "Connection Failed",
+            description: "Server is overloaded. Please try creating a new meeting.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        setConnectionError(error.message || "Connection failed");
+        toast({
+          title: "Connection Error",
+          description: "Failed to connect to the meeting. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   });
 
+  const handleRetryConnection = () => {
+    if (retryAttempts >= maxRetries) {
+      setIsRetrying(false);
+      setConnectionError("Maximum retry attempts reached. Please create a new meeting.");
+      return;
+    }
+
+    console.log(`Retry attempt ${retryAttempts + 1}/${maxRetries}`);
+    setRetryAttempts(prev => prev + 1);
+    
+    try {
+      // Reset states before retry
+      setConnectionError(null);
+      joinAttempted.current = false;
+      
+      // Attempt to join again
+      setTimeout(() => {
+        if (!isJoined && !joinAttempted.current) {
+          join();
+          joinAttempted.current = true;
+        }
+        setIsRetrying(false);
+      }, 1000);
+    } catch (error) {
+      console.error("Error during retry:", error);
+      setIsRetrying(false);
+    }
+  };
+
   useEffect(() => {
-    if (!joinAttempted.current && meetingId) {
-      joinAttempted.current = true;
+    if (!joinAttempted.current && meetingId && !isRetrying) {
       console.log("Attempting to join meeting:", meetingId);
       
-      // Add a small delay to prevent rapid reconnection attempts
+      // Add a delay to prevent immediate connection
       const timer = setTimeout(() => {
-        try {
-          join();
-        } catch (error) {
-          console.error("Error joining meeting:", error);
-          setConnectionError("Failed to join meeting");
+        if (!isJoined && !joinAttempted.current) {
+          try {
+            join();
+            joinAttempted.current = true;
+          } catch (error) {
+            console.error("Error joining meeting:", error);
+            setConnectionError("Failed to join meeting");
+          }
         }
-      }, 1000);
+      }, 2000); // Increased delay to 2 seconds
 
       return () => clearTimeout(timer);
     }
-  }, [join, meetingId]);
+  }, [join, meetingId, isRetrying]);
 
   const handleToggleMic = () => {
     if (isJoined) {
@@ -111,12 +171,27 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 
   const handleDisconnect = () => {
     try {
+      // Reset all states before leaving
+      setRetryAttempts(0);
+      setIsRetrying(false);
+      setConnectionError(null);
+      joinAttempted.current = false;
+      
       leave();
     } catch (error) {
       console.error("Error leaving meeting:", error);
       // Force leave by calling onLeave directly
       onLeave();
     }
+  };
+
+  const handleManualRetry = () => {
+    if (isRetrying) return;
+    
+    setRetryAttempts(0);
+    setConnectionError(null);
+    joinAttempted.current = false;
+    handleRetryConnection();
   };
 
   const inviteAgent = async () => {
@@ -270,11 +345,16 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
           <div className="mb-8 text-center">
             {connectionError ? (
               <div className="text-red-400 font-medium">
-                Connection Error: {connectionError}
+                {connectionError}
+                {retryAttempts > 0 && (
+                  <div className="text-sm text-gray-400 mt-1">
+                    Retry attempt: {retryAttempts}/{maxRetries}
+                  </div>
+                )}
               </div>
             ) : !isJoined ? (
               <div className="text-yellow-400 font-medium">
-                Connecting to meeting...
+                {isRetrying ? "Retrying connection..." : "Connecting to meeting..."}
               </div>
             ) : agentParticipant ? (
               <div className="text-green-400 font-medium">
@@ -318,6 +398,18 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
               </Button>
             )}
 
+            {/* Retry Button */}
+            {connectionError && !isRetrying && retryAttempts < maxRetries && (
+              <Button
+                onClick={handleManualRetry}
+                variant="outline"
+                className="px-6 py-3"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry
+              </Button>
+            )}
+
             {/* Disconnect Button */}
             <Button
               onClick={handleDisconnect}
@@ -334,6 +426,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
             <p>Meeting ID: {meetingId}</p>
             <p>Participants: {participantsList.length}</p>
             <p>Status: {isJoined ? 'Connected' : 'Connecting...'}</p>
+            {retryAttempts > 0 && (
+              <p>Retry attempts: {retryAttempts}/{maxRetries}</p>
+            )}
           </div>
         </div>
       </div>
@@ -355,7 +450,7 @@ const AgentMeeting: React.FC = () => {
   });
 
   const createMeeting = async () => {
-    if (isCreating) return; // Prevent multiple creation attempts
+    if (isCreating) return;
     
     setIsCreating(true);
     
@@ -369,7 +464,7 @@ const AgentMeeting: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          region: "sg001", // Specify region to avoid routing issues
+          region: "sg001",
           webhook: {
             endPoint: null
           }
@@ -436,8 +531,8 @@ const AgentMeeting: React.FC = () => {
         micEnabled: true,
         webcamEnabled: false,
         name: "User",
-        debugMode: false, // Disable debug mode to reduce noise
-        multiStream: false, // Disable multistream to reduce resource usage
+        debugMode: false,
+        multiStream: false,
       }}
       token={VIDEOSDK_TOKEN}
       reinitialiseMeetingOnConfigChange={false}
