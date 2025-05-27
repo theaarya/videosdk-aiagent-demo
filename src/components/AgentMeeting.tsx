@@ -274,7 +274,7 @@ const MeetingInterface: React.FC<{
     try {
       console.log(`Attempting to remove agent from meeting: ${meetingId}`);
       
-      const response = await fetch('https://d285-103-251-212-247.ngrok-free.app/leave-agent', {
+      const response = await fetch('https://4b47-103-251-212-247.ngrok-free.app/leave-agent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
