@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { toast } from '@/hooks/use-toast';
 
-const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTczOTUwOTkxNCwiZXhwIjoxNzQwMTE0NzE0fQ.2bpdG9HJtwkrte8d1Pa8rQUYtYX-RR7YY4QkutE1wGA";
+const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDgzNTE3NjEsImFwaWtleSI6IjUwZWY4ZDUwLWQ5YzAtNDVkNi1hYmMxLTE5MjNiNmM5NjM1MiIsInBlcm1pc3Npb25zIjpbImFsbG93X2pvaW4iXX0.T9P2PYjJUXfRFhojGtAMfEKeovOMXRjON0RRjph5KdU";
 
 interface AgentSettings {
   model: string;
