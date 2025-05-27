@@ -75,7 +75,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 
   const inviteAgent = async () => {
     try {
-      const response = await fetch('http://localhost:8001/join-agent', {
+      const response = await fetch('https://d285-103-251-212-247.ngrok-free.app/join-agent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
