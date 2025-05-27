@@ -125,6 +125,7 @@ const MeetingInterface: React.FC<{
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const joinAttempted = useRef(false);
+  const agentInviteAttempted = useRef(false);
   const maxRetries = 3;
   const retryDelay = 5000;
 
@@ -153,6 +154,7 @@ const MeetingInterface: React.FC<{
       setRetryAttempts(0);
       setIsRetrying(false);
       joinAttempted.current = false;
+      agentInviteAttempted.current = false;
       onDisconnect();
     },
     onParticipantJoined: (participant) => {
@@ -198,6 +200,15 @@ const MeetingInterface: React.FC<{
       }
     }
   });
+
+  // Automatically invite agent when meeting is joined
+  useEffect(() => {
+    if (isJoined && !agentInvited && !agentInviteAttempted.current) {
+      console.log("Auto-inviting agent after meeting join");
+      agentInviteAttempted.current = true;
+      inviteAgent();
+    }
+  }, [isJoined]);
 
   const handleRetryConnection = () => {
     if (retryAttempts >= maxRetries) {
@@ -265,6 +276,7 @@ const MeetingInterface: React.FC<{
       setIsRetrying(false);
       setConnectionError(null);
       joinAttempted.current = false;
+      agentInviteAttempted.current = false;
       setAgentInvited(false);
       
       leave();
@@ -284,15 +296,6 @@ const MeetingInterface: React.FC<{
   };
 
   const inviteAgent = async () => {
-    if (!isJoined) {
-      toast({
-        title: "Not Connected",
-        description: "Please connect to the meeting first",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       const response = await fetch('https://d285-103-251-212-247.ngrok-free.app/join-agent', {
         method: 'POST',
@@ -316,6 +319,7 @@ const MeetingInterface: React.FC<{
       }
     } catch (error) {
       console.error('Error inviting agent:', error);
+      agentInviteAttempted.current = false; // Allow retry
       toast({
         title: "Error",
         description: "Failed to invite AI Agent. Please try again.",
@@ -467,7 +471,7 @@ const MeetingInterface: React.FC<{
               </div>
             ) : isJoined ? (
               <div className="text-green-400 font-medium">
-                Connected - Click "Start Conversation" to invite agent
+                Connected - Agent invitation sent automatically
               </div>
             ) : (
               <div className="text-yellow-400 font-medium">
@@ -502,16 +506,6 @@ const MeetingInterface: React.FC<{
               <PhoneOff className="w-4 h-4 mr-2" />
               Disconnect
             </Button>
-
-            {/* Start/Invite Button */}
-            {!agentInvited && isJoined && (
-              <Button
-                onClick={inviteAgent}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition-colors"
-              >
-                Start Conversation
-              </Button>
-            )}
 
             {/* Retry Button */}
             {connectionError && !isRetrying && retryAttempts < maxRetries && (
