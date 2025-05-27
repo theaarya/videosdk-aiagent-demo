@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { MeetingProvider, useMeeting, useParticipant } from '@videosdk.live/react-sdk';
-import { Mic, MicOff, Disconnect } from 'lucide-react';
+import { Mic, MicOff, PhoneOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -261,7 +260,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
               variant="destructive"
               className="px-6 py-3"
             >
-              <Disconnect className="w-4 h-4 mr-2" />
+              <PhoneOff className="w-4 h-4 mr-2" />
               Disconnect
             </Button>
           </div>
@@ -349,7 +348,6 @@ const AgentMeeting: React.FC = () => {
         webcamEnabled: false,
         name: "User",
         debugMode: true,
-        joinWithoutUserInteraction: true,
       }}
       token={VIDEOSDK_TOKEN}
     >
