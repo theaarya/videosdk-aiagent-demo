@@ -109,10 +109,20 @@ const AgentAudioPlayer: React.FC<{ participantId: string }> = ({ participantId }
   );
 };
 
-const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agentSettings: AgentSettings }> = ({ 
+const MeetingContainer: React.FC<{ 
+  meetingId: string | null; 
+  onConnect: () => void;
+  onDisconnect: () => void; 
+  agentSettings: AgentSettings;
+  isConnecting: boolean;
+  isConnected: boolean;
+}> = ({ 
   meetingId, 
-  onLeave, 
-  agentSettings 
+  onConnect,
+  onDisconnect, 
+  agentSettings,
+  isConnecting,
+  isConnected
 }) => {
   const [agentInvited, setAgentInvited] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
@@ -122,7 +132,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
   const [isRetrying, setIsRetrying] = useState(false);
   const joinAttempted = useRef(false);
   const maxRetries = 3;
-  const retryDelay = 5000; // 5 seconds between retries
+  const retryDelay = 5000;
 
   const {
     join,
@@ -149,7 +159,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
       setRetryAttempts(0);
       setIsRetrying(false);
       joinAttempted.current = false;
-      onLeave();
+      onDisconnect();
     },
     onParticipantJoined: (participant) => {
       console.log("Participant joined:", participant.displayName);
@@ -169,11 +179,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     onError: (error) => {
       console.error("Meeting error:", error);
       
-      // Handle specific error types
       if (error.message?.includes("Insufficient resources")) {
         setConnectionError("Server is currently overloaded. Please try again in a few minutes.");
         
-        // Stop any further connection attempts for insufficient resources
         if (retryAttempts < maxRetries && !isRetrying) {
           setIsRetrying(true);
           setTimeout(() => {
@@ -200,7 +208,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
   const handleRetryConnection = () => {
     if (retryAttempts >= maxRetries) {
       setIsRetrying(false);
-      setConnectionError("Maximum retry attempts reached. Please create a new meeting.");
+      setConnectionError("Maximum retry attempts reached. Please try creating a new meeting.");
       return;
     }
 
@@ -208,11 +216,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     setRetryAttempts(prev => prev + 1);
     
     try {
-      // Reset states before retry
       setConnectionError(null);
       joinAttempted.current = false;
       
-      // Attempt to join again
       setTimeout(() => {
         if (!isJoined && !joinAttempted.current) {
           join();
@@ -227,10 +233,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
   };
 
   useEffect(() => {
-    if (!joinAttempted.current && meetingId && !isRetrying) {
+    if (!joinAttempted.current && meetingId && isConnecting && !isRetrying) {
       console.log("Attempting to join meeting:", meetingId);
       
-      // Add a delay to prevent immediate connection
       const timer = setTimeout(() => {
         if (!isJoined && !joinAttempted.current) {
           try {
@@ -241,11 +246,11 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
             setConnectionError("Failed to join meeting");
           }
         }
-      }, 2000); // Increased delay to 2 seconds
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [join, meetingId, isRetrying]);
+  }, [join, meetingId, isConnecting, isRetrying]);
 
   const handleToggleMic = () => {
     if (isJoined) {
@@ -254,7 +259,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     } else {
       toast({
         title: "Not Connected",
-        description: "Please wait for the meeting to connect first",
+        description: "Please connect to the meeting first",
         variant: "destructive",
       });
     }
@@ -262,17 +267,16 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 
   const handleDisconnect = () => {
     try {
-      // Reset all states before leaving
       setRetryAttempts(0);
       setIsRetrying(false);
       setConnectionError(null);
       joinAttempted.current = false;
+      setAgentInvited(false);
       
       leave();
     } catch (error) {
       console.error("Error leaving meeting:", error);
-      // Force leave by calling onLeave directly
-      onLeave();
+      onDisconnect();
     }
   };
 
@@ -289,7 +293,7 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
     if (!isJoined) {
       toast({
         title: "Not Connected",
-        description: "Please wait for the meeting to connect first",
+        description: "Please connect to the meeting first",
         variant: "destructive",
       });
       return;
@@ -436,8 +440,16 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
           </div>
 
           {/* Agent Avatar */}
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 mb-8 flex items-center justify-center">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-500 to-blue-700"></div>
+          <div className={`w-32 h-32 rounded-full mb-8 flex items-center justify-center transition-all duration-300 ${
+            isConnected && isJoined 
+              ? 'bg-gradient-to-br from-cyan-400 to-blue-600' 
+              : 'bg-gray-600 opacity-50'
+          }`}>
+            <div className={`w-28 h-28 rounded-full transition-all duration-300 ${
+              isConnected && isJoined 
+                ? 'bg-gradient-to-br from-cyan-500 to-blue-700' 
+                : 'bg-gray-700'
+            }`}></div>
           </div>
 
           {/* Meeting Status */}
@@ -451,7 +463,11 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
                   </div>
                 )}
               </div>
-            ) : !isJoined ? (
+            ) : !isConnected ? (
+              <div className="text-gray-400 font-medium">
+                Agent is disconnected
+              </div>
+            ) : isConnecting && !isJoined ? (
               <div className="text-yellow-400 font-medium">
                 {isRetrying ? "Retrying connection..." : "Connecting to meeting..."}
               </div>
@@ -463,9 +479,13 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
               <div className="text-yellow-400 font-medium">
                 Agent is joining...
               </div>
+            ) : isJoined ? (
+              <div className="text-green-400 font-medium">
+                Connected - Click "Start Conversation" to invite agent
+              </div>
             ) : (
               <div className="text-gray-400 font-medium">
-                Click "Start Conversation" to begin
+                Click "Connect" to start
               </div>
             )}
           </div>
@@ -486,6 +506,26 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
                 <MicOff className="w-5 h-5" />
               )}
             </Button>
+
+            {/* Connect/Disconnect Button */}
+            {!isConnected ? (
+              <Button
+                onClick={onConnect}
+                disabled={isConnecting}
+                className="px-8 py-3 bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {isConnecting ? "Connecting..." : "Connect"}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleDisconnect}
+                variant="destructive"
+                className="px-6 py-3"
+              >
+                <PhoneOff className="w-4 h-4 mr-2" />
+                Disconnect
+              </Button>
+            )}
 
             {/* Start/Invite Button */}
             {!agentInvited && isJoined && (
@@ -508,23 +548,13 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
                 Retry
               </Button>
             )}
-
-            {/* Disconnect Button */}
-            <Button
-              onClick={handleDisconnect}
-              variant="destructive"
-              className="px-6 py-3"
-            >
-              <PhoneOff className="w-4 h-4 mr-2" />
-              Disconnect
-            </Button>
           </div>
 
           {/* Meeting Info */}
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>Meeting ID: {meetingId}</p>
-            <p>Participants: {participantsList.length}</p>
-            <p>Status: {isJoined ? 'Connected' : 'Connecting...'}</p>
+            <p>Meeting ID: {meetingId || 'Not connected'}</p>
+            <p>Participants: {isConnected ? participantsList.length : 0}</p>
+            <p>Status: {isJoined ? 'Connected' : isConnecting ? 'Connecting...' : 'Disconnected'}</p>
             {retryAttempts > 0 && (
               <p>Retry attempts: {retryAttempts}/{maxRetries}</p>
             )}
@@ -536,9 +566,9 @@ const MeetingContainer: React.FC<{ meetingId: string; onLeave: () => void; agent
 };
 
 const AgentMeeting: React.FC = () => {
-  const [meetingId, setMeetingId] = useState<string>("");
-  const [isInMeeting, setIsInMeeting] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  const [meetingId, setMeetingId] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
     model: 'Haley',
     voice: 'Default',
@@ -549,10 +579,6 @@ const AgentMeeting: React.FC = () => {
   });
 
   const createMeeting = async () => {
-    if (isCreating) return;
-    
-    setIsCreating(true);
-    
     try {
       console.log("Creating meeting with token:", VIDEOSDK_TOKEN);
       
@@ -562,7 +588,6 @@ const AgentMeeting: React.FC = () => {
           "Authorization": VIDEOSDK_TOKEN,
           "Content-Type": "application/json",
         },
-
       });
 
       console.log("API Response status:", response.status);
@@ -571,11 +596,11 @@ const AgentMeeting: React.FC = () => {
         const data = await response.json();
         console.log("Meeting created successfully:", data);
         setMeetingId(data.roomId);
-        setIsInMeeting(true);
         toast({
           title: "Meeting Created",
           description: `Meeting ID: ${data.roomId}`,
         });
+        return data.roomId;
       } else {
         const errorData = await response.text();
         console.error("API Error:", response.status, errorData);
@@ -588,56 +613,66 @@ const AgentMeeting: React.FC = () => {
         description: error instanceof Error ? error.message : "Failed to create meeting. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsCreating(false);
+      throw error;
     }
   };
 
-  const handleLeaveMeeting = () => {
-    setIsInMeeting(false);
-    setMeetingId("");
+  const handleConnect = async () => {
+    if (isConnecting) return;
+    
+    setIsConnecting(true);
+    
+    try {
+      const roomId = await createMeeting();
+      setIsConnected(true);
+    } catch (error) {
+      setIsConnecting(false);
+    }
   };
 
-  if (!isInMeeting) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
-        <Card className="p-8 bg-[#1a1a1a] border-gray-800">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">AI Agent Meeting</h1>
-            <p className="text-gray-400 mb-8">Start a conversation with an AI agent</p>
-            <Button
-              onClick={createMeeting}
-              disabled={isCreating}
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {isCreating ? "Creating..." : "Create Meeting"}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    setIsConnecting(false);
+    setMeetingId(null);
+  };
 
+  // Always show the meeting UI directly
   return (
-    <MeetingProvider
-      config={{
-        meetingId,
-        micEnabled: true,
-        webcamEnabled: false,
-        name: "User",
-        debugMode: false,
-        multiStream: false,
-      }}
-      token={VIDEOSDK_TOKEN}
-      reinitialiseMeetingOnConfigChange={false}
-      joinWithoutUserInteraction={false}
-    >
-      <MeetingContainer 
-        meetingId={meetingId} 
-        onLeave={handleLeaveMeeting}
-        agentSettings={agentSettings}
-      />
-    </MeetingProvider>
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {meetingId && isConnected ? (
+        <MeetingProvider
+          config={{
+            meetingId,
+            micEnabled: true,
+            webcamEnabled: false,
+            name: "User",
+            debugMode: false,
+            multiStream: false,
+          }}
+          token={VIDEOSDK_TOKEN}
+          reinitialiseMeetingOnConfigChange={false}
+          joinWithoutUserInteraction={false}
+        >
+          <MeetingContainer 
+            meetingId={meetingId} 
+            onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
+            agentSettings={agentSettings}
+            isConnecting={isConnecting}
+            isConnected={isConnected}
+          />
+        </MeetingProvider>
+      ) : (
+        <MeetingContainer 
+          meetingId={meetingId} 
+          onConnect={handleConnect}
+          onDisconnect={handleDisconnect}
+          agentSettings={agentSettings}
+          isConnecting={isConnecting}
+          isConnected={isConnected}
+        />
+      )}
+    </div>
   );
 };
 
