@@ -108,7 +108,7 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
         }}
       >
         <div
-          className={`w-28 h-28 rounded-full transition-all duration-300 border-[3px] border-white`}
+          className={`w-28 h-28 rounded-full transition-all duration-300`}
           style={{
             background: `linear-gradient(to bottom right, #7FD4E6, #5AA8E6)`,
             boxShadow: isActiveSpeaker 
