@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings } from "./types";
@@ -22,8 +23,8 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       onSettingsChange={onSettingsChange}
     >
       {/* Agent Avatar */}
-      <div className="w-32 h-32 rounded-full mb-8 flex items-center justify-center bg-gray-600 opacity-50">
-        <div className="w-28 h-28 rounded-full bg-gray-700"></div>
+      <div className="w-32 h-32 rounded-full mb-8 flex items-center justify-center bg-gradient-to-br from-cyan-400 to-blue-600">
+        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-500 to-blue-700"></div>
       </div>
 
       {/* Control Panel */}
