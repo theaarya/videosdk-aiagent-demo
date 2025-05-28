@@ -67,41 +67,37 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      {/* Animated wave rings */}
-      {isConnected && (
-        <>
-          {[1, 2, 3].map((ring) => (
-            <div
-              key={ring}
-              className="absolute inset-0 rounded-full border-2 border-cyan-400/30 animate-ping"
-              style={{
-                animationDelay: `${ring * 0.5}s`,
-                animationDuration: "2s",
-                transform: `scale(${1 + (waveIntensity * 0.01 * ring)})`,
-                opacity: isActiveSpeaker ? 0.6 - (ring * 0.15) : 0.2,
-                transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
-              }}
-            />
-          ))}
-          
-          {/* Pulsing glow effect */}
-          <div
-            className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-md"
-            style={{
-              transform: `scale(${1.1 + (waveIntensity * 0.02)})`,
-              opacity: isActiveSpeaker ? 0.8 : 0.3,
-              transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
-            }}
-          />
-        </>
-      )}
+      {/* Animated wave rings - now always visible */}
+      {[1, 2, 3].map((ring) => (
+        <div
+          key={ring}
+          className="absolute inset-0 rounded-full border-2 border-cyan-400/30 animate-ping"
+          style={{
+            animationDelay: `${ring * 0.5}s`,
+            animationDuration: "2s",
+            transform: `scale(${1 + (waveIntensity * 0.01 * ring)})`,
+            opacity: isActiveSpeaker ? 0.6 - (ring * 0.15) : 0.2,
+            transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
+          }}
+        />
+      ))}
+      
+      {/* Pulsing glow effect - now always visible */}
+      <div
+        className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-md"
+        style={{
+          transform: `scale(${1.1 + (waveIntensity * 0.02)})`,
+          opacity: isActiveSpeaker ? 0.8 : 0.3,
+          transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
+        }}
+      />
 
       {/* Main avatar */}
       <div
         className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
           isConnected
             ? "bg-gradient-to-br from-cyan-400 to-blue-600"
-            : "bg-gray-600 opacity-50"
+            : "bg-gradient-to-br from-cyan-400 to-blue-600"
         }`}
         style={{
           transform: `scale(${1 + (waveIntensity * 0.005)})`,
@@ -112,12 +108,12 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
           className={`w-28 h-28 rounded-full transition-all duration-300 ${
             isConnected
               ? "bg-gradient-to-br from-cyan-500 to-blue-700"
-              : "bg-gray-700"
+              : "bg-gradient-to-br from-cyan-500 to-blue-700"
           }`}
           style={{
             boxShadow: isActiveSpeaker 
               ? `0 0 ${20 + waveIntensity * 2}px rgba(34, 211, 238, 0.6)` 
-              : "none",
+              : "0 0 10px rgba(34, 211, 238, 0.3)",
             transition: "box-shadow 0.1s ease-out",
           }}
         />
