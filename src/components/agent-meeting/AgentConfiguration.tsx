@@ -18,11 +18,9 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
 
   return (
     <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
-      {/* Header Section - matching RightHeaderBar height */}
-      <div className="flex bg-[#1F1F1F] border-b-[1px] border-[#252A34]">
-        <div className="px-6 py-3">
-          <div className="font-semibold text-base">Agent Configuration</div>
-        </div>
+      {/* Header Section - matching RightHeaderBar height exactly */}
+      <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between border-b-[1px] border-[#252A34]">
+        <h1 className="text-lg font-medium">Agent Configuration</h1>
       </div>
 
       <div className="px-4 py-6 flex flex-col gap-4">
