@@ -182,7 +182,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const leaveAgent = async () => {
     try {
       const response = await fetch(
-        "https://85b9-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/leave-agent",
+        "https://c08b-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/leave-agent",
         {
           method: "POST",
           headers: {
@@ -254,7 +254,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.log("Sending agent settings:", agentSettings);
       
       const response = await fetch(
-        "https://85b9-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/join-agent",
+        "https://c08b-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/join-agent",
         {
           method: "POST",
           headers: {
