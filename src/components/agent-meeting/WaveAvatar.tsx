@@ -71,8 +71,9 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
       {[1, 2, 3].map((ring) => (
         <div
           key={ring}
-          className="absolute inset-2 rounded-full border-2 border-cyan-400/30 animate-ping pointer-events-none"
+          className="absolute inset-2 rounded-full border-[3px] border-white animate-ping pointer-events-none"
           style={{
+            backgroundColor: '#93DCEC',
             animationDelay: `${ring * 0.5}s`,
             animationDuration: "2s",
             transform: `scale(${0.8 + (waveIntensity * 0.005 * ring)})`,
@@ -84,8 +85,9 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
       
       {/* Pulsing glow effect - constrained to avatar size */}
       <div
-        className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-md pointer-events-none"
+        className="absolute inset-1 rounded-full blur-md pointer-events-none"
         style={{
+          background: `linear-gradient(to bottom right, #93DCEC40, #6BB6FF40)`,
           transform: `scale(${1 + (waveIntensity * 0.01)})`,
           opacity: isActiveSpeaker ? 0.8 : 0.3,
           transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
@@ -94,26 +96,24 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
 
       {/* Main avatar */}
       <div
-        className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
+        className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 border-[3px] border-white ${
           isConnected
-            ? "bg-gradient-to-br from-cyan-400 to-blue-600"
-            : "bg-gradient-to-br from-cyan-400 to-blue-600"
+            ? ""
+            : ""
         }`}
         style={{
+          background: `linear-gradient(to bottom right, #93DCEC, #6BB6FF)`,
           transform: `scale(${1 + (waveIntensity * 0.002)})`,
           transition: "transform 0.1s ease-out",
         }}
       >
         <div
-          className={`w-28 h-28 rounded-full transition-all duration-300 ${
-            isConnected
-              ? "bg-gradient-to-br from-cyan-500 to-blue-700"
-              : "bg-gradient-to-br from-cyan-500 to-blue-700"
-          }`}
+          className={`w-28 h-28 rounded-full transition-all duration-300 border-[3px] border-white`}
           style={{
+            background: `linear-gradient(to bottom right, #7FD4E6, #5AA8E6)`,
             boxShadow: isActiveSpeaker 
-              ? `0 0 ${20 + waveIntensity * 2}px rgba(34, 211, 238, 0.6)` 
-              : "0 0 10px rgba(34, 211, 238, 0.3)",
+              ? `0 0 ${20 + waveIntensity * 2}px #93DCEC99` 
+              : "0 0 10px #93DCEC66",
             transition: "box-shadow 0.1s ease-out",
           }}
         />
