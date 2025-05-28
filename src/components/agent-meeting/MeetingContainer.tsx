@@ -1,9 +1,8 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings } from "./types";
 import { RoomLayout } from "../layout/RoomLayout";
-import { WaveAvatar } from "./WaveAvatar";
+import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 
 interface MeetingContainerProps {
   onConnect: () => void;
@@ -23,8 +22,8 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
     >
-      {/* Agent Avatar with Wave Animation */}
-      <WaveAvatar 
+      {/* Microphone with Wave Animation */}
+      <MicrophoneWithWaves 
         isConnected={false}
         className="mb-12"
       />

@@ -7,7 +7,7 @@ import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
-import { WaveAvatar } from "./WaveAvatar";
+import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
 
 interface MeetingInterfaceProps {
@@ -312,10 +312,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       onSettingsChange={onSettingsChange}
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
-        {/* Agent Avatar with Wave Animation */}
-        <WaveAvatar 
-          participantId={agentParticipant?.id}
+        {/* Microphone with Wave Animation */}
+        <MicrophoneWithWaves 
           isConnected={isJoined}
+          isSpeaking={!!agentParticipant}
           className="mb-8"
         />
 
