@@ -11,7 +11,7 @@ const AgentMeeting: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
     model: "Haley",
-    voice: "Default",
+    voice: "Puck",
     personality: "Default",
     temperature: 0.8,
     topP: 0.8,

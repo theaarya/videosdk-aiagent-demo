@@ -1,8 +1,8 @@
+
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { AgentSettings } from "./types";
-import { AVAILABLE_MODELS } from "./types";
-import { ChevronRight } from "lucide-react";
+import { AgentSettings, AVAILABLE_MODELS, AVAILABLE_VOICES, PERSONALITY_OPTIONS, PROMPTS } from "./types";
+import { ChevronRight, ArrowLeft } from "lucide-react";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -14,6 +14,46 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   onSettingsChange,
 }) => {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const [voiceDropdownOpen, setVoiceDropdownOpen] = useState(false);
+  const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
+  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(null);
+
+  const handlePersonalitySelect = (personality: string) => {
+    setSelectedPersonality(personality);
+    setPersonalityDropdownOpen(false);
+    onSettingsChange?.({ ...agentSettings, personality });
+  };
+
+  const handleBackToPersonality = () => {
+    setSelectedPersonality(null);
+  };
+
+  if (selectedPersonality) {
+    return (
+      <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
+        {/* Header Section */}
+        <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between py-4 border-b-[1px] border-[#252A34]">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleBackToPersonality}
+              className="p-1 hover:bg-[#252A34] rounded"
+            >
+              <ArrowLeft className="w-4 h-4 text-white" />
+            </button>
+            <h1 className="text-lg font-medium">{selectedPersonality} Prompt</h1>
+          </div>
+        </div>
+
+        <div className="px-4 py-6">
+          <div className="bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
+            <pre className="text-white text-sm leading-relaxed whitespace-pre-wrap font-sans">
+              {PROMPTS[selectedPersonality as keyof typeof PROMPTS]}
+            </pre>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
@@ -23,10 +63,10 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
       </div>
 
       <div className="px-4 py-6 flex flex-col gap-4">
-        {/* Model Dropdown */}
-        <div className="mb-4 relative h-[34px]">
+        {/* Model Dropdown - Full Width */}
+        <div className="mb-4 relative">
           <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm"
+            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
             onClick={() => setModelDropdownOpen((v) => !v)}
           >
             <span className="text-sm font-semibold text-white">Model</span>
@@ -42,7 +82,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             </div>
           </div>
           {modelDropdownOpen && (
-            <div className="absolute left-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
               {AVAILABLE_MODELS.map((model) => (
                 <div
                   key={model}
@@ -63,22 +103,81 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           )}
         </div>
 
-        {/* Voice */}
-        <div className="mb-2 flex items-center justify-between cursor-pointer select-none h-[34px] text-sm">
-          <span className=" font-semibold text-white text-sm">Voice</span>
-          <div className="flex items-center gap-1">
-            <span className="text-white font-medium text-sm">Default</span>
-            <ChevronRight className="w-4 h-4 text-white" />
+        {/* Voice Dropdown - Full Width */}
+        <div className="mb-4 relative">
+          <div
+            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
+            onClick={() => setVoiceDropdownOpen((v) => !v)}
+          >
+            <span className="text-sm font-semibold text-white">Voice</span>
+            <div className="flex items-center gap-1">
+              <span className="text-white font-medium text-sm">
+                {agentSettings.voice}
+              </span>
+              <ChevronRight
+                className={`w-4 h-4 text-white transition-transform ${
+                  voiceDropdownOpen ? "rotate-90" : ""
+                }`}
+              />
+            </div>
           </div>
+          {voiceDropdownOpen && (
+            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+              {AVAILABLE_VOICES.map((voice) => (
+                <div
+                  key={voice}
+                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
+                    agentSettings.voice === voice
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-[#232323] text-white"
+                  }`}
+                  onClick={() => {
+                    setVoiceDropdownOpen(false);
+                    onSettingsChange?.({ ...agentSettings, voice });
+                  }}
+                >
+                  {voice}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Personality */}
-        <div className="mb-6 flex items-center justify-between cursor-pointer select-none h-[34px] text-sm">
-          <span className="text-sm font-semibold text-white">Personality</span>
-          <div className="flex items-center gap-1">
-            <span className="text-sm text-white font-medium">Default</span>
-            <ChevronRight className="w-4 h-4 text-white" />
+        {/* Personality Dropdown - Full Width */}
+        <div className="mb-6 relative">
+          <div
+            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
+            onClick={() => setPersonalityDropdownOpen((v) => !v)}
+          >
+            <span className="text-sm font-semibold text-white">Personality</span>
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-white font-medium">
+                {agentSettings.personality}
+              </span>
+              <ChevronRight
+                className={`w-4 h-4 text-white transition-transform ${
+                  personalityDropdownOpen ? "rotate-90" : ""
+                }`}
+              />
+            </div>
           </div>
+          {personalityDropdownOpen && (
+            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+              {PERSONALITY_OPTIONS.map((personality) => (
+                <div
+                  key={personality}
+                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
+                    agentSettings.personality === personality
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-[#232323] text-white"
+                  }`}
+                  onClick={() => handlePersonalitySelect(personality)}
+                >
+                  {personality}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Sliders */}
