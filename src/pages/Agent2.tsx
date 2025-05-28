@@ -31,7 +31,7 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
   const [isJoined, setIsJoined] = useState(false);
   const [agentInvited, setAgentInvited] = useState(false);
 
-  const { join, leave, participants } = useMeeting({
+  const { join, leave, end, participants } = useMeeting({
     onMeetingJoined: () => {
       console.log("Meeting joined successfully");
       setIsJoined(true);
@@ -112,12 +112,42 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     try {
       if (agentInvited) {
         console.log("Removing agent from meeting:", meetingId);
-        await agentApi.leaveOnClickAgent(meetingId, VIDEOSDK_TOKEN);
+        setIsLoading(true);
+        
+        const response = await agentApi.leaveOnClickAgent(meetingId, VIDEOSDK_TOKEN);
+        console.log("Leave agent API response:", response);
+        
+        // Check the status from API response
+        if (response.status === "not_found") {
+          console.log("Agent not found in meeting");
+          toast({
+            title: "Agent Not Found",
+            description: "Agent was not found in the meeting",
+          });
+        } else if (response.status === "removed") {
+          console.log("Agent successfully removed from meeting");
+          toast({
+            title: "Agent Removed",
+            description: "AI Agent has left the conversation",
+          });
+        }
       }
-      leave();
+      
+      // End the call using VideoSDK's end method
+      console.log("Ending meeting call");
+      end();
+      
     } catch (error) {
       console.error("Error leaving meeting:", error);
-      leave();
+      toast({
+        title: "Error",
+        description: "Failed to leave meeting properly",
+        variant: "destructive",
+      });
+      // Still try to end the call even if API fails
+      end();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,7 +164,8 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     if (currentButton.action === "leave") {
       handleLeave();
     } else if (currentButton.action === "join" || currentButton.action === "talking") {
-      setCurrentButtonIndex((prev) => (prev + 1) % buttonVariants.length);
+      const nextIndex = (currentButtonIndex + 1) % buttonVariants.length;
+      setCurrentButtonIndex(nextIndex);
     }
   };
 
@@ -282,6 +313,7 @@ const Agent2: React.FC = () => {
         micEnabled: true,
         webcamEnabled: false,
         name: "User",
+        debugMode: false,
       }}
       token={VIDEOSDK_TOKEN}
     >
