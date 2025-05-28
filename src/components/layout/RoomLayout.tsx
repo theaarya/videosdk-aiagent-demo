@@ -1,3 +1,4 @@
+
 import React from "react";
 
 import { AgentSettings } from "../agent-meeting/types";
@@ -27,7 +28,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
         {/* Right Panel - Meeting Interface */}
         <div className="flex-1 flex flex-col bg-[#161616]">
           {/* Header Section */}
-          <div className="flex w-full bg-[#1F1F1F]">
+          <div className="flex bg-[#1F1F1F]">
             <div className="flex-1">
               <RightHeaderBar agentSettings={agentSettings} />
             </div>

@@ -1,3 +1,4 @@
+
 import ShareIcon from "./icons/ShareIcon";
 import CodeIcon from "./icons/CodeIcon";
 import RocketIcon from "./icons/RocketIcon";
@@ -9,7 +10,7 @@ const RightHeaderBar = ({
   agentSettings: AgentSettings;
 }) => {
   return (
-    <div className="w-full bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between border-b-[1px] border-[#252A34]">
+    <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between border-b-[1px] border-[#252A34]">
       <h1 className="text-lg font-medium">{agentSettings.model}</h1>
 
       <div className="flex items-center gap-3">

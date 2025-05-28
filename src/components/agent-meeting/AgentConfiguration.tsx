@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { AgentSettings } from "./types";
@@ -16,10 +17,10 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   return (
-    <div className="bg-[#161616] w-full h-full border-r-[1px] border-[#252A34]">
+    <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
       {/* Header Section */}
-      <div className="flex w-full bg-[#1F1F1F]">
-        <div className="w-full px-4 py-[18px]">
+      <div className="flex bg-[#1F1F1F]">
+        <div className="px-4 py-[18px]">
           <div className="font-semibold text-base">Agent Configuration</div>
         </div>
       </div>
@@ -44,7 +45,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             </div>
           </div>
           {modelDropdownOpen && (
-            <div className="absolute left-0 mt-2 w-full z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+            <div className="absolute left-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
               {AVAILABLE_MODELS.map((model) => (
                 <div
                   key={model}
@@ -89,7 +90,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           <div>
             <div className="flex items-center justify-between mb-2 h-[36px]">
               <span className="text-white text-sm">Temperature</span>
-              <span className="bg-[#1F1F1F] h-[36px] w-[43px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
+              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
                 {agentSettings.temperature.toFixed(1)}
               </span>
             </div>
@@ -104,14 +105,14 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               max={1}
               min={0}
               step={0.1}
-              className="w-full accent-blue-500"
+              className="accent-blue-500"
             />
           </div>
           {/* Top_P */}
           <div>
             <div className="flex items-center justify-between mb-2 h-[36px]">
               <span className="text-white text-sm">Top_P</span>
-              <span className="bg-[#1F1F1F] h-[36px] w-[43px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
+              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
                 {agentSettings.topP.toFixed(1)}
               </span>
             </div>
@@ -126,14 +127,14 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               max={1}
               min={0}
               step={0.1}
-              className="w-full accent-blue-500"
+              className="accent-blue-500"
             />
           </div>
           {/* Top_K */}
           <div>
             <div className="flex items-center justify-between mb-2 h-[36px]">
               <span className=" text-white text-sm">Top_K</span>
-              <span className="bg-[#1F1F1F] h-[36px] w-[43px] flex items-center justify-center border border-[#232323] text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center">
+              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center border border-[#232323] text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center">
                 {agentSettings.topK.toFixed(1)}
               </span>
             </div>
@@ -148,7 +149,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               max={1}
               min={0}
               step={0.1}
-              className="w-full accent-blue-500"
+              className="accent-blue-500"
             />
           </div>
         </div>
