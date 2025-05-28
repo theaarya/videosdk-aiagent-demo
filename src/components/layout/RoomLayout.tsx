@@ -45,7 +45,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer - Full width */}
       <Footer />
 
       {/* Mobile/Tablet Responsive Agent Configuration */}
