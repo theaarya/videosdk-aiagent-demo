@@ -1,7 +1,12 @@
-
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { AgentSettings, AVAILABLE_MODELS, AVAILABLE_VOICES, PERSONALITY_OPTIONS, PROMPTS } from "./types";
+import {
+  AgentSettings,
+  AVAILABLE_MODELS,
+  AVAILABLE_VOICES,
+  PERSONALITY_OPTIONS,
+  PROMPTS,
+} from "./types";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 
 interface AgentConfigurationProps {
@@ -16,7 +21,9 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
   const [voiceDropdownOpen, setVoiceDropdownOpen] = useState(false);
   const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
-  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(null);
+  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
+    null
+  );
 
   const handlePersonalitySelect = (personality: string) => {
     setSelectedPersonality(personality);
@@ -34,13 +41,15 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
         {/* Header Section */}
         <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between py-4 border-b-[1px] border-[#252A34]">
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={handleBackToPersonality}
               className="p-1 hover:bg-[#252A34] rounded"
             >
               <ArrowLeft className="w-4 h-4 text-white" />
             </button>
-            <h1 className="text-lg font-medium">{selectedPersonality} Prompt</h1>
+            <h1 className="text-lg font-medium">
+              {selectedPersonality} Prompt
+            </h1>
           </div>
         </div>
 
@@ -156,7 +165,9 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
             onClick={() => setPersonalityDropdownOpen((v) => !v)}
           >
-            <span className="text-sm font-semibold text-white">Personality</span>
+            <span className="text-sm font-semibold text-white">
+              Personality
+            </span>
             <div className="flex items-center gap-1">
               <span className="text-sm text-white font-medium">
                 {agentSettings.personality}
