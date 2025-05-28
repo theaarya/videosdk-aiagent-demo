@@ -4,7 +4,7 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { AgentSettings } from "./types";
+import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
@@ -253,6 +253,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       console.log("Sending agent settings:", agentSettings);
       
+      // Get the system prompt for the selected personality
+      const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
+      
       const response = await fetch(
         "https://c08b-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/join-agent",
         {
@@ -265,7 +268,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
             token: VIDEOSDK_TOKEN,
             model: agentSettings.model,
             voice: agentSettings.voice,
-            personality: agentSettings.personality,
+            system_prompt: systemPrompt, // Send the actual prompt instead of personality name
             temperature: agentSettings.temperature,
             topP: agentSettings.topP,
             topK: agentSettings.topK,

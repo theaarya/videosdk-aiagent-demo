@@ -13,7 +13,7 @@ const AgentMeeting: React.FC = () => {
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
     model: "gemini-2.0-flash-live-001",
     voice: "Puck",
-    personality: "Default",
+    personality: "Tutor", // Default personality selected
     temperature: 0.8,
     topP: 0.8,
     topK: 0.8,
