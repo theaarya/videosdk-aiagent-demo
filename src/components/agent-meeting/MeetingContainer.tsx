@@ -26,7 +26,7 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       {/* Agent Avatar with Wave Animation */}
       <WaveAvatar 
         isConnected={false}
-        className="mb-8"
+        className="mb-12"
       />
 
       {/* Control Panel */}
