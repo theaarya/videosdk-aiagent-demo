@@ -13,8 +13,9 @@ export const agentApi = {
       
       const response = await fetch(`${API_BASE_URL}/join-agent`, {
         method: 'POST',
- 
-
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           meeting_id: meetingId,
           token: token,
@@ -44,7 +45,9 @@ export const agentApi = {
       
       const response = await fetch(`${API_BASE_URL}/leave-agent`, {
         method: 'POST',
-
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           meeting_id: meetingId,
         }),
