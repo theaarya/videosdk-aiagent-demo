@@ -10,7 +10,9 @@ export interface AgentSettings {
 
 export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODM1MTk1MCwiZXhwIjoxNzQ4OTU2NzUwfQ.24oJzOKwWqLf2kvgMJw12grsxTgK0bfNUCIfFugqOY0";
 
-export const AVAILABLE_MODELS = ["Haley", "Samuel", "Felicia", "Jules", "Doug"];
+export const AVAILABLE_MODELS = {
+  gemini: ["gemini-2.0-flash-live-001"]
+};
 
 export const AVAILABLE_VOICES = ["Puck", "Charon", "Kore", "Fenrir", "Aoede"];
 

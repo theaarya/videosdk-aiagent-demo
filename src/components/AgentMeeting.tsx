@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
@@ -10,7 +11,7 @@ const AgentMeeting: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
-    model: "Haley",
+    model: "gemini-2.0-flash-live-001",
     voice: "Puck",
     personality: "Default",
     temperature: 0.8,

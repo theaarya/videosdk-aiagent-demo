@@ -83,20 +83,27 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           </div>
           {modelDropdownOpen && (
             <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {AVAILABLE_MODELS.map((model) => (
-                <div
-                  key={model}
-                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
-                    agentSettings.model === model
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-[#232323] text-white"
-                  }`}
-                  onClick={() => {
-                    setModelDropdownOpen(false);
-                    onSettingsChange?.({ ...agentSettings, model });
-                  }}
-                >
-                  {model}
+              {Object.entries(AVAILABLE_MODELS).map(([category, models]) => (
+                <div key={category}>
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    {category}
+                  </div>
+                  {models.map((model) => (
+                    <div
+                      key={model}
+                      className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ml-2 ${
+                        agentSettings.model === model
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#232323] text-white"
+                      }`}
+                      onClick={() => {
+                        setModelDropdownOpen(false);
+                        onSettingsChange?.({ ...agentSettings, model });
+                      }}
+                    >
+                      {model}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
