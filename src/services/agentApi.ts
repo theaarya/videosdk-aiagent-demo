@@ -9,7 +9,7 @@ interface AgentApiRequest {
 export const agentApi = {
   async joinOnClickAgent(meetingId: string, token: string): Promise<any> {
     try {
-      const response = await fetch(`${API_BASE_URL}/join-onclick-agent`, {
+      const response = await fetch(`${API_BASE_URL}/join-oneclick-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,14 +33,13 @@ export const agentApi = {
 
   async leaveOnClickAgent(meetingId: string, token: string): Promise<any> {
     try {
-      const response = await fetch(`${API_BASE_URL}/leave-onclick-agent`, {
+      const response = await fetch(`${API_BASE_URL}/leave-oneclick-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           meeting_id: meetingId,
-          token: token,
         }),
       });
 
