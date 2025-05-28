@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -35,7 +34,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const maxRetries = 3;
   const retryDelay = 5000;
 
-  const { join, leave, toggleMic, participants, localParticipant } = useMeeting(
+  const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting(
     {
       onMeetingJoined: () => {
         console.log("Meeting joined successfully");
@@ -196,14 +195,25 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Agent left successfully:", data.message);
-        toast({
-          title: "Agent Removed",
-          description: "AI Agent has been removed from the meeting",
-        });
+        console.log("Agent leave response:", data);
+        
+        if (data.status === "removed") {
+          console.log("Agent successfully removed, ending meeting");
+          end(); // Call the end method from useMeeting hook
+          toast({
+            title: "Agent Removed",
+            description: "AI Agent has been removed from the meeting",
+          });
+        } else if (data.status === "not_found") {
+          console.log("No agent session found");
+          toast({
+            title: "No Agent Found",
+            description: "No AI agent session was found for this meeting",
+          });
+        }
       } else {
         const errorData = await response.json();
-        console.error("Error removing agent:", errorData.detail);
+        console.error("Error removing agent:", errorData);
         toast({
           title: "Warning",
           description: "Could not remove AI agent from meeting",
@@ -224,16 +234,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       if (agentInvited) {
         await leaveAgent();
+      } else {
+        // If no agent is invited, just leave the meeting normally
+        leave();
       }
-
-      setRetryAttempts(0);
-      setIsRetrying(false);
-      setConnectionError(null);
-      joinAttempted.current = false;
-      agentInviteAttempted.current = false;
-      setAgentInvited(false);
-
-      leave();
     } catch (error) {
       console.error("Error during disconnect:", error);
       leave();
