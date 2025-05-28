@@ -23,9 +23,13 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
     >
-      {/* Agent Avatar with Water Animation */}
-      <div className="w-32 h-32 mb-8">
-        <WaterAnimation isActive={false} />
+      {/* Agent Avatar - Static State */}
+      <div className="w-48 h-48 mb-8">
+        <div className="relative w-full h-full">
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-cyan-500 to-blue-700"></div>
+          </div>
+        </div>
       </div>
 
       {/* Control Panel */}
@@ -34,9 +38,9 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
         <Button
           onClick={onConnect}
           disabled={isConnecting}
-          className="px-8 py-3 bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {isConnecting ? "Connecting..." : "Connect"}
+          {isConnecting ? "Connecting..." : "Start Conversation"}
         </Button>
       </div>
     </RoomLayout>
