@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { Volume2, VolumeX } from "lucide-react";
@@ -66,15 +67,15 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg ">
-      {/* <div className="flex items-center justify-between mb-3">
+    <div className="bg-gray-800 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <div
             className={`w-3 h-3 rounded-full ${
               isActiveSpeaker ? "bg-green-500 animate-pulse" : "bg-gray-500"
             }`}
           ></div>
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium text-white">
             {displayName || "AI Agent"}
           </span>
         </div>
@@ -103,7 +104,7 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
           className="flex-1"
         />
         <Volume2 className="w-4 h-4 text-gray-400" />
-      </div> */}
+      </div>
 
       <audio ref={audioRef} autoPlay playsInline style={{ display: "none" }} />
     </div>
