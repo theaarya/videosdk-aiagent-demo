@@ -79,8 +79,10 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
       {showWaves && waveIntensity > 0 && [1, 2, 3].map((ring) => (
         <div
           key={ring}
-          className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping pointer-events-none"
+          className="absolute inset-0 rounded-full border-2 animate-ping pointer-events-none"
           style={{
+            borderImage: `linear-gradient(45deg, #DE4CE3, #F96E8C) 1`,
+            borderColor: ring === 1 ? '#DE4CE3' : ring === 2 ? '#F96E8C' : '#DE4CE3',
             animationDelay: `${ring * 0.5}s`,
             animationDuration: "2s",
             transform: `scale(${1 + (waveIntensity * 0.02 * ring)})`,
@@ -90,7 +92,7 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
         />
       ))}
       
-      {/* Main microphone SVG */}
+      {/* Main microphone SVG - always visible */}
       <svg
         width="196"
         height="196"

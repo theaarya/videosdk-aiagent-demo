@@ -178,17 +178,11 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-12 p-8">
-      {isJoined && agentParticipant ? (
-        <WaveAvatar
-          participantId={agentParticipant.id}
-          isConnected={isJoined}
-        />
-      ) : (
-        <AnimatedMicrophone 
-          showWaves={isJoined && agentInvited}
-          isAgentSpeaking={isAgentSpeaking}
-        />
-      )}
+      {/* Always show the AnimatedMicrophone - it represents the agent */}
+      <AnimatedMicrophone 
+        showWaves={isJoined && agentInvited}
+        isAgentSpeaking={isAgentSpeaking}
+      />
       
       <CustomButton 
         text={currentButton.text} 
