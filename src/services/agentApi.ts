@@ -13,13 +13,8 @@ export const agentApi = {
       
       const response = await fetch(`${API_BASE_URL}/join-agent`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-          'Accept': 'application/json',
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type',
-        },
+ 
+
         body: JSON.stringify({
           meeting_id: meetingId,
           token: token,
@@ -49,13 +44,7 @@ export const agentApi = {
       
       const response = await fetch(`${API_BASE_URL}/leave-agent`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-          'Accept': 'application/json',
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type',
-        },
+
         body: JSON.stringify({
           meeting_id: meetingId,
         }),
