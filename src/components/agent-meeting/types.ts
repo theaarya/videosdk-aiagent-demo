@@ -8,8 +8,8 @@ export interface AgentSettings {
   topK: number;
 }
 
-export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODM1MTk1MCwiZXhwIjoxNzQ4OTU2NzUwfQ.24oJzOKwWqLf2kvgMJw12grsxTgK0bfNUCIfFugqOY0";
-export const API_URL = "https://caa7-2409-4080-be13-68fc-a03f-b651-b21b-7aa.ngrok-free.app"
+export const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN
+export const API_URL = import.meta.env.VITE_API_URL
 export const AVAILABLE_MODELS = {
   gemini: ["gemini-2.0-flash-live-001"]
 };
