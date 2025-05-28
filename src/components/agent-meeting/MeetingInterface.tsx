@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -250,6 +251,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const inviteAgent = async () => {
     try {
+      console.log("Sending agent settings:", agentSettings);
+      
       const response = await fetch(
         "https://85b9-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/join-agent",
         {
@@ -260,6 +263,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           body: JSON.stringify({
             meeting_id: meetingId,
             token: VIDEOSDK_TOKEN,
+            model: agentSettings.model,
+            voice: agentSettings.voice,
+            personality: agentSettings.personality,
+            temperature: agentSettings.temperature,
+            topP: agentSettings.topP,
+            topK: agentSettings.topK,
           }),
         }
       );
