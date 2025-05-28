@@ -15,50 +15,44 @@ export const MicrophoneWithWaves: React.FC<MicrophoneWithWavesProps> = ({
 }) => {
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
-      {/* Animated Wave Rings */}
-      {isConnected && (
+      {/* Animated Wave Rings - Only when agent is speaking */}
+      {isConnected && isSpeaking && (
         <>
-          {/* First wave ring - innermost */}
+          {/* First wave ring - innermost, just 2px larger than mic */}
           <div
-            className={`absolute rounded-full border-2 ${
-              isSpeaking ? "animate-ping" : "animate-pulse"
-            }`}
+            className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "220px",
-              height: "220px",
+              width: "200px",
+              height: "200px",
               borderColor: "#F96E8C",
-              opacity: 0.6,
-              animationDuration: isSpeaking ? "1s" : "2s",
+              opacity: 0.8,
+              animationDuration: "0.8s",
               animationDelay: "0s",
             }}
           />
           
-          {/* Second wave ring - middle */}
+          {/* Second wave ring - 2px larger */}
           <div
-            className={`absolute rounded-full border-2 ${
-              isSpeaking ? "animate-ping" : "animate-pulse"
-            }`}
+            className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "280px",
-              height: "280px",
+              width: "202px",
+              height: "202px",
               borderColor: "#DE4CE3",
-              opacity: 0.4,
-              animationDuration: isSpeaking ? "1.3s" : "2.6s",
+              opacity: 0.6,
+              animationDuration: "1s",
               animationDelay: "0.1s",
             }}
           />
           
-          {/* Third wave ring - outermost */}
+          {/* Third wave ring - 3px larger */}
           <div
-            className={`absolute rounded-full border-2 ${
-              isSpeaking ? "animate-ping" : "animate-pulse"
-            }`}
+            className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "340px",
-              height: "340px",
+              width: "205px",
+              height: "205px",
               borderColor: "#6A65F3",
-              opacity: 0.3,
-              animationDuration: isSpeaking ? "1.6s" : "3.2s",
+              opacity: 0.4,
+              animationDuration: "1.2s",
               animationDelay: "0.2s",
             }}
           />

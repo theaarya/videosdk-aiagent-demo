@@ -29,6 +29,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [agentIsSpeaking, setAgentIsSpeaking] = useState(false);
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
   const maxRetries = 3;
@@ -74,6 +75,17 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       },
       onSpeakerChanged: (activeSpeakerId) => {
         console.log("Speaker changed:", activeSpeakerId);
+        // Check if the active speaker is the agent
+        const participantsList = Array.from(participants.values());
+        const agentParticipant = participantsList.find(
+          (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+        );
+        
+        if (agentParticipant && activeSpeakerId === agentParticipant.id) {
+          setAgentIsSpeaking(true);
+        } else {
+          setAgentIsSpeaking(false);
+        }
       },
       onError: (error) => {
         console.error("Meeting error:", error);
@@ -315,7 +327,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         {/* Microphone with Wave Animation */}
         <MicrophoneWithWaves 
           isConnected={isJoined}
-          isSpeaking={!!agentParticipant}
+          isSpeaking={agentIsSpeaking}
           className="mb-8"
         />
 
