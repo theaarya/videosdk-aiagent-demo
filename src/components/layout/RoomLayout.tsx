@@ -4,7 +4,6 @@ import { AgentSettings } from "../agent-meeting/types";
 import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
 import { ResponsiveAgentConfig } from "./ResponsiveAgentConfig";
 import RightHeaderBar from "../RightHeaderBar";
-import Footer from "../Footer";
 
 interface RoomLayoutProps {
   children: React.ReactNode;
@@ -18,10 +17,10 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   onSettingsChange,
 }) => {
   return (
-    <div className="h-screen bg-black flex flex-col">
+    <div className="min-h-screen text-white flex flex-col">
       {/* Content Section - Responsive container */}
       <div className="flex flex-1 justify-center">
-        <div className="w-full max-w-7xl flex h-full">
+        <div className="w-full max-w-7xl flex">
           {/* Desktop Agent Configuration - Hidden on mobile/tablet */}
           <div className="hidden lg:block w-[400px] bg-[#161616]">
             <AgentConfiguration
@@ -38,15 +37,12 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
                 <RightHeaderBar agentSettings={agentSettings} />
               </div>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-white">
+            <div className="flex-1 flex flex-col items-center justify-center p-8">
               {children}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Footer - Full width */}
-      <Footer />
 
       {/* Mobile/Tablet Responsive Agent Configuration */}
       <div className="lg:hidden">

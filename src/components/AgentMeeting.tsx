@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
-import { AgentSettings, VITE_VIDEOSDK_TOKEN } from "./agent-meeting/types";
+import { AgentSettings, VIDEOSDK_TOKEN } from "./agent-meeting/types";
 import { MeetingInterface } from "./agent-meeting/MeetingInterface";
 import { MeetingContainer } from "./agent-meeting/MeetingContainer";
 
@@ -20,12 +21,12 @@ const AgentMeeting: React.FC = () => {
 
   const createMeeting = async () => {
     try {
-      console.log("Creating meeting with token:", VITE_VIDEOSDK_TOKEN);
+      console.log("Creating meeting with token:", VIDEOSDK_TOKEN);
 
       const response = await fetch("https://api.videosdk.live/v2/rooms", {
         method: "POST",
         headers: {
-          Authorization: VITE_VIDEOSDK_TOKEN,
+          Authorization: VIDEOSDK_TOKEN,
           "Content-Type": "application/json",
         },
       });
@@ -95,7 +96,7 @@ const AgentMeeting: React.FC = () => {
           debugMode: false,
           multiStream: false,
         }}
-        token={VITE_VIDEOSDK_TOKEN}
+        token={VIDEOSDK_TOKEN}
         reinitialiseMeetingOnConfigChange={false}
         joinWithoutUserInteraction={false}
       >

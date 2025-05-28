@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { VITE_VIDEOSDK_TOKEN, VITE_API_URL } from "./types";
+import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { WaveAvatar } from "./WaveAvatar";
 import { RoomLayout } from "../layout/RoomLayout";
@@ -34,8 +34,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const maxRetries = 3;
   const retryDelay = 5000;
 
-  const { join, leave, end, toggleMic, participants, localParticipant } =
-    useMeeting({
+  const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting(
+    {
       onMeetingJoined: () => {
         console.log("Meeting joined successfully");
         setIsJoined(true);
@@ -105,7 +105,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           });
         }
       },
-    });
+    }
+  );
 
   useEffect(() => {
     if (isJoined && !agentInvited && !agentInviteAttempted.current) {
@@ -179,20 +180,23 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      const response = await fetch(`${VITE_API_URL}/leave-agent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          meeting_id: meetingId,
-        }),
-      });
+      const response = await fetch(
+        "https://545b-103-251-212-247.ngrok-free.app/leave-agent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meeting_id: meetingId,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         console.log("Agent leave response:", data);
-
+        
         if (data.status === "removed") {
           console.log("Agent successfully removed, ending meeting");
           end(); // Call the end method from useMeeting hook
@@ -252,28 +256,30 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const inviteAgent = async () => {
     try {
       console.log("Sending agent settings:", agentSettings);
-
+      
       // Get the system prompt for the selected personality
-      const systemPrompt =
-        PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
-
-      const response = await fetch(`${VITE_API_URL}/join-agent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          meeting_id: meetingId,
-          token: VITE_VIDEOSDK_TOKEN,
-          model: agentSettings.model,
-          voice: agentSettings.voice,
-          personality: agentSettings.personality,
-          system_prompt: systemPrompt,
-          temperature: agentSettings.temperature,
-          topP: agentSettings.topP,
-          topK: agentSettings.topK,
-        }),
-      });
+      const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
+      
+      const response = await fetch(
+        "https://545b-103-251-212-247.ngrok-free.app/join-agent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meeting_id: meetingId,
+            token: VIDEOSDK_TOKEN,
+            model: agentSettings.model,
+            voice: agentSettings.voice,
+            personality: agentSettings.personality,
+            system_prompt: systemPrompt,
+            temperature: agentSettings.temperature,
+            topP: agentSettings.topP,
+            topK: agentSettings.topK,
+          }),
+        }
+      );
 
       if (response.ok) {
         setAgentInvited(true);
@@ -307,7 +313,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
         {/* Agent Avatar with Wave Animation */}
-        <WaveAvatar
+        <WaveAvatar 
           participantId={agentParticipant?.id}
           isConnected={isJoined}
           className="mb-8"
