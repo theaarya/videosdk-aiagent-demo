@@ -5,7 +5,7 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { VIDEOSDK_TOKEN } from "./types";
+import { VIDEOSDK_TOKEN, API_URL } from "./types";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
 import { CustomButton } from "./CustomButton";
@@ -173,7 +173,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const leaveAgent = async () => {
     try {
       const response = await fetch(
-        "https://9523-103-251-212-247.ngrok-free.app/leave-agent",
+        `${API_URL}/leave-agent`,
         {
           method: "POST",
           headers: {
@@ -233,7 +233,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
       const response = await fetch(
-        "https://9523-103-251-212-247.ngrok-free.app/join-agent",
+        `${API_URL}/join-agent`,
         {
           method: "POST",
           headers: {
