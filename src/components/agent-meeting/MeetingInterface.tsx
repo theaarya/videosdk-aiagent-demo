@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
-import { RefreshCw } from "lucide-react";
+
+import React, { useEffect, useState } from "react";
+import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { AgentSettings } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { VIDEOSDK_TOKEN } from "./types";
-import MicWithSlash from "../icons/MicWithSlash";
-
 import { RoomLayout } from "../layout/RoomLayout";
+import { WaterAnimation } from "./WaterAnimation";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -23,335 +21,119 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   agentSettings,
   onSettingsChange,
 }) => {
-  const [agentInvited, setAgentInvited] = useState(false);
-  const [micEnabled, setMicEnabled] = useState(true);
-  const [isJoined, setIsJoined] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [retryAttempts, setRetryAttempts] = useState(0);
-  const [isRetrying, setIsRetrying] = useState(false);
-  const joinAttempted = useRef(false);
-  const agentInviteAttempted = useRef(false);
-  const maxRetries = 3;
-  const retryDelay = 5000;
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [agentParticipantId, setAgentParticipantId] = useState<string | null>(null);
+  const [agentAudioStream, setAgentAudioStream] = useState<MediaStream | null>(null);
 
-  const { join, leave, toggleMic, participants, localParticipant } = useMeeting(
-    {
-      onMeetingJoined: () => {
-        console.log("Meeting joined successfully");
-        setIsJoined(true);
-        setConnectionError(null);
-        setRetryAttempts(0);
-        setIsRetrying(false);
-        joinAttempted.current = true;
-        toast({
-          title: "Meeting Started",
-          description: "You have joined the conversation",
-        });
-      },
-      onMeetingLeft: () => {
-        console.log("Meeting left");
-        setIsJoined(false);
-        setRetryAttempts(0);
-        setIsRetrying(false);
-        joinAttempted.current = false;
-        agentInviteAttempted.current = false;
-        onDisconnect();
-      },
-      onParticipantJoined: (participant) => {
-        console.log("Participant joined:", participant.displayName);
-        if (
-          participant.displayName?.includes("Agent") ||
-          participant.displayName?.includes("Haley")
-        ) {
-          toast({
-            title: "AI Agent Joined",
-            description: `${participant.displayName} has joined the conversation`,
-          });
-        }
-      },
-      onParticipantLeft: (participant) => {
-        console.log("Participant left:", participant.displayName);
-      },
-      onSpeakerChanged: (activeSpeakerId) => {
-        console.log("Speaker changed:", activeSpeakerId);
-      },
-      onError: (error) => {
-        console.error("Meeting error:", error);
+  const { participants, localMicOn, unmuteMic, muteMic, leave } = useMeeting({
+    onMeetingJoined: () => {
+      console.log("Meeting joined successfully");
+    },
+    onParticipantJoined: (participant) => {
+      console.log("Participant joined:", participant);
+      if (participant.displayName?.toLowerCase().includes('agent') || participant.displayName?.toLowerCase().includes('bot')) {
+        setAgentParticipantId(participant.id);
+      }
+    },
+    onParticipantLeft: (participant) => {
+      console.log("Participant left:", participant);
+      if (participant.id === agentParticipantId) {
+        setAgentParticipantId(null);
+        setAgentAudioStream(null);
+      }
+    },
+  });
 
-        if (error.message?.includes("Insufficient resources")) {
-          setConnectionError(
-            "Server is currently overloaded. Please try again in a few minutes."
-          );
+  // Get agent participant data
+  const agentParticipant = agentParticipantId ? useParticipant(agentParticipantId, {
+    onStreamEnabled: (stream) => {
+      if (stream.kind === 'audio') {
+        console.log("Agent audio stream enabled");
+        const mediaStream = new MediaStream([stream.track]);
+        setAgentAudioStream(mediaStream);
+      }
+    },
+    onStreamDisabled: (stream) => {
+      if (stream.kind === 'audio') {
+        console.log("Agent audio stream disabled");
+        setAgentAudioStream(null);
+      }
+    },
+  }) : null;
 
-          if (retryAttempts < maxRetries && !isRetrying) {
-            setIsRetrying(true);
-            setTimeout(() => {
-              handleRetryConnection();
-            }, retryDelay);
-          } else {
-            toast({
-              title: "Connection Failed",
-              description:
-                "Server is overloaded. Please try creating a new meeting.",
-              variant: "destructive",
-            });
-          }
-        } else {
-          setConnectionError(error.message || "Connection failed");
-          toast({
-            title: "Connection Error",
-            description: "Failed to connect to the meeting. Please try again.",
-            variant: "destructive",
-          });
-        }
-      },
-    }
-  );
-
-  useEffect(() => {
-    if (isJoined && !agentInvited && !agentInviteAttempted.current) {
-      console.log("Auto-inviting agent after meeting join");
-      agentInviteAttempted.current = true;
-      inviteAgent();
-    }
-  }, [isJoined]);
-
-  const handleRetryConnection = () => {
-    if (retryAttempts >= maxRetries) {
-      setIsRetrying(false);
-      setConnectionError(
-        "Maximum retry attempts reached. Please try creating a new meeting."
-      );
-      return;
-    }
-
-    console.log(`Retry attempt ${retryAttempts + 1}/${maxRetries}`);
-    setRetryAttempts((prev) => prev + 1);
-
-    try {
-      setConnectionError(null);
-      joinAttempted.current = false;
-
-      setTimeout(() => {
-        if (!isJoined && !joinAttempted.current) {
-          join();
-          joinAttempted.current = true;
-        }
-        setIsRetrying(false);
-      }, 1000);
-    } catch (error) {
-      console.error("Error during retry:", error);
-      setIsRetrying(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!joinAttempted.current && !isRetrying) {
-      console.log("Attempting to join meeting:", meetingId);
-
-      const timer = setTimeout(() => {
-        if (!isJoined && !joinAttempted.current) {
-          try {
-            join();
-            joinAttempted.current = true;
-          } catch (error) {
-            console.error("Error joining meeting:", error);
-            setConnectionError("Failed to join meeting");
-          }
-        }
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [join, meetingId, isRetrying]);
-
-  const handleToggleMic = () => {
-    if (isJoined) {
-      toggleMic();
-      setMicEnabled(!micEnabled);
+  const toggleMic = () => {
+    if (localMicOn) {
+      muteMic();
+      setIsMicOn(false);
     } else {
-      toast({
-        title: "Not Connected",
-        description: "Please connect to the meeting first",
-        variant: "destructive",
-      });
+      unmuteMic();
+      setIsMicOn(true);
     }
   };
 
-  const leaveAgent = async () => {
-    try {
-      const response = await fetch(
-        "https://85b9-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/leave-agent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meeting_id: meetingId,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Agent left successfully:", data.message);
-        toast({
-          title: "Agent Removed",
-          description: "AI Agent has been removed from the meeting",
-        });
-      } else {
-        const errorData = await response.json();
-        console.error("Error removing agent:", errorData.detail);
-        toast({
-          title: "Warning",
-          description: "Could not remove AI agent from meeting",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error calling leave-agent API:", error);
-      toast({
-        title: "Warning",
-        description: "Could not remove AI agent from meeting",
-        variant: "destructive",
-      });
-    }
+  const handleLeave = () => {
+    leave();
+    onDisconnect();
   };
 
-  const handleDisconnect = async () => {
-    try {
-      if (agentInvited) {
-        await leaveAgent();
-      }
+  const isAgentSpeaking = agentParticipant?.isActiveSpeaker || false;
 
-      setRetryAttempts(0);
-      setIsRetrying(false);
-      setConnectionError(null);
-      joinAttempted.current = false;
-      agentInviteAttempted.current = false;
-      setAgentInvited(false);
-
-      leave();
-    } catch (error) {
-      console.error("Error during disconnect:", error);
-      leave();
-    }
-  };
-
-  const handleManualRetry = () => {
-    if (isRetrying) return;
-
-    setRetryAttempts(0);
-    setConnectionError(null);
-    joinAttempted.current = false;
-    handleRetryConnection();
-  };
-
-  const inviteAgent = async () => {
-    try {
-      const response = await fetch(
-        "https://85b9-2405-201-201b-889c-8a5-fa1b-b1d2-8c88.ngrok-free.app/join-agent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meeting_id: meetingId,
-            token: VIDEOSDK_TOKEN,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setAgentInvited(true);
-        toast({
-          title: "Agent Invited",
-          description: "AI Agent is joining the conversation...",
-        });
-      } else {
-        throw new Error("Failed to invite agent");
-      }
-    } catch (error) {
-      console.error("Error inviting agent:", error);
-      agentInviteAttempted.current = false;
-      toast({
-        title: "Error",
-        description: "Failed to invite AI Agent. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const participantsList = Array.from(participants.values());
-  const agentParticipant = participantsList.find(
-    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
-  );
+  useEffect(() => {
+    console.log("Agent speaking status:", isAgentSpeaking);
+    console.log("Agent audio stream:", agentAudioStream);
+  }, [isAgentSpeaking, agentAudioStream]);
 
   return (
     <RoomLayout
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
     >
-      <div className="flex flex-col items-center justify-between h-[50%]">
-        {/* Agent Avatar */}
-        <div
-          className={`w-32 h-32 rounded-full mb-8 flex items-center justify-center transition-all duration-300 ${
-            isJoined
-              ? "bg-gradient-to-br from-cyan-400 to-blue-600"
-              : "bg-gray-600 opacity-50"
-          }`}
-        >
-          <div
-            className={`w-28 h-28 rounded-full transition-all duration-300 ${
-              isJoined
-                ? "bg-gradient-to-br from-cyan-500 to-blue-700"
-                : "bg-gray-700"
-            }`}
-          ></div>
-        </div>
-
-        {/* Control Panel */}
-        <div className="flex items-center space-x-6">
-          {/* Microphone Control */}
-          <Button
-            onClick={handleToggleMic}
-            size="lg"
-            className="w-12 h-8  bg-[#1F1F1F] hover:bg-[#1F1F1F]"
-            disabled={!isJoined}
-          >
-            <MicWithSlash disabled={!micEnabled} />
-          </Button>
-
-          {/* Disconnect Button */}
-          <Button
-            onClick={handleDisconnect}
-            variant="destructive"
-            className="px-6 py-3 bg-[#380b0b] hover:bg-[#380b0b] text-[#a13f3f]"
-          >
-            Disconnect
-          </Button>
-
-          {/* Retry Button */}
-          {connectionError && !isRetrying && retryAttempts < maxRetries && (
-            <Button
-              onClick={handleManualRetry}
-              variant="outline"
-              className="px-6 py-3"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Retry
-            </Button>
-          )}
-        </div>
+      {/* Agent Avatar with Water Animation */}
+      <div className="w-48 h-48 mb-8">
+        <WaterAnimation 
+          isActive={isAgentSpeaking || !!agentAudioStream} 
+          audioStream={agentAudioStream || undefined}
+        />
       </div>
 
-      {/* Agent Audio Player */}
-      {agentParticipant && (
-        <div className="mt-8 w-full max-w-md">
-          <AgentAudioPlayer participantId={agentParticipant.id} />
-        </div>
+      {/* Meeting Info */}
+      <div className="text-center mb-6">
+        <h2 className="text-xl font-semibold mb-2">Meeting Active</h2>
+        <p className="text-gray-400">Meeting ID: {meetingId}</p>
+        <p className="text-sm text-gray-500 mt-2">
+          Participants: {Object.keys(participants).length}
+        </p>
+        {agentParticipantId && (
+          <p className="text-sm text-green-400 mt-1">
+            Agent Connected {isAgentSpeaking ? "🎤 Speaking" : ""}
+          </p>
+        )}
+      </div>
+
+      {/* Control Panel */}
+      <div className="flex items-center space-x-6">
+        <Button
+          onClick={toggleMic}
+          variant={isMicOn ? "default" : "destructive"}
+          size="lg"
+          className="rounded-full w-16 h-16"
+        >
+          {isMicOn ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+        </Button>
+
+        <Button
+          onClick={handleLeave}
+          variant="destructive"
+          size="lg"
+          className="rounded-full w-16 h-16"
+        >
+          <PhoneOff className="w-6 h-6" />
+        </Button>
+      </div>
+
+      {/* Hidden Audio Player for Agent */}
+      {agentParticipantId && (
+        <AgentAudioPlayer participantId={agentParticipantId} />
       )}
     </RoomLayout>
   );
