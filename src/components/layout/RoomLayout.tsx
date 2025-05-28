@@ -4,6 +4,7 @@ import { AgentSettings } from "../agent-meeting/types";
 import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
 import { ResponsiveAgentConfig } from "./ResponsiveAgentConfig";
 import RightHeaderBar from "../RightHeaderBar";
+import Footer from "../Footer";
 
 interface RoomLayoutProps {
   children: React.ReactNode;
@@ -43,6 +44,9 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Mobile/Tablet Responsive Agent Configuration */}
       <div className="lg:hidden">
