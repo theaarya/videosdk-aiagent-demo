@@ -1,23 +1,190 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import { AnimatedMicrophone } from '@/components/AnimatedMicrophone';
 import { CustomButton } from '@/components/CustomButton';
 import { agentApi } from '@/services/agentApi';
+import { AgentAudioPlayer } from '@/components/agent-meeting/AgentAudioPlayer';
+import { WaveAvatar } from '@/components/agent-meeting/WaveAvatar';
+import { toast } from '@/hooks/use-toast';
 
-const Agent2: React.FC = () => {
-  const [currentButtonIndex, setCurrentButtonIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [meetingId, setMeetingId] = useState<string | null>(null);
-  
-  // VideoSDK token
-  const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQzMTMxMSwiZXhwIjoxNzQ5MDM2MTExfQ.DyXaaZ_ydclWZ9dWCeJ0J4LKdQ4XfZ0LOPWNu4jEKb8";
-  
+// VideoSDK token
+const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQzMTMxMSwiZXhwIjoxNzQ5MDM2MTExfQ.DyXaaZ_ydclWZ9dWCeJ0J4LKdQ4XfZ0LOPWNu4jEKb8";
+
+interface MeetingComponentProps {
+  meetingId: string;
+  onMeetingLeft: () => void;
+  onAgentJoined: () => void;
+  currentButtonIndex: number;
+  setCurrentButtonIndex: (index: number) => void;
+  setIsLoading: (loading: boolean) => void;
+}
+
+const MeetingComponent: React.FC<MeetingComponentProps> = ({
+  meetingId,
+  onMeetingLeft,
+  onAgentJoined,
+  currentButtonIndex,
+  setCurrentButtonIndex,
+  setIsLoading
+}) => {
+  const [isJoined, setIsJoined] = useState(false);
+  const [agentInvited, setAgentInvited] = useState(false);
+
+  const { join, leave, participants } = useMeeting({
+    onMeetingJoined: () => {
+      console.log("Meeting joined successfully");
+      setIsJoined(true);
+      toast({
+        title: "Meeting Started",
+        description: "You have joined the conversation",
+      });
+      
+      // Automatically invite agent after joining
+      setTimeout(() => {
+        inviteAgent();
+      }, 1000);
+    },
+    onMeetingLeft: () => {
+      console.log("Meeting left");
+      setIsJoined(false);
+      setAgentInvited(false);
+      onMeetingLeft();
+    },
+    onParticipantJoined: (participant) => {
+      console.log("Participant joined:", participant.displayName);
+      if (participant.displayName?.includes("Agent") || participant.displayName?.includes("Haley")) {
+        setAgentInvited(true);
+        onAgentJoined();
+        toast({
+          title: "AI Agent Joined",
+          description: `${participant.displayName} has joined the conversation`,
+        });
+      }
+    },
+    onParticipantLeft: (participant) => {
+      console.log("Participant left:", participant.displayName);
+    },
+    onError: (error) => {
+      console.error("Meeting error:", error);
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to the meeting",
+        variant: "destructive",
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (meetingId && !isJoined) {
+      console.log("Auto-joining meeting:", meetingId);
+      setTimeout(() => {
+        join();
+      }, 1000);
+    }
+  }, [meetingId, join, isJoined]);
+
+  const inviteAgent = async () => {
+    try {
+      console.log("Inviting agent to meeting:", meetingId);
+      setIsLoading(true);
+      
+      await agentApi.joinOnClickAgent(meetingId, VIDEOSDK_TOKEN);
+      
+      console.log("Agent invited successfully");
+      toast({
+        title: "Agent Invited",
+        description: "AI Agent is joining the conversation...",
+      });
+    } catch (error) {
+      console.error("Error inviting agent:", error);
+      toast({
+        title: "Error",
+        description: "Failed to invite AI Agent",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      if (agentInvited) {
+        console.log("Removing agent from meeting:", meetingId);
+        await agentApi.leaveOnClickAgent(meetingId, VIDEOSDK_TOKEN);
+      }
+      leave();
+    } catch (error) {
+      console.error("Error leaving meeting:", error);
+      leave();
+    }
+  };
+
   const buttonVariants = [
     { text: "Give it a try!", thickBorder: true, action: "join" },
     { text: "Give it a sec...", thickBorder: false, action: "loading" },
     { text: "Just talk", thickBorder: false, action: "talking" },
     { text: "Press to stop", thickBorder: true, action: "leave" }
   ];
+
+  const currentButton = buttonVariants[currentButtonIndex];
+
+  const handleButtonClick = () => {
+    if (currentButton.action === "leave") {
+      handleLeave();
+    } else if (currentButton.action === "join" || currentButton.action === "talking") {
+      setCurrentButtonIndex((prev) => (prev + 1) % buttonVariants.length);
+    }
+  };
+
+  const participantsList = Array.from(participants.values());
+  const agentParticipant = participantsList.find(
+    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+  );
+
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-12 p-8">
+      {isJoined && agentParticipant ? (
+        <WaveAvatar
+          participantId={agentParticipant.id}
+          isConnected={isJoined}
+        />
+      ) : (
+        <AnimatedMicrophone />
+      )}
+      
+      <CustomButton 
+        text={currentButton.text} 
+        thickBorder={currentButton.thickBorder}
+        onClick={handleButtonClick}
+      />
+      
+      {meetingId && (
+        <div className="text-white text-sm">
+          Meeting ID: {meetingId}
+        </div>
+      )}
+
+      {isJoined && (
+        <div className="text-white text-sm">
+          Status: {agentInvited ? "Agent Connected" : "Waiting for agent..."}
+        </div>
+      )}
+
+      {agentParticipant && (
+        <div className="w-full max-w-md">
+          <AgentAudioPlayer participantId={agentParticipant.id} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Agent2: React.FC = () => {
+  const [currentButtonIndex, setCurrentButtonIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [meetingId, setMeetingId] = useState<string | null>(null);
 
   const createMeeting = async (): Promise<string> => {
     try {
@@ -48,57 +215,85 @@ const Agent2: React.FC = () => {
   const handleButtonClick = async () => {
     if (isLoading) return;
     
+    const buttonVariants = [
+      { text: "Give it a try!", thickBorder: true, action: "join" },
+      { text: "Give it a sec...", thickBorder: false, action: "loading" },
+      { text: "Just talk", thickBorder: false, action: "talking" },
+      { text: "Press to stop", thickBorder: true, action: "leave" }
+    ];
+    
     const currentButton = buttonVariants[currentButtonIndex];
     console.log("Button clicked, current action:", currentButton.action);
     
-    try {
-      setIsLoading(true);
-      
-      if (currentButton.action === "join") {
-        // Create meeting first
+    if (currentButton.action === "join") {
+      try {
+        setIsLoading(true);
         const newMeetingId = await createMeeting();
         setMeetingId(newMeetingId);
-        
-        console.log("Joining agent with meeting_id:", newMeetingId);
-        await agentApi.joinOnClickAgent(newMeetingId, VIDEOSDK_TOKEN);
-        console.log("Successfully joined agent");
-        
-      } else if (currentButton.action === "leave" && meetingId) {
-        console.log("Leaving agent with meeting_id:", meetingId);
-        await agentApi.leaveOnClickAgent(meetingId, VIDEOSDK_TOKEN);
-        console.log("Successfully left agent");
-        setMeetingId(null);
+        setCurrentButtonIndex(1); // Move to "Give it a sec..." state
+      } catch (error) {
+        console.error("Error creating meeting:", error);
+        toast({
+          title: "Error",
+          description: "Failed to create meeting",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
-      
-      // Move to next button state
-      setCurrentButtonIndex((prev) => (prev + 1) % buttonVariants.length);
-      
-    } catch (error) {
-      console.error("Error with agent API:", error);
-      // Show error but still move to next state for demo purposes
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setCurrentButtonIndex((prev) => (prev + 1) % buttonVariants.length);
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  const handleMeetingLeft = () => {
+    setMeetingId(null);
+    setCurrentButtonIndex(0);
+  };
+
+  const handleAgentJoined = () => {
+    setCurrentButtonIndex(2); // Move to "Just talk" state
+  };
+
+  const buttonVariants = [
+    { text: "Give it a try!", thickBorder: true, action: "join" },
+    { text: "Give it a sec...", thickBorder: false, action: "loading" },
+    { text: "Just talk", thickBorder: false, action: "talking" },
+    { text: "Press to stop", thickBorder: true, action: "leave" }
+  ];
+
   const currentButton = buttonVariants[currentButtonIndex];
 
+  if (!meetingId) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-12 p-8">
+        <AnimatedMicrophone />
+        <CustomButton 
+          text={isLoading ? "Creating meeting..." : currentButton.text} 
+          thickBorder={currentButton.thickBorder}
+          onClick={handleButtonClick}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-12 p-8">
-      <AnimatedMicrophone />
-      <CustomButton 
-        text={isLoading ? "Processing..." : currentButton.text} 
-        thickBorder={currentButton.thickBorder}
-        onClick={handleButtonClick}
+    <MeetingProvider
+      config={{
+        meetingId,
+        micEnabled: true,
+        webcamEnabled: false,
+        name: "User",
+      }}
+      token={VIDEOSDK_TOKEN}
+    >
+      <MeetingComponent
+        meetingId={meetingId}
+        onMeetingLeft={handleMeetingLeft}
+        onAgentJoined={handleAgentJoined}
+        currentButtonIndex={currentButtonIndex}
+        setCurrentButtonIndex={setCurrentButtonIndex}
+        setIsLoading={setIsLoading}
       />
-      {meetingId && (
-        <div className="text-white text-sm">
-          Meeting ID: {meetingId}
-        </div>
-      )}
-    </div>
+    </MeetingProvider>
   );
 };
 
