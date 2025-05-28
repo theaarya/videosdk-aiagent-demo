@@ -66,27 +66,27 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
   const waveIntensity = isActiveSpeaker ? audioLevel * 100 : 0;
 
   return (
-    <div className={`relative ${className}`}>
-      {/* Animated wave rings - now always visible */}
+    <div className={`relative w-32 h-32 ${className}`}>
+      {/* Animated wave rings - constrained to avatar size */}
       {[1, 2, 3].map((ring) => (
         <div
           key={ring}
-          className="absolute inset-0 rounded-full border-2 border-cyan-400/30 animate-ping"
+          className="absolute inset-2 rounded-full border-2 border-cyan-400/30 animate-ping pointer-events-none"
           style={{
             animationDelay: `${ring * 0.5}s`,
             animationDuration: "2s",
-            transform: `scale(${1 + (waveIntensity * 0.01 * ring)})`,
+            transform: `scale(${0.8 + (waveIntensity * 0.005 * ring)})`,
             opacity: isActiveSpeaker ? 0.6 - (ring * 0.15) : 0.2,
             transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
           }}
         />
       ))}
       
-      {/* Pulsing glow effect - now always visible */}
+      {/* Pulsing glow effect - constrained to avatar size */}
       <div
-        className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-md"
+        className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-md pointer-events-none"
         style={{
-          transform: `scale(${1.1 + (waveIntensity * 0.02)})`,
+          transform: `scale(${1 + (waveIntensity * 0.01)})`,
           opacity: isActiveSpeaker ? 0.8 : 0.3,
           transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
         }}
@@ -100,7 +100,7 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
             : "bg-gradient-to-br from-cyan-400 to-blue-600"
         }`}
         style={{
-          transform: `scale(${1 + (waveIntensity * 0.005)})`,
+          transform: `scale(${1 + (waveIntensity * 0.002)})`,
           transition: "transform 0.1s ease-out",
         }}
       >
