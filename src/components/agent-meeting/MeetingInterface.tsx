@@ -266,12 +266,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           body: JSON.stringify({
             meeting_id: meetingId,
             token: VIDEOSDK_TOKEN,
-            model: agentSettings.model,
-            voice: agentSettings.voice,
-            system_prompt: systemPrompt, // Send the actual prompt instead of personality name
-            temperature: agentSettings.temperature,
-            topP: agentSettings.topP,
-            topK: agentSettings.topK,
+            // model: agentSettings.model,
+            // voice: agentSettings.voice,
+            // system_prompt: systemPrompt, // Send the actual prompt instead of personality name
+            // temperature: agentSettings.temperature,
+            // topP: agentSettings.topP,
+            // topK: agentSettings.topK,
           }),
         }
       );
