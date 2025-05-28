@@ -1,5 +1,5 @@
 
-const API_BASE_URL = "https://ccc3-103-251-212-247.ngrok-free.app";
+const API_BASE_URL = "https://03ff-103-251-212-247.ngrok-free.app";
 
 interface AgentApiRequest {
   meeting_id: string;
@@ -17,6 +17,8 @@ export const agentApi = {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
+          'Access-Control-Request-Method': 'POST',
+          'Access-Control-Request-Headers': 'Content-Type',
         },
         body: JSON.stringify({
           meeting_id: meetingId,
@@ -51,6 +53,8 @@ export const agentApi = {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
+          'Access-Control-Request-Method': 'POST',
+          'Access-Control-Request-Headers': 'Content-Type',
         },
         body: JSON.stringify({
           meeting_id: meetingId,
