@@ -11,7 +11,7 @@ export const agentApi = {
     try {
       console.log('Attempting to join agent with:', { meetingId, token });
       
-      const response = await fetch(`${API_BASE_URL}/join-oneclick-agent`, {
+      const response = await fetch(`${API_BASE_URL}/join-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const agentApi = {
     try {
       console.log('Attempting to leave agent with meetingId:', meetingId);
       
-      const response = await fetch(`${API_BASE_URL}/leave-oneclick-agent`, {
+      const response = await fetch(`${API_BASE_URL}/leave-agent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
