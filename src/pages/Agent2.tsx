@@ -4,7 +4,6 @@ import { AnimatedMicrophone } from '@/components/AnimatedMicrophone';
 import { CustomButton } from '@/components/CustomButton';
 import { agentApi } from '@/services/agentApi';
 import { AgentAudioPlayer } from '@/components/agent-meeting/AgentAudioPlayer';
-import { WaveAvatar } from '@/components/agent-meeting/WaveAvatar';
 import { toast } from '@/hooks/use-toast';
 
 // VideoSDK token
@@ -30,13 +29,18 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
   const [isJoined, setIsJoined] = useState(false);
   const [agentInvited, setAgentInvited] = useState(false);
 
-  const { join, leave, end, participants } = useMeeting({
+  const { join, leave, end, participants, enableMic, disableMic, localMicOn } = useMeeting({
     onMeetingJoined: () => {
       console.log("Meeting joined successfully");
       setIsJoined(true);
+      // Ensure microphone is enabled when joining
+      if (!localMicOn) {
+        enableMic();
+        console.log("Microphone enabled for human participant");
+      }
       toast({
         title: "Meeting Started",
-        description: "You have joined the conversation",
+        description: "You have joined the conversation with microphone enabled",
       });
       
       // Automatically invite agent after joining
@@ -82,6 +86,14 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
       }, 1000);
     }
   }, [meetingId, join, isJoined]);
+
+  // Ensure microphone stays enabled
+  useEffect(() => {
+    if (isJoined && !localMicOn) {
+      enableMic();
+      console.log("Re-enabling microphone for human participant");
+    }
+  }, [isJoined, localMicOn, enableMic]);
 
   const inviteAgent = async () => {
     try {
@@ -198,14 +210,14 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
 
       {isJoined && (
         <div className="text-white text-sm">
-          Status: {agentInvited ? "Agent Connected" : "Waiting for agent..."}
+          Status: {agentInvited ? "Agent Connected" : "Waiting for agent..."} | 
+          Mic: {localMicOn ? "On" : "Off"}
         </div>
       )}
 
+      {/* Hidden audio player - no UI, just audio functionality */}
       {agentParticipant && (
-        <div className="w-full max-w-md">
-          <AgentAudioPlayer participantId={agentParticipant.id} />
-        </div>
+        <AgentAudioPlayer participantId={agentParticipant.id} />
       )}
     </div>
   );
@@ -309,7 +321,7 @@ const Agent2: React.FC = () => {
     <MeetingProvider
       config={{
         meetingId,
-        micEnabled: true,
+        micEnabled: true, // Ensure microphone is enabled by default
         webcamEnabled: false,
         name: "User",
         debugMode: false,
