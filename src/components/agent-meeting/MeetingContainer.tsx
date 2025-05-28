@@ -1,8 +1,9 @@
+
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { AgentSettings } from "./types";
 import { RoomLayout } from "../layout/RoomLayout";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
+import { CustomButton } from "./CustomButton";
 
 interface MeetingContainerProps {
   onConnect: () => void;
@@ -31,13 +32,12 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       {/* Control Panel */}
       <div className="flex items-center space-x-6">
         {/* Connect Button */}
-        <Button
+        <CustomButton
+          text={isConnecting ? "Connecting..." : "Connect"}
+          thickBorder={true}
           onClick={onConnect}
           disabled={isConnecting}
-          className="px-8 py-3 bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
-        >
-          {isConnecting ? "Connecting..." : "Connect"}
-        </Button>
+        />
       </div>
     </RoomLayout>
   );

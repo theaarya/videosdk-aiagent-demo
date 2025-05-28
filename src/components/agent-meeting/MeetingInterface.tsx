@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -9,6 +10,7 @@ import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
+import { CustomButton } from "./CustomButton";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -24,6 +26,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   onSettingsChange,
 }) => {
   const [agentInvited, setAgentInvited] = useState(false);
+  const [agentJoined, setAgentJoined] = useState(false);
   const [micEnabled, setMicEnabled] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
@@ -64,6 +67,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           participant.displayName?.includes("Agent") ||
           participant.displayName?.includes("Haley")
         ) {
+          setAgentJoined(true);
           toast({
             title: "AI Agent Joined",
             description: `${participant.displayName} has joined the conversation`,
@@ -72,6 +76,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       },
       onParticipantLeft: (participant) => {
         console.log("Participant left:", participant.displayName);
+        if (
+          participant.displayName?.includes("Agent") ||
+          participant.displayName?.includes("Haley")
+        ) {
+          setAgentJoined(false);
+        }
       },
       onSpeakerChanged: (activeSpeakerId) => {
         console.log("Speaker changed:", activeSpeakerId);
@@ -247,7 +257,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       if (agentInvited) {
         await leaveAgent();
       } else {
-        // If no agent is invited, just leave the meeting normally
         leave();
       }
     } catch (error) {
@@ -269,7 +278,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       console.log("Sending agent settings:", agentSettings);
       
-      // Get the system prompt for the selected personality
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
       const response = await fetch(
@@ -313,10 +321,47 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     }
   };
 
+  const handleInviteAgent = () => {
+    if (!agentInvited && isJoined) {
+      inviteAgent();
+    }
+  };
+
   const participantsList = Array.from(participants.values());
   const agentParticipant = participantsList.find(
     (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
   );
+
+  const renderMainButton = () => {
+    if (!agentInvited) {
+      // Step 1: Invite agent
+      return (
+        <CustomButton
+          text="Give it a try!"
+          thickBorder={true}
+          onClick={handleInviteAgent}
+          disabled={!isJoined}
+        />
+      );
+    } else if (agentInvited && !agentJoined) {
+      // Step 2: Agent is joining
+      return (
+        <CustomButton
+          text="Give it a sec..."
+          disabled={true}
+        />
+      );
+    } else {
+      // Step 3: Agent joined, show stop button
+      return (
+        <CustomButton
+          text="Press to stop"
+          thickBorder={true}
+          onClick={handleDisconnect}
+        />
+      );
+    }
+  };
 
   return (
     <RoomLayout
@@ -331,26 +376,24 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           className="mb-8"
         />
 
+        {/* Main Button */}
+        <div className="mb-6">
+          {renderMainButton()}
+        </div>
+
         {/* Control Panel */}
         <div className="flex items-center space-x-6">
-          {/* Microphone Control */}
-          <Button
-            onClick={handleToggleMic}
-            size="lg"
-            className="w-12 h-8  bg-[#1F1F1F] hover:bg-[#1F1F1F]"
-            disabled={!isJoined}
-          >
-            <MicWithSlash disabled={!micEnabled} />
-          </Button>
-
-          {/* Disconnect Button */}
-          <Button
-            onClick={handleDisconnect}
-            variant="destructive"
-            className="px-6 py-3 bg-[#380b0b] hover:bg-[#380b0b] text-[#a13f3f]"
-          >
-            Disconnect
-          </Button>
+          {/* Microphone Control - Only show when agent is joined */}
+          {agentJoined && (
+            <Button
+              onClick={handleToggleMic}
+              size="lg"
+              className="w-12 h-8  bg-[#1F1F1F] hover:bg-[#1F1F1F]"
+              disabled={!isJoined}
+            >
+              <MicWithSlash disabled={!micEnabled} />
+            </Button>
+          )}
 
           {/* Retry Button */}
           {connectionError && !isRetrying && retryAttempts < maxRetries && (
