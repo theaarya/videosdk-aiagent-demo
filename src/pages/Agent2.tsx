@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import { AnimatedMicrophone } from '@/components/AnimatedMicrophone';
 import { CustomButton } from '@/components/CustomButton';
@@ -29,6 +29,8 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
 }) => {
   const [isJoined, setIsJoined] = useState(false);
   const [agentInvited, setAgentInvited] = useState(false);
+  const agentInviteRef = useRef(false);
+  const joinRef = useRef(false);
 
   const { join, leave, end, participants, toggleMic, localMicOn } = useMeeting({
     onMeetingJoined: () => {
@@ -45,16 +47,13 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
         title: "Meeting Started",
         description: "You have joined the conversation with microphone enabled",
       });
-      
-      // Automatically invite agent after joining
-      setTimeout(() => {
-        inviteAgent();
-      }, 1000);
     },
     onMeetingLeft: () => {
       console.log("Meeting left");
       setIsJoined(false);
       setAgentInvited(false);
+      agentInviteRef.current = false;
+      joinRef.current = false;
       onMeetingLeft();
     },
     onParticipantJoined: (participant) => {
@@ -81,14 +80,27 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     },
   });
 
+  // Auto-join meeting once
   useEffect(() => {
-    if (meetingId && !isJoined) {
+    if (meetingId && !isJoined && !joinRef.current) {
       console.log("Auto-joining meeting:", meetingId);
+      joinRef.current = true;
       setTimeout(() => {
         join();
       }, 1000);
     }
   }, [meetingId, join, isJoined]);
+
+  // Auto-invite agent once after joining
+  useEffect(() => {
+    if (isJoined && !agentInvited && !agentInviteRef.current) {
+      console.log("Auto-inviting agent after meeting join");
+      agentInviteRef.current = true;
+      setTimeout(() => {
+        inviteAgent();
+      }, 1000);
+    }
+  }, [isJoined, agentInvited]);
 
   // Ensure microphone stays enabled
   useEffect(() => {
@@ -99,6 +111,8 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
   }, [isJoined, localMicOn, toggleMic]);
 
   const inviteAgent = async () => {
+    if (agentInviteRef.current) return; // Prevent duplicate calls
+    
     try {
       console.log("Inviting agent to meeting:", meetingId);
       setIsLoading(true);
@@ -112,6 +126,7 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
       });
     } catch (error) {
       console.error("Error inviting agent:", error);
+      agentInviteRef.current = false; // Reset on error so it can be retried
       toast({
         title: "Error",
         description: "Failed to invite AI Agent",
@@ -230,6 +245,7 @@ const Agent2: React.FC = () => {
   const [currentButtonIndex, setCurrentButtonIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [meetingId, setMeetingId] = useState<string | null>(null);
+  const createMeetingRef = useRef(false);
 
   const createMeeting = async (): Promise<string> => {
     try {
@@ -258,7 +274,7 @@ const Agent2: React.FC = () => {
   };
 
   const handleButtonClick = async () => {
-    if (isLoading) return;
+    if (isLoading || createMeetingRef.current) return;
     
     const buttonVariants = [
       { text: "Give it a try!", thickBorder: true, action: "join" },
@@ -273,11 +289,13 @@ const Agent2: React.FC = () => {
     if (currentButton.action === "join") {
       try {
         setIsLoading(true);
+        createMeetingRef.current = true;
         const newMeetingId = await createMeeting();
         setMeetingId(newMeetingId);
         setCurrentButtonIndex(1); // Move to "Give it a sec..." state
       } catch (error) {
         console.error("Error creating meeting:", error);
+        createMeetingRef.current = false;
         toast({
           title: "Error",
           description: "Failed to create meeting",
@@ -292,6 +310,7 @@ const Agent2: React.FC = () => {
   const handleMeetingLeft = () => {
     setMeetingId(null);
     setCurrentButtonIndex(0);
+    createMeetingRef.current = false;
   };
 
   const handleAgentJoined = () => {
@@ -322,6 +341,7 @@ const Agent2: React.FC = () => {
 
   return (
     <MeetingProvider
+      key={meetingId} // Force re-render when meetingId changes
       config={{
         meetingId,
         micEnabled: true, // Ensure microphone is enabled by default
