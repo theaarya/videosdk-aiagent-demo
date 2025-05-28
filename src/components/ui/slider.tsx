@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 
@@ -15,7 +16,7 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="bg-[#393939] relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
+    <SliderPrimitive.Track className="bg-[#393939] relative h-[5px] w-full grow overflow-hidden rounded-full bg-secondary">
       <SliderPrimitive.Range className="bg-[#5568FE] absolute h-full" />
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb className="bg-[#5568FE] block h-5 w-5 rounded-full ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
