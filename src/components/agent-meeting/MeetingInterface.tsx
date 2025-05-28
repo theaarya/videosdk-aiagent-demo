@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { VIDEOSDK_TOKEN } from "./types";
@@ -43,10 +43,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         setRetryAttempts(0);
         setIsRetrying(false);
         joinAttempted.current = true;
-        toast({
-          title: "Meeting Started",
-          description: "You have joined the conversation",
-        });
       },
       onMeetingLeft: () => {
         console.log("Meeting left");
@@ -64,10 +60,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           participant.displayName?.includes("Haley")
         ) {
           setAgentJoined(true);
-          toast({
-            title: "AI Agent Joined",
-            description: `${participant.displayName} has joined the conversation`,
-          });
         }
       },
       onParticipantLeft: (participant) => {
@@ -106,21 +98,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
             setTimeout(() => {
               handleRetryConnection();
             }, retryDelay);
-          } else {
-            toast({
-              title: "Connection Failed",
-              description:
-                "Server is overloaded. Please try creating a new meeting.",
-              variant: "destructive",
-            });
           }
         } else {
           setConnectionError(error.message || "Connection failed");
-          toast({
-            title: "Connection Error",
-            description: "Failed to connect to the meeting. Please try again.",
-            variant: "destructive",
-          });
         }
       },
     }
@@ -187,12 +167,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     if (isJoined) {
       toggleMic();
       setMicEnabled(!micEnabled);
-    } else {
-      toast({
-        title: "Not Connected",
-        description: "Please connect to the meeting first",
-        variant: "destructive",
-      });
     }
   };
 
@@ -218,33 +192,15 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         if (data.status === "removed") {
           console.log("Agent successfully removed, ending meeting");
           end(); // Call the end method from useMeeting hook
-          toast({
-            title: "Agent Removed",
-            description: "AI Agent has been removed from the meeting",
-          });
         } else if (data.status === "not_found") {
           console.log("No agent session found");
-          toast({
-            title: "No Agent Found",
-            description: "No AI agent session was found for this meeting",
-          });
         }
       } else {
         const errorData = await response.json();
         console.error("Error removing agent:", errorData);
-        toast({
-          title: "Warning",
-          description: "Could not remove AI agent from meeting",
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error("Error calling leave-agent API:", error);
-      toast({
-        title: "Warning",
-        description: "Could not remove AI agent from meeting",
-        variant: "destructive",
-      });
     }
   };
 
@@ -299,21 +255,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
       if (response.ok) {
         setAgentInvited(true);
-        toast({
-          title: "Agent Invited",
-          description: "AI Agent is joining the conversation...",
-        });
       } else {
         throw new Error("Failed to invite agent");
       }
     } catch (error) {
       console.error("Error inviting agent:", error);
       agentInviteAttempted.current = false;
-      toast({
-        title: "Error",
-        description: "Failed to invite AI Agent. Please try again.",
-        variant: "destructive",
-      });
     }
   };
 
