@@ -173,7 +173,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const leaveAgent = async () => {
     try {
       const response = await fetch(
-        "${API_URL}/leave-agent",
+        `${API_URL}/leave-agent`,
         {
           method: "POST",
           headers: {
