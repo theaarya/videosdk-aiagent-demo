@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
@@ -79,10 +80,6 @@ const AgentMeeting: React.FC = () => {
     setIsConnected(false);
     setIsConnecting(false);
     setMeetingId(null);
-  };
-
-  const handleSettingsChange = (newSettings: AgentSettings) => {
-    setAgentSettings(newSettings);
   };
 
   // Render different components based on connection state
