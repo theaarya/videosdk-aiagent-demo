@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings } from "./types";
 import { RoomLayout } from "../layout/RoomLayout";
+import { WaveAvatar } from "./WaveAvatar";
 
 interface MeetingContainerProps {
   onConnect: () => void;
@@ -22,10 +23,11 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
     >
-      {/* Agent Avatar */}
-      <div className="w-32 h-32 rounded-full mb-8 flex items-center justify-center bg-gradient-to-br from-cyan-400 to-blue-600">
-        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-500 to-blue-700"></div>
-      </div>
+      {/* Agent Avatar with Wave Animation */}
+      <WaveAvatar 
+        isConnected={false}
+        className="mb-8"
+      />
 
       {/* Control Panel */}
       <div className="flex items-center space-x-6">

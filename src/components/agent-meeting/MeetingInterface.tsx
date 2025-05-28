@@ -7,7 +7,7 @@ import { AgentSettings } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
-
+import { WaveAvatar } from "./WaveAvatar";
 import { RoomLayout } from "../layout/RoomLayout";
 
 interface MeetingInterfaceProps {
@@ -295,22 +295,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       onSettingsChange={onSettingsChange}
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
-        {/* Agent Avatar */}
-        <div
-          className={`w-32 h-32 rounded-full mb-8 flex items-center justify-center transition-all duration-300 ${
-            isJoined
-              ? "bg-gradient-to-br from-cyan-400 to-blue-600"
-              : "bg-gray-600 opacity-50"
-          }`}
-        >
-          <div
-            className={`w-28 h-28 rounded-full transition-all duration-300 ${
-              isJoined
-                ? "bg-gradient-to-br from-cyan-500 to-blue-700"
-                : "bg-gray-700"
-            }`}
-          ></div>
-        </div>
+        {/* Agent Avatar with Wave Animation */}
+        <WaveAvatar 
+          participantId={agentParticipant?.id}
+          isConnected={isJoined}
+          className="mb-8"
+        />
 
         {/* Control Panel */}
         <div className="flex items-center space-x-6">
