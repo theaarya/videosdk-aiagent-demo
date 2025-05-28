@@ -30,7 +30,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
 
   if (selectedPersonality) {
     return (
-      <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
+      <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34] lg:border-r lg:border-0">
         {/* Header Section */}
         <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between py-4 border-b-[1px] border-[#252A34]">
           <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           </div>
         </div>
 
-        <div className="px-4 py-6">
+        <div className="px-4 py-6 h-full overflow-y-auto">
           <div className="bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
             <pre className="text-white text-sm leading-relaxed whitespace-pre-wrap font-sans">
               {PROMPTS[selectedPersonality as keyof typeof PROMPTS]}
@@ -56,13 +56,13 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   }
 
   return (
-    <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34]">
+    <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34] lg:border-r lg:border-0">
       {/* Header Section - matching RightHeaderBar height exactly */}
       <div className="bg-[#1F1F1F] text-white px-6 py-3 flex items-center justify-between py-4 border-b-[1px] border-[#252A34]">
         <h1 className="text-lg font-medium">Agent Configuration</h1>
       </div>
 
-      <div className="px-4 py-6 flex flex-col gap-4">
+      <div className="px-4 py-6 flex flex-col gap-4 h-full overflow-y-auto">
         {/* Model Dropdown - Full Width */}
         <div className="mb-4 relative">
           <div
