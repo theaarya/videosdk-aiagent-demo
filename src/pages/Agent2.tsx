@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import { AnimatedMicrophone } from '@/components/AnimatedMicrophone';
@@ -33,11 +34,13 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     onMeetingJoined: () => {
       console.log("Meeting joined successfully");
       setIsJoined(true);
+      
       // Ensure microphone is enabled when joining
       if (!localMicOn) {
         toggleMic();
         console.log("Microphone enabled for human participant");
       }
+      
       toast({
         title: "Meeting Started",
         description: "You have joined the conversation with microphone enabled",
@@ -327,8 +330,8 @@ const Agent2: React.FC = () => {
         debugMode: false,
       }}
       token={VIDEOSDK_TOKEN}
-              reinitialiseMeetingOnConfigChange={false}
-        joinWithoutUserInteraction={false}
+      reinitialiseMeetingOnConfigChange={false}
+      joinWithoutUserInteraction={false}
     >
       <MeetingComponent
         meetingId={meetingId}
