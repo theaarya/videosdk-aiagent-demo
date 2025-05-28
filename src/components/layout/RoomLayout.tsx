@@ -17,7 +17,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   onSettingsChange,
 }) => {
   return (
-    <div className="min-h-screen text-white flex flex-col">
+    <div className="min-h-screen bg-black">
       {/* Content Section - Responsive container */}
       <div className="flex flex-1 justify-center">
         <div className="w-full max-w-7xl flex">
@@ -37,7 +37,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
                 <RightHeaderBar agentSettings={agentSettings} />
               </div>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-center p-8">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-white">
               {children}
             </div>
           </div>
