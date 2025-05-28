@@ -94,9 +94,11 @@
 @layer base {
   * {
     @apply border-border;
+    font-weight: 0;
   }
 
   body {
     @apply bg-black text-foreground;
+    font-weight: 0;
   }
 }
