@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -7,7 +6,6 @@ import { toast } from "@/hooks/use-toast";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { VIDEOSDK_TOKEN } from "./types";
-import MicWithSlash from "../icons/MicWithSlash";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
 import { CustomButton } from "./CustomButton";
@@ -16,14 +14,12 @@ interface MeetingInterfaceProps {
   meetingId: string;
   onDisconnect: () => void;
   agentSettings: AgentSettings;
-  onSettingsChange?: (settings: AgentSettings) => void;
 }
 
 export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   meetingId,
   onDisconnect,
   agentSettings,
-  onSettingsChange,
 }) => {
   const [agentInvited, setAgentInvited] = useState(false);
   const [agentJoined, setAgentJoined] = useState(false);
@@ -366,7 +362,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   return (
     <RoomLayout
       agentSettings={agentSettings}
-      onSettingsChange={onSettingsChange}
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
         {/* Microphone with Wave Animation */}

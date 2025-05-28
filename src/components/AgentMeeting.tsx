@@ -10,10 +10,12 @@ const AgentMeeting: React.FC = () => {
   const [meetingId, setMeetingId] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [agentSettings, setAgentSettings] = useState<AgentSettings>({
+  
+  // Default agent settings - all values passed by default
+  const [agentSettings] = useState<AgentSettings>({
     model: "gemini-2.0-flash-live-001",
     voice: "Puck",
-    personality: "Tutor", // Default personality selected
+    personality: "Tutor",
     temperature: 0.8,
     topP: 0.8,
     topK: 0.8,
@@ -104,7 +106,6 @@ const AgentMeeting: React.FC = () => {
           meetingId={meetingId}
           onDisconnect={handleDisconnect}
           agentSettings={agentSettings}
-          onSettingsChange={handleSettingsChange}
         />
       </MeetingProvider>
     );
@@ -115,7 +116,6 @@ const AgentMeeting: React.FC = () => {
       onConnect={handleConnect}
       agentSettings={agentSettings}
       isConnecting={isConnecting}
-      onSettingsChange={handleSettingsChange}
     />
   );
 };

@@ -9,20 +9,15 @@ interface MeetingContainerProps {
   onConnect: () => void;
   agentSettings: AgentSettings;
   isConnecting: boolean;
-  onSettingsChange?: (settings: AgentSettings) => void;
 }
 
 export const MeetingContainer: React.FC<MeetingContainerProps> = ({
   onConnect,
   agentSettings,
   isConnecting,
-  onSettingsChange,
 }) => {
   return (
-    <RoomLayout
-      agentSettings={agentSettings}
-      onSettingsChange={onSettingsChange}
-    >
+    <RoomLayout agentSettings={agentSettings}>
       {/* Microphone with Wave Animation */}
       <MicrophoneWithWaves 
         isConnected={false}
