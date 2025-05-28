@@ -29,13 +29,13 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
   const [isJoined, setIsJoined] = useState(false);
   const [agentInvited, setAgentInvited] = useState(false);
 
-  const { join, leave, end, participants, enableMic, disableMic, localMicOn } = useMeeting({
+  const { join, leave, end, participants, toggleMic, localMicOn } = useMeeting({
     onMeetingJoined: () => {
       console.log("Meeting joined successfully");
       setIsJoined(true);
       // Ensure microphone is enabled when joining
       if (!localMicOn) {
-        enableMic();
+        toggleMic();
         console.log("Microphone enabled for human participant");
       }
       toast({
@@ -56,7 +56,7 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     },
     onParticipantJoined: (participant) => {
       console.log("Participant joined:", participant.displayName);
-      if (participant.displayName?.includes("Agent") || participant.displayName?.includes("Haley")) {
+      if (participant.displayName?.includes("Agent") || participant.displayName?.includes("Haley") || participant.displayName?.includes("Gemini")) {
         setAgentInvited(true);
         onAgentJoined();
         toast({
@@ -90,10 +90,10 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
   // Ensure microphone stays enabled
   useEffect(() => {
     if (isJoined && !localMicOn) {
-      enableMic();
+      toggleMic();
       console.log("Re-enabling microphone for human participant");
     }
-  }, [isJoined, localMicOn, enableMic]);
+  }, [isJoined, localMicOn, toggleMic]);
 
   const inviteAgent = async () => {
     try {
@@ -182,7 +182,7 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
 
   const participantsList = Array.from(participants.values());
   const agentParticipant = participantsList.find(
-    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley") || p.displayName?.includes("Gemini")
   );
 
   // Check if agent is speaking (this is a simplified check - you might want to use actual audio level detection)
