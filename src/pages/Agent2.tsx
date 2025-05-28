@@ -327,6 +327,8 @@ const Agent2: React.FC = () => {
         debugMode: false,
       }}
       token={VIDEOSDK_TOKEN}
+              reinitialiseMeetingOnConfigChange={false}
+        joinWithoutUserInteraction={false}
     >
       <MeetingComponent
         meetingId={meetingId}
