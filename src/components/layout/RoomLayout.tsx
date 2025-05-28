@@ -17,10 +17,10 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   onSettingsChange,
 }) => {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="h-screen bg-black flex flex-col">
       {/* Content Section - Responsive container */}
       <div className="flex flex-1 justify-center">
-        <div className="w-full max-w-7xl flex">
+        <div className="w-full max-w-7xl flex h-full">
           {/* Desktop Agent Configuration - Hidden on mobile/tablet */}
           <div className="hidden lg:block w-[400px] bg-[#161616]">
             <AgentConfiguration
