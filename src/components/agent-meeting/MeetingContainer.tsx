@@ -23,22 +23,24 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
     >
-      {/* Agent Avatar with Wave Animation */}
-      <WaveAvatar 
-        isConnected={false}
-        className="mb-12"
-      />
+      <div className="flex flex-col items-center justify-between h-[50%]">
+        {/* Agent Avatar with Wave Animation */}
+        <WaveAvatar 
+          isConnected={false}
+          className="mb-8"
+        />
 
-      {/* Control Panel */}
-      <div className="flex items-center space-x-6">
-        {/* Connect Button */}
-        <Button
-          onClick={onConnect}
-          disabled={isConnecting}
-          className="px-8 py-3 bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
-        >
-          {isConnecting ? "Connecting..." : "Connect"}
-        </Button>
+        {/* Control Panel */}
+        <div className="flex items-center space-x-6">
+          {/* Connect Button */}
+          <Button
+            onClick={onConnect}
+            disabled={isConnecting}
+            className="px-8 py-3 bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
+          >
+            {isConnecting ? "Connecting..." : "Connect"}
+          </Button>
+        </div>
       </div>
     </RoomLayout>
   );
