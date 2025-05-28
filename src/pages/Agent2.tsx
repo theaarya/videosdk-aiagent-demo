@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import { AnimatedMicrophone } from '@/components/AnimatedMicrophone';
@@ -174,6 +173,9 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
     (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
   );
 
+  // Check if agent is speaking (this is a simplified check - you might want to use actual audio level detection)
+  const isAgentSpeaking = agentParticipant && agentInvited;
+
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-12 p-8">
       {isJoined && agentParticipant ? (
@@ -182,7 +184,10 @@ const MeetingComponent: React.FC<MeetingComponentProps> = ({
           isConnected={isJoined}
         />
       ) : (
-        <AnimatedMicrophone />
+        <AnimatedMicrophone 
+          showWaves={isJoined && agentInvited}
+          isAgentSpeaking={isAgentSpeaking}
+        />
       )}
       
       <CustomButton 

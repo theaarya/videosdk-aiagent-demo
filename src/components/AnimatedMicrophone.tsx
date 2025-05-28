@@ -1,12 +1,15 @@
-
 import React, { useEffect, useState, useRef } from "react";
 
 interface AnimatedMicrophoneProps {
   className?: string;
+  showWaves?: boolean;
+  isAgentSpeaking?: boolean;
 }
 
 export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
   className = "",
+  showWaves = false,
+  isAgentSpeaking = false,
 }) => {
   const [audioLevel, setAudioLevel] = useState(0);
   const [isListening, setIsListening] = useState(false);
@@ -15,6 +18,13 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
+    // Only start audio capture if we need to show waves
+    if (!showWaves) {
+      setIsListening(false);
+      setAudioLevel(0);
+      return;
+    }
+
     const startAudioCapture = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -58,14 +68,15 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [showWaves]);
 
-  const waveIntensity = isListening ? audioLevel * 50 : 0;
+  // Use agent speaking state for wave intensity if provided, otherwise use microphone audio level
+  const waveIntensity = showWaves ? (isAgentSpeaking ? 30 : (isListening ? audioLevel * 50 : 0)) : 0;
 
   return (
     <div className={`relative ${className}`}>
-      {/* Animated wave rings */}
-      {[1, 2, 3].map((ring) => (
+      {/* Animated wave rings - only show if showWaves is true and there's wave intensity */}
+      {showWaves && waveIntensity > 0 && [1, 2, 3].map((ring) => (
         <div
           key={ring}
           className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping pointer-events-none"
@@ -73,7 +84,7 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
             animationDelay: `${ring * 0.5}s`,
             animationDuration: "2s",
             transform: `scale(${1 + (waveIntensity * 0.02 * ring)})`,
-            opacity: isListening ? 0.6 - (ring * 0.15) : 0.2,
+            opacity: 0.6 - (ring * 0.15),
             transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
           }}
         />
@@ -90,7 +101,7 @@ export const AnimatedMicrophone: React.FC<AnimatedMicrophoneProps> = ({
         style={{ 
           width: '196px', 
           height: '196px',
-          transform: `scale(${1 + (waveIntensity * 0.01)})`,
+          transform: showWaves && waveIntensity > 0 ? `scale(${1 + (waveIntensity * 0.01)})` : 'scale(1)',
           transition: "transform 0.1s ease-out",
         }}
       >
