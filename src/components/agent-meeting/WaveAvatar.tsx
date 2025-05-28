@@ -18,10 +18,12 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number>();
 
-  const participant = participantId ? useParticipant(participantId) : null;
+  // Always call useParticipant to avoid hook order violations
+  const participant = useParticipant(participantId || "");
 
   useEffect(() => {
-    if (!participant?.micStream) {
+    // Only proceed if we have a valid participant and participantId
+    if (!participantId || !participant?.micStream) {
       setAudioLevel(0);
       setIsActiveSpeaker(false);
       return;
@@ -59,7 +61,7 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
       }
       audioContext.close();
     };
-  }, [participant?.micStream]);
+  }, [participantId, participant?.micStream]);
 
   const waveIntensity = isActiveSpeaker ? audioLevel * 100 : 0;
 
