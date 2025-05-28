@@ -381,20 +381,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           {renderMainButton()}
         </div>
 
-        {/* Control Panel */}
+        {/* Control Panel - Only show retry button if needed */}
         <div className="flex items-center space-x-6">
-          {/* Microphone Control - Only show when agent is joined */}
-          {agentJoined && (
-            <Button
-              onClick={handleToggleMic}
-              size="lg"
-              className="w-12 h-8  bg-[#1F1F1F] hover:bg-[#1F1F1F]"
-              disabled={!isJoined}
-            >
-              <MicWithSlash disabled={!micEnabled} />
-            </Button>
-          )}
-
           {/* Retry Button */}
           {connectionError && !isRetrying && retryAttempts < maxRetries && (
             <Button
