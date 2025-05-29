@@ -18,42 +18,42 @@ export const MicrophoneWithWaves: React.FC<MicrophoneWithWavesProps> = ({
       {/* Animated Wave Rings - Only when agent is speaking */}
       {isConnected && isSpeaking && (
         <>
-          {/* First wave ring - innermost, just 2px larger than mic */}
+          {/* First wave ring - innermost, small radius */}
           <div
             className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "200px",
-              height: "200px",
+              width: "210px",
+              height: "210px",
               borderColor: "#F96E8C",
-              opacity: 0.8,
-              animationDuration: "0.8s",
+              opacity: 0.7,
+              animationDuration: "2s",
               animationDelay: "0s",
             }}
           />
           
-          {/* Second wave ring - 2px larger */}
+          {/* Second wave ring - slightly larger */}
           <div
             className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "202px",
-              height: "202px",
+              width: "220px",
+              height: "220px",
               borderColor: "#DE4CE3",
-              opacity: 0.6,
-              animationDuration: "1s",
-              animationDelay: "0.1s",
+              opacity: 0.5,
+              animationDuration: "2.5s",
+              animationDelay: "0.3s",
             }}
           />
           
-          {/* Third wave ring - 3px larger */}
+          {/* Third wave ring - outermost */}
           <div
             className="absolute rounded-full border-2 animate-ping"
             style={{
-              width: "205px",
-              height: "205px",
+              width: "230px",
+              height: "230px",
               borderColor: "#6A65F3",
-              opacity: 0.4,
-              animationDuration: "1.2s",
-              animationDelay: "0.2s",
+              opacity: 0.3,
+              animationDuration: "3s",
+              animationDelay: "0.6s",
             }}
           />
         </>
