@@ -8,8 +8,9 @@ export interface AgentSettings {
   topK: number;
 }
 
-export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI0N2M3ZTJlYy01NzY5LTQ3OWQtYjdjNS0zYjU5MDcxYzhhMDkiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY3MjgwOTcxMywiZXhwIjoxODMwNTk3NzEzfQ.KeXr1cxORdq6X7-sxBLLV7MsUnwuJGLaG8_VTyTFBig"
-export const API_URL = "https://aiendpoint.tryvideosdk.live/"
+export const VITE_VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
+export const VITE_API_URL = import.meta.env.VITE_API_URL;
+
 export const AVAILABLE_MODELS = {
   gemini: ["gemini-2.0-flash-live-001"]
 };
