@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -9,6 +8,7 @@ import { VIDEOSDK_TOKEN, API_URL } from "./types";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
 import { CustomButton } from "./CustomButton";
+import { proxyApiRequest } from "@/utils/apiProxy";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -172,7 +172,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      const response = await fetch(
+      const response = await proxyApiRequest(
         `${API_URL}/leave-agent`,
         {
           method: "POST",
@@ -191,7 +191,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         
         if (data.status === "removed") {
           console.log("Agent successfully removed, ending meeting");
-          end(); // Call the end method from useMeeting hook
+          end();
         } else if (data.status === "not_found") {
           console.log("No agent session found");
         }
@@ -232,7 +232,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
-      const response = await fetch(
+      const response = await proxyApiRequest(
         `${API_URL}/join-agent`,
         {
           method: "POST",
