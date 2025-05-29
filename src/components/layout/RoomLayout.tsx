@@ -14,7 +14,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   onSettingsChange,
 }) => {
   return (
-    <div className="min-h-screen text-white flex flex-col bg-[#161616]">
+    <div className="min-h-screen text-white flex flex-col" style={{ backgroundColor: "rgba(24,24,24,1)" }}>
       {/* Simplified layout - just the main content */}
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         {children}
