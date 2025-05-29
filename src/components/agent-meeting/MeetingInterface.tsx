@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings, PROMPTS } from "./types";
@@ -29,8 +29,11 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [agentIsSpeaking, setAgentIsSpeaking] = useState(false);
+  const [agentParticipantId, setAgentParticipantId] = useState<string | null>(null);
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number>();
   const maxRetries = 3;
   const retryDelay = 5000;
 
@@ -60,6 +63,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           participant.displayName?.includes("Haley")
         ) {
           setAgentJoined(true);
+          setAgentParticipantId(participant.id);
         }
       },
       onParticipantLeft: (participant) => {
@@ -69,20 +73,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           participant.displayName?.includes("Haley")
         ) {
           setAgentJoined(false);
-        }
-      },
-      onSpeakerChanged: (activeSpeakerId) => {
-        console.log("Speaker changed:", activeSpeakerId);
-        // Check if the active speaker is the agent
-        const participantsList = Array.from(participants.values());
-        const agentParticipant = participantsList.find(
-          (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
-        );
-        
-        if (agentParticipant && activeSpeakerId === agentParticipant.id) {
-          setAgentIsSpeaking(true);
-        } else {
-          setAgentIsSpeaking(false);
+          setAgentParticipantId(null);
         }
       },
       onError: (error) => {
@@ -105,6 +96,74 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       },
     }
   );
+
+  // Use participant hook for agent if available
+  const agentParticipant = useParticipant(agentParticipantId || "", {
+    onStreamEnabled: (stream) => {
+      console.log("Agent stream enabled:", stream);
+      if (stream.kind === "audio") {
+        setupAudioAnalysis(stream);
+      }
+    },
+    onStreamDisabled: (stream) => {
+      console.log("Agent stream disabled:", stream);
+      if (stream.kind === "audio") {
+        cleanupAudioAnalysis();
+      }
+    },
+  });
+
+  const setupAudioAnalysis = (stream: MediaStream) => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.8;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const updateAudioLevel = () => {
+        if (analyserRef.current) {
+          analyserRef.current.getByteFrequencyData(dataArray);
+          const average = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+          const normalizedLevel = Math.min(average / 128, 1);
+          
+          // Set speaking state based on audio level
+          setAgentIsSpeaking(normalizedLevel > 0.1);
+        }
+        animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+      };
+
+      updateAudioLevel();
+    } catch (error) {
+      console.error("Error setting up audio analysis:", error);
+    }
+  };
+
+  const cleanupAudioAnalysis = () => {
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    setAgentIsSpeaking(false);
+    analyserRef.current = null;
+  };
+
+  useEffect(() => {
+    if (agentParticipant?.micStream) {
+      const mediaStream = new MediaStream([agentParticipant.micStream.track]);
+      setupAudioAnalysis(mediaStream);
+    } else {
+      cleanupAudioAnalysis();
+    }
+
+    return () => {
+      cleanupAudioAnalysis();
+    };
+  }, [agentParticipant?.micStream]);
 
   useEffect(() => {
     if (isJoined && !agentInvited && !agentInviteAttempted.current) {
@@ -271,7 +330,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   };
 
   const participantsList = Array.from(participants.values());
-  const agentParticipant = participantsList.find(
+  const agentParticipantFromList = participantsList.find(
     (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
   );
 
@@ -340,11 +399,147 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       </div>
 
       {/* Agent Audio Player */}
-      {agentParticipant && (
+      {agentParticipantFromList && (
         <div className="mt-8 w-full max-w-md">
-          <AgentAudioPlayer participantId={agentParticipant.id} />
+          <AgentAudioPlayer participantId={agentParticipantFromList.id} />
         </div>
       )}
     </RoomLayout>
   );
+
+  const handleRetryConnection = () => {
+    if (retryAttempts >= maxRetries) {
+      setIsRetrying(false);
+      setConnectionError(
+        "Maximum retry attempts reached. Please try creating a new meeting."
+      );
+      return;
+    }
+
+    console.log(`Retry attempt ${retryAttempts + 1}/${maxRetries}`);
+    setRetryAttempts((prev) => prev + 1);
+
+    try {
+      setConnectionError(null);
+      joinAttempted.current = false;
+
+      setTimeout(() => {
+        if (!isJoined && !joinAttempted.current) {
+          join();
+          joinAttempted.current = true;
+        }
+        setIsRetrying(false);
+      }, 1000);
+    } catch (error) {
+      console.error("Error during retry:", error);
+      setIsRetrying(false);
+    }
+  };
+
+  const handleToggleMic = () => {
+    if (isJoined) {
+      toggleMic();
+      setMicEnabled(!micEnabled);
+    }
+  };
+
+  const leaveAgent = async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}/leave-agent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meeting_id: meetingId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Agent leave response:", data);
+        
+        if (data.status === "removed") {
+          console.log("Agent successfully removed, ending meeting");
+          end(); // Call the end method from useMeeting hook
+        } else if (data.status === "not_found") {
+          console.log("No agent session found");
+        }
+      } else {
+        const errorData = await response.json();
+        console.error("Error removing agent:", errorData);
+      }
+    } catch (error) {
+      console.error("Error calling leave-agent API:", error);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      if (agentInvited) {
+        await leaveAgent();
+      } else {
+        leave();
+      }
+    } catch (error) {
+      console.error("Error during disconnect:", error);
+      leave();
+    }
+  };
+
+  const handleManualRetry = () => {
+    if (isRetrying) return;
+
+    setRetryAttempts(0);
+    setConnectionError(null);
+    joinAttempted.current = false;
+    handleRetryConnection();
+  };
+
+  const inviteAgent = async () => {
+    try {
+      console.log("Sending agent settings:", agentSettings);
+      
+      const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
+      
+      const response = await fetch(
+        `${API_URL}/join-agent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            meeting_id: meetingId,
+            token: VIDEOSDK_TOKEN,
+            model: agentSettings.model,
+            voice: agentSettings.voice,
+            personality: agentSettings.personality,
+            system_prompt: systemPrompt,
+            temperature: agentSettings.temperature,
+            topP: agentSettings.topP,
+            topK: agentSettings.topK,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setAgentInvited(true);
+      } else {
+        throw new Error("Failed to invite agent");
+      }
+    } catch (error) {
+      console.error("Error inviting agent:", error);
+      agentInviteAttempted.current = false;
+    }
+  };
+
+  const handleInviteAgent = () => {
+    if (!agentInvited && isJoined) {
+      inviteAgent();
+    }
+  };
 };
