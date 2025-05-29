@@ -5,7 +5,7 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { VIDEOSDK_TOKEN, VITE_API_URL } from "./types";
+import { VITE_VIDEOSDK_TOKEN, VITE_API_URL } from "./types";
 import { MicrophoneWithWaves } from "./MicrophoneWithWaves";
 import { RoomLayout } from "../layout/RoomLayout";
 import { CustomButton } from "./CustomButton";
@@ -302,7 +302,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           },
           body: JSON.stringify({
             meeting_id: meetingId,
-            token: VIDEOSDK_TOKEN,
+            token: VITE_VIDEOSDK_TOKEN,
             model: agentSettings.model,
             voice: agentSettings.voice,
             personality: agentSettings.personality,
