@@ -325,48 +325,29 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.log("Attempting to invite agent with CORS handling");
       console.log("Request body:", requestBody);
 
-      // Try with HTTPS first (with CORS handling)
+      // Try with HTTPS first using no-cors mode to bypass CORS restrictions
       try {
-        const httpsResponse = await fetch(
-          "https://aiendpoint.tryvideosdk.live/join-agent",
-          {
-            method: "POST",
-            mode: "no-cors", // Bypass CORS restrictions
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
+        console.log("Sending HTTPS request with no-cors mode...");
+        
+        await fetch("https://aiendpoint.tryvideosdk.live/join-agent", {
+          method: "POST",
+          mode: "no-cors", // Bypass CORS restrictions
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
 
         // With no-cors mode, we can't read the response, but if no error is thrown,
         // the request was sent successfully
         console.log("HTTPS request sent successfully (no-cors mode)");
         
-        // Wait a moment to see if agent joins
-        setTimeout(() => {
-          const currentParticipants = Array.from(participants.values());
-          const agentParticipant = currentParticipants.find(
-            (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
-          );
-          
-          if (agentParticipant) {
-            console.log("Agent detected in participants after HTTPS request");
-            setAgentInvited(true);
-            toast({
-              title: "Agent Invited",
-              description: "AI Agent is joining the conversation...",
-            });
-          } else {
-            console.log("No agent detected yet, will continue monitoring");
-            // Set as invited anyway since request was sent
-            setAgentInvited(true);
-            toast({
-              title: "Agent Invitation Sent",
-              description: "AI Agent should be joining shortly...",
-            });
-          }
-        }, 3000);
+        // Mark as invited and show success message
+        setAgentInvited(true);
+        toast({
+          title: "Agent Invitation Sent",
+          description: "AI Agent should be joining shortly... (Request sent via HTTPS)",
+        });
 
         return; // Exit if HTTPS request was sent successfully
 
@@ -374,32 +355,37 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         console.log("HTTPS request failed, trying HTTP fallback:", httpsError);
         
         // Fallback to HTTP with normal CORS handling
-        const httpResponse = await fetch(
-          "http://aiendpoint.tryvideosdk.live/join-agent",
-          {
+        try {
+          console.log("Sending HTTP request...");
+          
+          const httpResponse = await fetch("http://aiendpoint.tryvideosdk.live/join-agent", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(requestBody),
-          }
-        );
-
-        console.log("HTTP response status:", httpResponse.status);
-        console.log("HTTP response ok:", httpResponse.ok);
-
-        if (httpResponse.ok) {
-          const responseData = await httpResponse.json();
-          console.log("Agent invite successful via HTTP:", responseData);
-          setAgentInvited(true);
-          toast({
-            title: "Agent Invited",
-            description: "AI Agent is joining the conversation...",
           });
-        } else {
-          const errorText = await httpResponse.text();
-          console.error("HTTP agent invite failed:", httpResponse.status, errorText);
-          throw new Error(`Failed to invite agent: ${httpResponse.status} - ${errorText}`);
+
+          console.log("HTTP response status:", httpResponse.status);
+          console.log("HTTP response ok:", httpResponse.ok);
+
+          if (httpResponse.ok) {
+            const responseData = await httpResponse.json();
+            console.log("Agent invite successful via HTTP:", responseData);
+            setAgentInvited(true);
+            toast({
+              title: "Agent Invited",
+              description: "AI Agent is joining the conversation... (Connected via HTTP)",
+            });
+          } else {
+            const errorText = await httpResponse.text();
+            console.error("HTTP agent invite failed:", httpResponse.status, errorText);
+            throw new Error(`HTTP request failed: ${httpResponse.status} - ${errorText}`);
+          }
+
+        } catch (httpError) {
+          console.error("HTTP fallback also failed:", httpError);
+          throw new Error("Both HTTPS and HTTP requests failed");
         }
       }
 
@@ -407,20 +393,21 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.error("Error inviting agent:", error);
       agentInviteAttempted.current = false;
       
-      // Provide more detailed error information
-      let errorMessage = "Failed to invite AI Agent. Please try again.";
+      // Provide detailed error information
+      let errorMessage = "Failed to invite AI Agent. This is likely due to CORS restrictions.";
+      
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
-          errorMessage = "Unable to connect to AI service due to network restrictions. The server might be temporarily unavailable or there may be a CORS policy issue.";
-        } else if (error.message.includes("CORS")) {
-          errorMessage = "Connection blocked by browser security policy. Please try refreshing the page or contact support.";
+          errorMessage = "Network error: Unable to reach the AI service. This could be due to CORS policy or server availability.";
+        } else if (error.message.includes("Both HTTPS and HTTP requests failed")) {
+          errorMessage = "Connection failed: Both secure and fallback connections were blocked. This is likely a CORS policy issue.";
         } else {
           errorMessage = `AI Agent error: ${error.message}`;
         }
       }
       
       toast({
-        title: "Error",
+        title: "Agent Invitation Failed",
         description: errorMessage,
         variant: "destructive",
       });
