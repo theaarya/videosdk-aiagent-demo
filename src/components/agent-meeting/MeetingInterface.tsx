@@ -314,15 +314,20 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       // Get the system prompt for the selected personality
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
+      // Create request body matching the server's MeetingReqConfig schema
       const requestBody = {
         meeting_id: meetingId,
         token: VIDEOSDK_TOKEN,
-        model: agentSettings.model,
+        pipeline_type: "cascading", // Fixed pipeline type
+        stt: "deepgram", // Speech-to-text service
+        tts: "elevenlabs", // Text-to-speech service
+        llm: "openai", // Language model service
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
+        detection: false // Voice activity detection
       };
 
-      console.log("Attempting to invite agent with CORS handling");
+      console.log("Attempting to invite agent with correct request body");
       console.log("Request body:", requestBody);
 
       // Try with HTTPS first using no-cors mode to bypass CORS restrictions
