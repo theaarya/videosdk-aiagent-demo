@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useTranscription } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
@@ -54,7 +53,7 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
     onTranscriptionText: ({ participantId, participantName, text, type }) => {
       console.log("Transcription received:", { participantId, participantName, text, type });
       
-      const isPartial = type === "TRANSCRIPTION_GENERATING";
+      const isPartial = type === "realtime";
       const timestamp = new Date();
       
       setTranscriptions(prev => {
@@ -102,7 +101,7 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
   const handleToggleTranscription = () => {
     try {
       if (isTranscribing) {
-        stopTranscription();
+        stopTranscription({});
       } else {
         startTranscription();
       }
