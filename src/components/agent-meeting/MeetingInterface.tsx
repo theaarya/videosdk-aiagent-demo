@@ -180,7 +180,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      console.log("Attempting to remove agent with CORS handling");
+      console.log("Attempting to remove agent using new endpoint");
       
       const requestBody = {
         meeting_id: meetingId,
@@ -188,86 +188,51 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
       console.log("Leave agent request body:", requestBody);
 
-      // Try with HTTPS first (with CORS handling)
-      try {
-        const httpsResponse = await fetch(
-          "https://aiendpoint.tryvideosdk.live/leave-agent",
-          {
-            method: "POST",
-            mode: "no-cors", // Bypass CORS restrictions
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
+      const response = await fetch(
+        "https://154e-45-114-214-78.ngrok-free.app/leave-agent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
-        // With no-cors mode, we can't read the response, but if no error is thrown,
-        // the request was sent successfully
-        console.log("HTTPS leave-agent request sent successfully (no-cors mode)");
+      console.log("Leave agent response status:", response.status);
+      console.log("Leave agent response ok:", response.ok);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Agent leave successful:", responseData);
         
-        // Wait a moment and then end the meeting regardless
-        setTimeout(() => {
-          console.log("Ending meeting after agent leave attempt");
-          end(); // Call the end method from useMeeting hook
-          toast({
-            title: "Agent Removed",
-            description: "AI Agent removal requested, ending meeting",
-          });
-        }, 1000);
-
-        return; // Exit if HTTPS request was sent successfully
-
-      } catch (httpsError) {
-        console.log("HTTPS leave-agent request failed, trying HTTP fallback:", httpsError);
-        
-        // Fallback to HTTP with normal CORS handling
-        const httpResponse = await fetch(
-          "http://aiendpoint.tryvideosdk.live/leave-agent",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
-
-        console.log("HTTP leave-agent response status:", httpResponse.status);
-        console.log("HTTP leave-agent response ok:", httpResponse.ok);
-
-        if (httpResponse.ok) {
-          const responseData = await httpResponse.json();
-          console.log("Agent leave successful via HTTP:", responseData);
-          
-          if (responseData.status === "removed") {
-            console.log("Agent successfully removed, ending meeting");
-            end(); // Call the end method from useMeeting hook
-            toast({
-              title: "Agent Removed",
-              description: "AI Agent has been removed from the meeting",
-            });
-          } else if (responseData.status === "not_found") {
-            console.log("No agent session found, ending meeting anyway");
-            end();
-            toast({
-              title: "No Agent Found",
-              description: "No AI agent session was found, ending meeting",
-            });
-          }
-        } else {
-          const errorText = await httpResponse.text();
-          console.error("HTTP leave-agent failed:", httpResponse.status, errorText);
-          
-          // Even if the API call fails, end the meeting locally
-          console.log("API failed, but ending meeting locally");
+        if (responseData.status === "removed") {
+          console.log("Agent successfully removed, ending meeting");
           end();
           toast({
-            title: "Warning",
-            description: "Could not confirm agent removal, but ending meeting",
-            variant: "destructive",
+            title: "Agent Removed",
+            description: "AI Agent has been removed from the meeting",
+          });
+        } else if (responseData.status === "not_found") {
+          console.log("No agent session found, ending meeting anyway");
+          end();
+          toast({
+            title: "No Agent Found",
+            description: "No AI agent session was found, ending meeting",
           });
         }
+      } else {
+        const errorText = await response.text();
+        console.error("Leave agent failed:", response.status, errorText);
+        
+        // Even if the API call fails, end the meeting locally
+        console.log("API failed, but ending meeting locally");
+        end();
+        toast({
+          title: "Warning",
+          description: "Could not confirm agent removal, but ending meeting",
+          variant: "destructive",
+        });
       }
 
     } catch (error) {
@@ -327,71 +292,32 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         detection: agentSettings.detection
       };
 
-      console.log("Attempting to invite agent with updated request body");
+      console.log("Attempting to invite agent with new endpoint");
       console.log("Request body:", requestBody);
 
-      // Try with HTTPS first using no-cors mode to bypass CORS restrictions
-      try {
-        console.log("Sending HTTPS request with no-cors mode...");
-        
-        await fetch("https://aiendpoint.tryvideosdk.live/join-agent", {
-          method: "POST",
-          mode: "no-cors", // Bypass CORS restrictions
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
+      const response = await fetch("https://154e-45-114-214-78.ngrok-free.app/join-agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-        // With no-cors mode, we can't read the response, but if no error is thrown,
-        // the request was sent successfully
-        console.log("HTTPS request sent successfully (no-cors mode)");
-        
-        // Mark as invited and show success message
+      console.log("Invite agent response status:", response.status);
+      console.log("Invite agent response ok:", response.ok);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Agent invite successful:", responseData);
         setAgentInvited(true);
         toast({
-          title: "Agent Invitation Sent",
-          description: "AI Agent should be joining shortly... (Request sent via HTTPS)",
+          title: "Agent Invited",
+          description: "AI Agent is joining the conversation...",
         });
-
-        return; // Exit if HTTPS request was sent successfully
-
-      } catch (httpsError) {
-        console.log("HTTPS request failed, trying HTTP fallback:", httpsError);
-        
-        // Fallback to HTTP with normal CORS handling
-        try {
-          console.log("Sending HTTP request...");
-          
-          const httpResponse = await fetch("http://aiendpoint.tryvideosdk.live/join-agent", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          });
-
-          console.log("HTTP response status:", httpResponse.status);
-          console.log("HTTP response ok:", httpResponse.ok);
-
-          if (httpResponse.ok) {
-            const responseData = await httpResponse.json();
-            console.log("Agent invite successful via HTTP:", responseData);
-            setAgentInvited(true);
-            toast({
-              title: "Agent Invited",
-              description: "AI Agent is joining the conversation... (Connected via HTTP)",
-            });
-          } else {
-            const errorText = await httpResponse.text();
-            console.error("HTTP agent invite failed:", httpResponse.status, errorText);
-            throw new Error(`HTTP request failed: ${httpResponse.status} - ${errorText}`);
-          }
-
-        } catch (httpError) {
-          console.error("HTTP fallback also failed:", httpError);
-          throw new Error("Both HTTPS and HTTP requests failed");
-        }
+      } else {
+        const errorText = await response.text();
+        console.error("Agent invite failed:", response.status, errorText);
+        throw new Error(`Request failed: ${response.status} - ${errorText}`);
       }
 
     } catch (error) {
@@ -399,13 +325,11 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       agentInviteAttempted.current = false;
       
       // Provide detailed error information
-      let errorMessage = "Failed to invite AI Agent. This is likely due to CORS restrictions.";
+      let errorMessage = "Failed to invite AI Agent.";
       
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
-          errorMessage = "Network error: Unable to reach the AI service. This could be due to CORS policy or server availability.";
-        } else if (error.message.includes("Both HTTPS and HTTP requests failed")) {
-          errorMessage = "Connection failed: Both secure and fallback connections were blocked. This is likely a CORS policy issue.";
+          errorMessage = "Network error: Unable to reach the AI service.";
         } else {
           errorMessage = `AI Agent error: ${error.message}`;
         }
