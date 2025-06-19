@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { AgentSettings, AVAILABLE_MODELS, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
-import { ChevronRight, ArrowLeft } from "lucide-react";
+import { ChevronRight, ArrowLeft, Settings } from "lucide-react";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -29,6 +29,9 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   const handleBackToPersonality = () => {
     setSelectedPersonality(null);
   };
+
+  // Check if cascading pipeline is selected
+  const isCascadingPipeline = agentSettings.pipelineType === "cascading";
 
   if (selectedPersonality) {
     return (
@@ -145,132 +148,279 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                     onSettingsChange?.({ ...agentSettings, pipelineType });
                   }}
                 >
-                  {pipelineType}
+                  <div className="flex flex-col">
+                    <span className="font-medium">{pipelineType}</span>
+                    {pipelineType === "cascading" && (
+                      <span className="text-xs text-gray-400 mt-1">
+                        Configure TTS, STT & LLM providers
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* STT Dropdown */}
-        <div className="mb-4 relative">
-          <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
-            onClick={() => setSttDropdownOpen((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-white">Speech-to-Text</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-white font-medium">
-                {agentSettings.stt}
-              </span>
-              <ChevronRight
-                className={`w-4 h-4 text-white transition-transform ${
-                  sttDropdownOpen ? "rotate-90" : ""
-                }`}
-              />
+        {/* Cascading Pipeline Configuration */}
+        {isCascadingPipeline && (
+          <div className="mb-6 bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Settings className="w-4 h-4 text-blue-400" />
+              <h3 className="text-sm font-semibold text-white">Cascading Pipeline Configuration</h3>
             </div>
-          </div>
-          {sttDropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {STT_OPTIONS.map((stt) => (
+            <p className="text-xs text-gray-400 mb-4">
+              Configure the providers for each component of your conversational AI pipeline
+            </p>
+            
+            <div className="space-y-4">
+              {/* Speech-to-Text Provider */}
+              <div className="relative">
+                <label className="block text-xs font-medium text-gray-300 mb-2">
+                  Speech-to-Text Provider
+                </label>
                 <div
-                  key={stt}
-                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
-                    agentSettings.stt === stt
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-[#232323] text-white"
-                  }`}
-                  onClick={() => {
-                    setSttDropdownOpen(false);
-                    onSettingsChange?.({ ...agentSettings, stt });
-                  }}
+                  className="flex items-center justify-between cursor-pointer select-none h-[36px] bg-[#161616] border border-[#232323] rounded-lg px-3 hover:border-[#404040] transition-colors"
+                  onClick={() => setSttDropdownOpen((v) => !v)}
                 >
-                  {stt}
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.stt}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-gray-400 transition-transform ${
+                      sttDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                {sttDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-2 z-20 bg-[#1F1F1F] rounded-lg shadow-lg border border-[#232323] py-2 animate-fade-in">
+                    {STT_OPTIONS.map((stt) => (
+                      <div
+                        key={stt}
+                        className={`px-3 py-2 text-sm cursor-pointer transition-colors flex items-center text-white ${
+                          agentSettings.stt === stt
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-[#232323] text-white"
+                        }`}
+                        onClick={() => {
+                          setSttDropdownOpen(false);
+                          onSettingsChange?.({ ...agentSettings, stt });
+                        }}
+                      >
+                        <span className="font-medium">{stt}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-        {/* TTS Dropdown */}
-        <div className="mb-4 relative">
-          <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
-            onClick={() => setTtsDropdownOpen((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-white">Text-to-Speech</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-white font-medium">
-                {agentSettings.tts}
-              </span>
-              <ChevronRight
-                className={`w-4 h-4 text-white transition-transform ${
-                  ttsDropdownOpen ? "rotate-90" : ""
-                }`}
-              />
-            </div>
-          </div>
-          {ttsDropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {TTS_OPTIONS.map((tts) => (
+              {/* Language Model Provider */}
+              <div className="relative">
+                <label className="block text-xs font-medium text-gray-300 mb-2">
+                  Language Model Provider
+                </label>
                 <div
-                  key={tts}
-                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
-                    agentSettings.tts === tts
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-[#232323] text-white"
-                  }`}
-                  onClick={() => {
-                    setTtsDropdownOpen(false);
-                    onSettingsChange?.({ ...agentSettings, tts });
-                  }}
+                  className="flex items-center justify-between cursor-pointer select-none h-[36px] bg-[#161616] border border-[#232323] rounded-lg px-3 hover:border-[#404040] transition-colors"
+                  onClick={() => setLlmDropdownOpen((v) => !v)}
                 >
-                  {tts}
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.llm}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-gray-400 transition-transform ${
+                      llmDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                {llmDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-2 z-20 bg-[#1F1F1F] rounded-lg shadow-lg border border-[#232323] py-2 animate-fade-in">
+                    {LLM_OPTIONS.map((llm) => (
+                      <div
+                        key={llm}
+                        className={`px-3 py-2 text-sm cursor-pointer transition-colors flex items-center text-white ${
+                          agentSettings.llm === llm
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-[#232323] text-white"
+                        }`}
+                        onClick={() => {
+                          setLlmDropdownOpen(false);
+                          onSettingsChange?.({ ...agentSettings, llm });
+                        }}
+                      >
+                        <span className="font-medium">{llm}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-        {/* LLM Dropdown */}
-        <div className="mb-4 relative">
-          <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
-            onClick={() => setLlmDropdownOpen((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-white">Language Model</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-white font-medium">
-                {agentSettings.llm}
-              </span>
-              <ChevronRight
-                className={`w-4 h-4 text-white transition-transform ${
-                  llmDropdownOpen ? "rotate-90" : ""
-                }`}
-              />
+              {/* Text-to-Speech Provider */}
+              <div className="relative">
+                <label className="block text-xs font-medium text-gray-300 mb-2">
+                  Text-to-Speech Provider
+                </label>
+                <div
+                  className="flex items-center justify-between cursor-pointer select-none h-[36px] bg-[#161616] border border-[#232323] rounded-lg px-3 hover:border-[#404040] transition-colors"
+                  onClick={() => setTtsDropdownOpen((v) => !v)}
+                >
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.tts}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-gray-400 transition-transform ${
+                      ttsDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
+                </div>
+                {ttsDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-2 z-20 bg-[#1F1F1F] rounded-lg shadow-lg border border-[#232323] py-2 animate-fade-in">
+                    {TTS_OPTIONS.map((tts) => (
+                      <div
+                        key={tts}
+                        className={`px-3 py-2 text-sm cursor-pointer transition-colors flex items-center text-white ${
+                          agentSettings.tts === tts
+                            ? "bg-blue-600 text-white"
+                            : "hover:bg-[#232323] text-white"
+                        }`}
+                        onClick={() => {
+                          setTtsDropdownOpen(false);
+                          onSettingsChange?.({ ...agentSettings, tts });
+                        }}
+                      >
+                        <span className="font-medium">{tts}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          {llmDropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {LLM_OPTIONS.map((llm) => (
-                <div
-                  key={llm}
-                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
-                    agentSettings.llm === llm
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-[#232323] text-white"
-                  }`}
-                  onClick={() => {
-                    setLlmDropdownOpen(false);
-                    onSettingsChange?.({ ...agentSettings, llm });
-                  }}
-                >
-                  {llm}
+        )}
+
+        {/* Only show individual dropdowns if NOT cascading pipeline */}
+        {!isCascadingPipeline && (
+          <>
+            {/* STT Dropdown */}
+            <div className="mb-4 relative">
+              <div
+                className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
+                onClick={() => setSttDropdownOpen((v) => !v)}
+              >
+                <span className="text-sm font-semibold text-white">Speech-to-Text</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.stt}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-white transition-transform ${
+                      sttDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
                 </div>
-              ))}
+              </div>
+              {sttDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+                  {STT_OPTIONS.map((stt) => (
+                    <div
+                      key={stt}
+                      className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
+                        agentSettings.stt === stt
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#232323] text-white"
+                      }`}
+                      onClick={() => {
+                        setSttDropdownOpen(false);
+                        onSettingsChange?.({ ...agentSettings, stt });
+                      }}
+                    >
+                      {stt}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            {/* TTS Dropdown */}
+            <div className="mb-4 relative">
+              <div
+                className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
+                onClick={() => setTtsDropdownOpen((v) => !v)}
+              >
+                <span className="text-sm font-semibold text-white">Text-to-Speech</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.tts}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-white transition-transform ${
+                      ttsDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+              {ttsDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+                  {TTS_OPTIONS.map((tts) => (
+                    <div
+                      key={tts}
+                      className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
+                        agentSettings.tts === tts
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#232323] text-white"
+                      }`}
+                      onClick={() => {
+                        setTtsDropdownOpen(false);
+                        onSettingsChange?.({ ...agentSettings, tts });
+                      }}
+                    >
+                      {tts}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* LLM Dropdown */}
+            <div className="mb-4 relative">
+              <div
+                className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
+                onClick={() => setLlmDropdownOpen((v) => !v)}
+              >
+                <span className="text-sm font-semibold text-white">Language Model</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-white font-medium">
+                    {agentSettings.llm}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-white transition-transform ${
+                      llmDropdownOpen ? "rotate-90" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+              {llmDropdownOpen && (
+                <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
+                  {LLM_OPTIONS.map((llm) => (
+                    <div
+                      key={llm}
+                      className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
+                        agentSettings.llm === llm
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#232323] text-white"
+                      }`}
+                      onClick={() => {
+                        setLlmDropdownOpen(false);
+                        onSettingsChange?.({ ...agentSettings, llm });
+                      }}
+                    >
+                      {llm}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Personality Dropdown */}
         <div className="mb-6 relative">
