@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
@@ -17,6 +16,11 @@ const AgentMeeting: React.FC = () => {
     temperature: 0.8,
     topP: 0.8,
     topK: 0.8,
+    pipelineType: "cascading",
+    stt: "deepgram",
+    tts: "elevenlabs", 
+    llm: "openai",
+    detection: false,
   });
 
   const createMeeting = async () => {

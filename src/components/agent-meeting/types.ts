@@ -1,3 +1,4 @@
+
 export interface AgentSettings {
   model: string;
   voice: string;
@@ -5,17 +6,32 @@ export interface AgentSettings {
   temperature: number;
   topP: number;
   topK: number;
+  pipelineType: string;
+  stt: string;
+  tts: string;
+  llm: string;
+  detection: boolean;
 }
 
 export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJjMzczZWE5Zi05YmY5LTQ2YjktOWJkMS01NmE5MDQ4NTIxMDciLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQyNDk0MCwiZXhwIjoxNzc5OTYwOTQwfQ.9ymYDhKhgUqp9VIAiPcJ2lurLnp7dfTPsmiHMb2jVTA";
 
 export const AVAILABLE_MODELS = {
-  gemini: ["gemini-2.0-flash-live-001"]
+  gemini: ["gemini-2.0-flash-live-001"],
+  openai: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
+  anthropic: ["claude-3-5-sonnet-20241022", "claude-3-haiku-20240307"]
 };
 
 export const AVAILABLE_VOICES = ["Puck", "Charon", "Kore", "Fenrir", "Aoede"];
 
 export const PERSONALITY_OPTIONS = ["Tutor", "Doctor", "Recruiter", "Companion", "Storyteller", "Confession", "Famous"];
+
+export const PIPELINE_TYPES = ["cascading", "direct", "streaming"];
+
+export const STT_OPTIONS = ["deepgram", "whisper", "azure"];
+
+export const TTS_OPTIONS = ["elevenlabs", "azure", "openai"];
+
+export const LLM_OPTIONS = ["openai", "anthropic", "gemini"];
 
 export const PROMPTS = {
   "Tutor": `You are an AI Tutor participating in a live audio/video session with a student. Your job is to help the student understand academic concepts clearly, patiently, and interactively.
