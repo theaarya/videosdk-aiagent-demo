@@ -16,7 +16,7 @@ const AgentMeeting: React.FC = () => {
     temperature: 0.8,
     topP: 0.8,
     topK: 0.8,
-    pipelineType: "cascading",
+    pipelineType: "openai",
     stt: "deepgram",
     tts: "elevenlabs", 
     llm: "openai",

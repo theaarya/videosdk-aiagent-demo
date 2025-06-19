@@ -24,7 +24,7 @@ export const AVAILABLE_VOICES = ["Puck", "Charon", "Kore", "Fenrir", "Aoede"];
 
 export const PERSONALITY_OPTIONS = ["Tutor", "Doctor", "Recruiter", "Companion", "Storyteller", "Confession", "Famous"];
 
-export const PIPELINE_TYPES = ["cascading", "direct", "streaming"];
+export const PIPELINE_TYPES = ["openai", "google", "aws", "cascading"];
 
 export const STT_OPTIONS = ["deepgram", "whisper", "azure"];
 
