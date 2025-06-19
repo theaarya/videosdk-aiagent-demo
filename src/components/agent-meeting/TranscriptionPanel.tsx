@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useTranscription } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
@@ -101,9 +102,9 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
   const handleToggleTranscription = () => {
     try {
       if (isTranscribing) {
-        stopTranscription({});
+        stopTranscription();
       } else {
-        startTranscription();
+        startTranscription({});
       }
     } catch (error) {
       console.error("Error toggling transcription:", error);
