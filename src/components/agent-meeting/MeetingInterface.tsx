@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -181,7 +182,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const leaveAgent = async () => {
     try {
       const response = await fetch(
-        "http://aiendpoint.tryvideosdk.live/leave-agent",
+        "https://aiendpoint.tryvideosdk.live/leave-agent",
         {
           method: "POST",
           headers: {
@@ -261,7 +262,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
       const response = await fetch(
-        "http://aiendpoint.tryvideosdk.live/join-agent",
+        "https://aiendpoint.tryvideosdk.live/join-agent",
         {
           method: "POST",
           headers: {
