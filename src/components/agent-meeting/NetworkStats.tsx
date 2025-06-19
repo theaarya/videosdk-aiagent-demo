@@ -3,10 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wifi, WifiOff, Activity, Clock, Package, AlertTriangle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Wifi, WifiOff, Activity, Clock, Package, AlertTriangle, User, Bot } from "lucide-react";
 
 interface NetworkStatsProps {
   participantId: string;
+  agentParticipantId?: string;
   isVisible: boolean;
 }
 
@@ -20,31 +22,49 @@ interface AudioStats {
   network?: string;
 }
 
+interface ParticipantStats {
+  stats: AudioStats;
+  isAvailable: boolean;
+}
+
 export const NetworkStats: React.FC<NetworkStatsProps> = ({
   participantId,
+  agentParticipantId,
   isVisible,
 }) => {
-  const [audioStats, setAudioStats] = useState<AudioStats>({});
-  const [isStatsAvailable, setIsStatsAvailable] = useState(false);
+  const [userStats, setUserStats] = useState<ParticipantStats>({
+    stats: {},
+    isAvailable: false,
+  });
+  const [agentStats, setAgentStats] = useState<ParticipantStats>({
+    stats: {},
+    isAvailable: false,
+  });
 
-  const { getAudioStats } = useParticipant(participantId);
+  const { getAudioStats: getUserAudioStats } = useParticipant(participantId);
+  const { getAudioStats: getAgentAudioStats } = useParticipant(agentParticipantId || "");
 
-  useEffect(() => {
-    if (!isVisible || !getAudioStats) return;
+  const updateParticipantStats = async (
+    getStatsFunction: any,
+    setStatsFunction: React.Dispatch<React.SetStateAction<ParticipantStats>>,
+    participantType: string
+  ) => {
+    if (!getStatsFunction) {
+      setStatsFunction({ stats: {}, isAvailable: false });
+      return;
+    }
 
-    const updateStats = async () => {
-      try {
-        const statsPromise = getAudioStats();
-        console.log("Audio stats promise:", statsPromise);
-        
-        // Await the promise to get the actual stats array
-        const statsArray = await statsPromise;
-        console.log("Audio stats array:", statsArray);
-        
-        if (statsArray && statsArray.length > 0) {
-          // Use the first stats object from the array
-          const stats = statsArray[0];
-          setAudioStats({
+    try {
+      const statsPromise = getStatsFunction();
+      console.log(`${participantType} stats promise:`, statsPromise);
+      
+      const statsArray = await statsPromise;
+      console.log(`${participantType} stats array:`, statsArray);
+      
+      if (statsArray && statsArray.length > 0) {
+        const stats = statsArray[0];
+        setStatsFunction({
+          stats: {
             jitter: stats.jitter,
             bitrate: stats.bitrate,
             totalPackets: stats.totalPackets,
@@ -52,14 +72,28 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
             rtt: stats.rtt,
             codec: stats.codec,
             network: stats.network
-          });
-          setIsStatsAvailable(true);
-        } else {
-          setIsStatsAvailable(false);
-        }
-      } catch (error) {
-        console.error("Error getting audio stats:", error);
-        setIsStatsAvailable(false);
+          },
+          isAvailable: true,
+        });
+      } else {
+        setStatsFunction({ stats: {}, isAvailable: false });
+      }
+    } catch (error) {
+      console.error(`Error getting ${participantType} stats:`, error);
+      setStatsFunction({ stats: {}, isAvailable: false });
+    }
+  };
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const updateStats = async () => {
+      // Update user stats
+      await updateParticipantStats(getUserAudioStats, setUserStats, "User");
+      
+      // Update agent stats if agent participant exists
+      if (agentParticipantId && getAgentAudioStats) {
+        await updateParticipantStats(getAgentAudioStats, setAgentStats, "Agent");
       }
     };
 
@@ -68,14 +102,14 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
     updateStats(); // Initial call
 
     return () => clearInterval(interval);
-  }, [isVisible, getAudioStats]);
+  }, [isVisible, getUserAudioStats, getAgentAudioStats, agentParticipantId]);
 
   if (!isVisible) return null;
 
-  const getQualityStatus = () => {
-    if (!isStatsAvailable) return { status: "unknown", color: "gray" };
+  const getQualityStatus = (stats: AudioStats, isAvailable: boolean) => {
+    if (!isAvailable) return { status: "unknown", color: "gray" };
     
-    const { rtt = 0, packetsLost = 0, totalPackets = 1 } = audioStats;
+    const { rtt = 0, packetsLost = 0, totalPackets = 1 } = stats;
     const packetLossRate = (packetsLost / totalPackets) * 100;
 
     if (rtt > 300 || packetLossRate > 5) {
@@ -87,21 +121,24 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
     }
   };
 
-  const { status, color } = getQualityStatus();
+  const renderStatsContent = (participantStats: ParticipantStats, participantType: string) => {
+    const { stats, isAvailable } = participantStats;
+    const { status, color } = getQualityStatus(stats, isAvailable);
 
-  return (
-    <Card className="bg-gray-900 border-gray-700 text-white">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          {isStatsAvailable ? (
-            <Wifi className="w-5 h-5 text-green-500" />
-          ) : (
-            <WifiOff className="w-5 h-5 text-red-500" />
-          )}
-          Network Stats
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {isAvailable ? (
+              <Wifi className="w-4 h-4 text-green-500" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-red-500" />
+            )}
+            <span className="text-sm text-gray-400">{participantType} Connection</span>
+          </div>
           <Badge 
             variant="outline" 
-            className={`ml-auto ${
+            className={`text-xs ${
               color === 'green' ? 'border-green-500 text-green-500' :
               color === 'yellow' ? 'border-yellow-500 text-yellow-500' :
               color === 'red' ? 'border-red-500 text-red-500' :
@@ -110,13 +147,12 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
           >
             {status.toUpperCase()}
           </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {!isStatsAvailable ? (
+        </div>
+
+        {!isAvailable ? (
           <div className="text-center text-gray-400 py-4">
-            <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>Waiting for audio stats...</p>
+            <Activity className="w-6 h-6 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">Waiting for audio stats...</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -125,7 +161,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
               <div>
                 <div className="text-gray-400">RTT</div>
                 <div className="font-mono">
-                  {audioStats.rtt ? `${audioStats.rtt}ms` : "N/A"}
+                  {stats.rtt ? `${stats.rtt}ms` : "N/A"}
                 </div>
               </div>
             </div>
@@ -135,7 +171,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
               <div>
                 <div className="text-gray-400">Jitter</div>
                 <div className="font-mono">
-                  {audioStats.jitter ? `${audioStats.jitter.toFixed(2)}ms` : "N/A"}
+                  {stats.jitter ? `${stats.jitter.toFixed(2)}ms` : "N/A"}
                 </div>
               </div>
             </div>
@@ -145,7 +181,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
               <div>
                 <div className="text-gray-400">Packets</div>
                 <div className="font-mono">
-                  {audioStats.totalPackets || "N/A"}
+                  {stats.totalPackets || "N/A"}
                 </div>
               </div>
             </div>
@@ -155,9 +191,9 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
               <div>
                 <div className="text-gray-400">Lost</div>
                 <div className="font-mono">
-                  {audioStats.packetsLost || 0}
-                  {audioStats.totalPackets && audioStats.packetsLost ? 
-                    ` (${((audioStats.packetsLost / audioStats.totalPackets) * 100).toFixed(1)}%)` 
+                  {stats.packetsLost || 0}
+                  {stats.totalPackets && stats.packetsLost ? 
+                    ` (${((stats.packetsLost / stats.totalPackets) * 100).toFixed(1)}%)` 
                     : ""
                   }
                 </div>
@@ -166,16 +202,53 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
 
             <div className="col-span-2 pt-2 border-t border-gray-700">
               <div className="flex justify-between text-xs text-gray-400">
-                <span>Bitrate: {audioStats.bitrate ? `${Math.round(audioStats.bitrate / 1000)}kbps` : "N/A"}</span>
-                <span>Codec: {audioStats.codec || "N/A"}</span>
+                <span>Bitrate: {stats.bitrate ? `${Math.round(stats.bitrate / 1000)}kbps` : "N/A"}</span>
+                <span>Codec: {stats.codec || "N/A"}</span>
               </div>
-              {audioStats.network && (
+              {stats.network && (
                 <div className="text-xs text-gray-400 mt-1">
-                  Network: {audioStats.network}
+                  Network: {stats.network}
                 </div>
               )}
             </div>
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const hasAgentStats = agentParticipantId && agentStats.isAvailable;
+
+  return (
+    <Card className="bg-gray-900 border-gray-700 text-white">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Activity className="w-5 h-5 text-blue-500" />
+          Network Stats
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {hasAgentStats ? (
+          <Tabs defaultValue="user" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-800 mb-4">
+              <TabsTrigger value="user" className="flex items-center gap-2 data-[state=active]:bg-gray-700">
+                <User className="w-4 h-4" />
+                Your Stats
+              </TabsTrigger>
+              <TabsTrigger value="agent" className="flex items-center gap-2 data-[state=active]:bg-gray-700">
+                <Bot className="w-4 h-4" />
+                Agent Stats
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="user" className="mt-0">
+              {renderStatsContent(userStats, "User")}
+            </TabsContent>
+            <TabsContent value="agent" className="mt-0">
+              {renderStatsContent(agentStats, "Agent")}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          renderStatsContent(userStats, "User")
         )}
       </CardContent>
     </Card>

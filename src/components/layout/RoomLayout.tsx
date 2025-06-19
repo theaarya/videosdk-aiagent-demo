@@ -24,6 +24,12 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   localParticipantId,
   isConnected = false,
 }) => {
+  // Find the agent participant
+  const participantsList = Array.from(participants.values());
+  const agentParticipant = participantsList.find(
+    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+  );
+
   return (
     <div className="h-screen w-full text-white flex flex-col overflow-hidden">
       {/* Content Section - Fixed height container */}
@@ -60,6 +66,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
               <div className="flex-shrink-0 p-4">
                 <NetworkStats
                   participantId={localParticipantId || ""}
+                  agentParticipantId={agentParticipant?.id}
                   isVisible={isConnected}
                 />
               </div>
