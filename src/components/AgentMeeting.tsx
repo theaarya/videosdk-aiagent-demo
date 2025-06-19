@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
@@ -21,6 +22,8 @@ const AgentMeeting: React.FC = () => {
     tts: "elevenlabs", 
     llm: "openai",
     detection: false,
+    turnDetection: true,
+    vad: false,
   });
 
   const createMeeting = async () => {

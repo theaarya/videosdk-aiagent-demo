@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { AgentSettings, AVAILABLE_MODELS, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
 import { ChevronRight, ArrowLeft, Settings } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -296,6 +297,46 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             </div>
           </div>
         )}
+
+        {/* Voice Activity Detection Options */}
+        <div className="mb-6 bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-white mb-4">Voice Activity Detection</h3>
+          <p className="text-xs text-gray-400 mb-4">
+            Configure voice detection and turn management settings
+          </p>
+          
+          <div className="space-y-4">
+            {/* Turn Detection Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-white">Turn Detection</label>
+                <span className="text-xs text-gray-400">Automatically detect when to respond</span>
+              </div>
+              <Switch
+                checked={agentSettings.turnDetection}
+                onCheckedChange={(checked) =>
+                  onSettingsChange?.({ ...agentSettings, turnDetection: checked })
+                }
+                className="data-[state=checked]:bg-blue-600"
+              />
+            </div>
+
+            {/* VAD Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-white">Voice Activity Detection</label>
+                <span className="text-xs text-gray-400">Detect when user is speaking</span>
+              </div>
+              <Switch
+                checked={agentSettings.vad}
+                onCheckedChange={(checked) =>
+                  onSettingsChange?.({ ...agentSettings, vad: checked })
+                }
+                className="data-[state=checked]:bg-blue-600"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Personality Dropdown */}
         <div className="mb-6 relative">
