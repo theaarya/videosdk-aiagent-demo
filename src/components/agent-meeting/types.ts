@@ -1,4 +1,3 @@
-
 export interface AgentSettings {
   model: string;
   voice: string;
@@ -8,7 +7,7 @@ export interface AgentSettings {
   topK: number;
 }
 
-export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQzNjYzOCwiZXhwIjoxNzQ5MDQxNDM4fQ.EP64Wh9KIoc1CSAzjTLoT3kwrxbJqGHl-pTwp1Ffn9c";
+export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJjMzczZWE5Zi05YmY5LTQ2YjktOWJkMS01NmE5MDQ4NTIxMDciLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQyNDk0MCwiZXhwIjoxNzc5OTYwOTQwfQ.9ymYDhKhgUqp9VIAiPcJ2lurLnp7dfTPsmiHMb2jVTA";
 
 export const AVAILABLE_MODELS = {
   gemini: ["gemini-2.0-flash-live-001"]
@@ -95,5 +94,5 @@ Never break character. You are here to listen with grace, ask with care, and mak
 - Keep the tone entertaining, engaging, and respectful.
 - If the user wants to switch to another famous person, smoothly transition upon request.
 
-Your goal is to create an immersive, enjoyable experience where the user feels like they're really talking to their favorite famous figure.`
+Your goal is to create an immersive, enjoyable experience where the user feels like they're really talking to their favorite famous figure.`,
 } as const;
