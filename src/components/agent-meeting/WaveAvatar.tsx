@@ -63,12 +63,14 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
     };
   }, [participantId, participant?.micStream]);
 
-  const waveIntensity = isActiveSpeaker ? audioLevel * 100 : 0;
+  // Only show wave effects when connected AND agent is speaking
+  const shouldShowWaves = isConnected && isActiveSpeaker;
+  const waveIntensity = shouldShowWaves ? audioLevel * 100 : 0;
 
   return (
     <div className={`relative w-32 h-32 ${className}`}>
-      {/* Animated wave rings - constrained to avatar size */}
-      {[1, 2, 3].map((ring) => (
+      {/* Animated wave rings - only visible when agent is speaking */}
+      {shouldShowWaves && [1, 2, 3].map((ring) => (
         <div
           key={ring}
           className="absolute inset-2 rounded-full border-[3px] border-white animate-ping pointer-events-none"
@@ -77,33 +79,31 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
             animationDelay: `${ring * 0.5}s`,
             animationDuration: "2s",
             transform: `scale(${0.8 + (waveIntensity * 0.005 * ring)})`,
-            opacity: isActiveSpeaker ? 0.6 - (ring * 0.15) : 0.2,
+            opacity: 0.6 - (ring * 0.15),
             transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
           }}
         />
       ))}
       
-      {/* Pulsing glow effect - constrained to avatar size */}
-      <div
-        className="absolute inset-1 rounded-full blur-md pointer-events-none"
-        style={{
-          background: `linear-gradient(to bottom right, #93DCEC40, #6BB6FF40)`,
-          transform: `scale(${1 + (waveIntensity * 0.01)})`,
-          opacity: isActiveSpeaker ? 0.8 : 0.3,
-          transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
-        }}
-      />
+      {/* Pulsing glow effect - only visible when agent is speaking */}
+      {shouldShowWaves && (
+        <div
+          className="absolute inset-1 rounded-full blur-md pointer-events-none"
+          style={{
+            background: `linear-gradient(to bottom right, #93DCEC40, #6BB6FF40)`,
+            transform: `scale(${1 + (waveIntensity * 0.01)})`,
+            opacity: 0.8,
+            transition: "transform 0.1s ease-out, opacity 0.1s ease-out",
+          }}
+        />
+      )}
 
-      {/* Main avatar */}
+      {/* Main avatar - always visible but with dynamic effects only when speaking */}
       <div
-        className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 border-[3px] border-white ${
-          isConnected
-            ? ""
-            : ""
-        }`}
+        className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 border-[3px] border-white`}
         style={{
           background: `linear-gradient(to bottom right, #93DCEC, #6BB6FF)`,
-          transform: `scale(${1 + (waveIntensity * 0.002)})`,
+          transform: shouldShowWaves ? `scale(${1 + (waveIntensity * 0.002)})` : 'scale(1)',
           transition: "transform 0.1s ease-out",
         }}
       >
@@ -111,9 +111,9 @@ export const WaveAvatar: React.FC<WaveAvatarProps> = ({
           className={`w-28 h-28 rounded-full transition-all duration-300`}
           style={{
             background: `linear-gradient(to bottom right, #7FD4E6, #5AA8E6)`,
-            boxShadow: isActiveSpeaker 
+            boxShadow: shouldShowWaves 
               ? `0 0 ${20 + waveIntensity * 2}px #93DCEC99` 
-              : "0 0 10px #93DCEC66",
+              : "0 0 5px #93DCEC33",
             transition: "box-shadow 0.1s ease-out",
           }}
         />
