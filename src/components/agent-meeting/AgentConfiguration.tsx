@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { AgentSettings, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
-import { ChevronRight, ArrowLeft, Settings } from "lucide-react";
+import { ChevronRight, ArrowLeft, Settings, Mic, RotateCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface AgentConfigurationProps {
@@ -247,22 +247,77 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 )}
               </div>
 
-              {/* Detection Toggle */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">
-                    Voice Activity Detection
-                  </label>
-                  <p className="text-xs text-gray-400">
-                    Enable VAD and turn detection features
-                  </p>
+              {/* Detection Features Section */}
+              <div className="mt-6 pt-4 border-t border-[#232323]">
+                <div className="flex items-center gap-2 mb-3">
+                  <Mic className="w-4 h-4 text-emerald-400" />
+                  <h4 className="text-xs font-semibold text-white">Detection Features</h4>
                 </div>
-                <Switch
-                  checked={agentSettings.detection}
-                  onCheckedChange={(checked) => {
-                    onSettingsChange?.({ ...agentSettings, detection: checked });
-                  }}
-                />
+                <p className="text-xs text-gray-400 mb-4">
+                  Advanced audio processing capabilities for better conversation flow
+                </p>
+
+                {/* Voice Activity Detection */}
+                <div className="mb-3 p-3 bg-[#161616] border border-[#232323] rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Mic className="w-3 h-3 text-emerald-400" />
+                      <div>
+                        <span className="text-xs font-medium text-white">Voice Activity Detection</span>
+                        <p className="text-xs text-gray-400 mt-1">Detects when speech is present in audio</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        agentSettings.detection 
+                          ? "bg-emerald-900 text-emerald-200 border border-emerald-700" 
+                          : "bg-gray-800 text-gray-400 border border-gray-600"
+                      }`}>
+                        {agentSettings.detection ? "Enabled" : "Disabled"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Turn Detection */}
+                <div className="mb-4 p-3 bg-[#161616] border border-[#232323] rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <RotateCw className="w-3 h-3 text-blue-400" />
+                      <div>
+                        <span className="text-xs font-medium text-white">Turn Detection</span>
+                        <p className="text-xs text-gray-400 mt-1">Identifies when to switch between speakers</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        agentSettings.detection 
+                          ? "bg-blue-900 text-blue-200 border border-blue-700" 
+                          : "bg-gray-800 text-gray-400 border border-gray-600"
+                      }`}>
+                        {agentSettings.detection ? "Enabled" : "Disabled"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Master Toggle */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Enable Detection Features
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Master control for VAD and Turn Detection
+                    </p>
+                  </div>
+                  <Switch
+                    checked={agentSettings.detection}
+                    onCheckedChange={(checked) => {
+                      onSettingsChange?.({ ...agentSettings, detection: checked });
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
