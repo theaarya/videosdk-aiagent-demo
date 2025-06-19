@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -275,12 +274,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const inviteAgent = async () => {
     try {
-      console.log("=== STARTING AGENT INVITATION ===");
       console.log("Sending agent settings:", agentSettings);
       
       // Get the system prompt for the selected personality
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
-      console.log("System prompt retrieved:", systemPrompt ? "Success" : "Failed");
       
       // Create request body using the new agentSettings structure
       const requestBody = {
@@ -292,15 +289,11 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         llm: agentSettings.llm,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
-        detection: agentSettings.detection,
-        vad: agentSettings.vad
+        detection: agentSettings.detection
       };
 
-      console.log("=== REQUEST BODY PREPARED ===");
-      console.log("Request body:", JSON.stringify(requestBody, null, 2));
-
-      console.log("=== ATTEMPTING FETCH REQUEST ===");
-      console.log("Fetch URL: https://aiendpoint.tryvideosdk.live/join-agent");
+      console.log("Attempting to invite agent with AI endpoint");
+      console.log("Request body:", requestBody);
 
       const response = await fetch("https://aiendpoint.tryvideosdk.live/join-agent", {
         method: "POST",
@@ -310,9 +303,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         body: JSON.stringify(requestBody),
       });
 
-      console.log("=== FETCH RESPONSE RECEIVED ===");
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
+      console.log("Invite agent response status:", response.status);
+      console.log("Invite agent response ok:", response.ok);
 
       if (response.ok) {
         const responseData = await response.json();
@@ -329,11 +321,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       }
 
     } catch (error) {
-      console.error("=== ERROR IN AGENT INVITATION ===");
-      console.error("Error type:", error?.constructor?.name);
-      console.error("Error message:", error instanceof Error ? error.message : error);
-      console.error("Full error:", error);
-      
+      console.error("Error inviting agent:", error);
       agentInviteAttempted.current = false;
       
       // Provide detailed error information
