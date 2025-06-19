@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
-import { Slider } from "@/components/ui/slider";
-import { AgentSettings, AVAILABLE_MODELS, AVAILABLE_VOICES, PERSONALITY_OPTIONS, PROMPTS } from "./types";
+import { AgentSettings, AVAILABLE_MODELS, PERSONALITY_OPTIONS, PROMPTS } from "./types";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 
 interface AgentConfigurationProps {
@@ -14,7 +13,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   onSettingsChange,
 }) => {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
-  const [voiceDropdownOpen, setVoiceDropdownOpen] = useState(false);
   const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(null);
 
@@ -110,46 +108,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           )}
         </div>
 
-        {/* Voice Dropdown - Full Width */}
-        <div className="mb-4 relative">
-          <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
-            onClick={() => setVoiceDropdownOpen((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-white">Voice</span>
-            <div className="flex items-center gap-1">
-              <span className="text-white font-medium text-sm">
-                {agentSettings.voice}
-              </span>
-              <ChevronRight
-                className={`w-4 h-4 text-white transition-transform ${
-                  voiceDropdownOpen ? "rotate-90" : ""
-                }`}
-              />
-            </div>
-          </div>
-          {voiceDropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {AVAILABLE_VOICES.map((voice) => (
-                <div
-                  key={voice}
-                  className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ${
-                    agentSettings.voice === voice
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-[#232323] text-white"
-                  }`}
-                  onClick={() => {
-                    setVoiceDropdownOpen(false);
-                    onSettingsChange?.({ ...agentSettings, voice });
-                  }}
-                >
-                  {voice}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Personality Dropdown - Full Width */}
         <div className="mb-6 relative">
           <div
@@ -185,76 +143,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               ))}
             </div>
           )}
-        </div>
-
-        {/* Sliders */}
-        <div className="space-y-6">
-          {/* Temperature */}
-          <div>
-            <div className="flex items-center justify-between mb-2 h-[36px]">
-              <span className="text-white text-sm">Temperature</span>
-              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
-                {agentSettings.temperature.toFixed(1)}
-              </span>
-            </div>
-            <Slider
-              value={[agentSettings.temperature]}
-              onValueChange={(value) =>
-                onSettingsChange?.({
-                  ...agentSettings,
-                  temperature: value[0],
-                })
-              }
-              max={1}
-              min={0}
-              step={0.1}
-              className="accent-blue-500"
-            />
-          </div>
-          {/* Top_P */}
-          <div>
-            <div className="flex items-center justify-between mb-2 h-[36px]">
-              <span className="text-white text-sm">Top_P</span>
-              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center border border-[#232323]">
-                {agentSettings.topP.toFixed(1)}
-              </span>
-            </div>
-            <Slider
-              value={[agentSettings.topP]}
-              onValueChange={(value) =>
-                onSettingsChange?.({
-                  ...agentSettings,
-                  topP: value[0],
-                })
-              }
-              max={1}
-              min={0}
-              step={0.1}
-              className="accent-blue-500"
-            />
-          </div>
-          {/* Top_K */}
-          <div>
-            <div className="flex items-center justify-between mb-2 h-[36px]">
-              <span className=" text-white text-sm">Top_K</span>
-              <span className="bg-[#1F1F1F] h-[36px] flex items-center justify-center border border-[#232323] text-white text-xs font-semibold rounded-lg px-3 py-1 min-w-[40px] text-center">
-                {agentSettings.topK.toFixed(1)}
-              </span>
-            </div>
-            <Slider
-              value={[agentSettings.topK]}
-              onValueChange={(value) =>
-                onSettingsChange?.({
-                  ...agentSettings,
-                  topK: value[0],
-                })
-              }
-              max={1}
-              min={0}
-              step={0.1}
-              className="accent-blue-500"
-            />
-          </div>
         </div>
       </div>
     </div>
