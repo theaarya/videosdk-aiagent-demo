@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -183,7 +182,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      console.log("Attempting to remove agent using new endpoint");
+      console.log("Attempting to remove agent using AI endpoint");
       
       const requestBody = {
         meeting_id: meetingId,
@@ -192,7 +191,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.log("Leave agent request body:", requestBody);
 
       const response = await fetch(
-        "https://154e-45-114-214-78.ngrok-free.app/leave-agent",
+        "https://aiendpoint.tryvideosdk.live/leave-agent",
         {
           method: "POST",
           headers: {
@@ -295,10 +294,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         detection: agentSettings.detection
       };
 
-      console.log("Attempting to invite agent with new endpoint");
+      console.log("Attempting to invite agent with AI endpoint");
       console.log("Request body:", requestBody);
 
-      const response = await fetch("https://154e-45-114-214-78.ngrok-free.app/join-agent", {
+      const response = await fetch("https://aiendpoint.tryvideosdk.live/join-agent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
