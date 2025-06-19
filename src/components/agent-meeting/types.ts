@@ -1,4 +1,3 @@
-
 export interface AgentSettings {
   model: string;
   voice: string;
@@ -13,7 +12,7 @@ export interface AgentSettings {
   detection: boolean;
 }
 
-export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJjMzczZWE5Zi05YmY5LTQ2YjktOWJkMS01NmE5MDQ4NTIxMDciLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQyNDk0MCwiZXhwIjoxNzc5OTYwOTQwfQ.9ymYDhKhgUqp9VIAiPcJ2lurLnp7dfTPsmiHMb2jVTA";
+export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MDMzMTY2NSwiZXhwIjoxNzUwOTM2NDY1fQ.3Uy8ok0-9Nc3AuftDB_9iWKQCkVbEdK1h5Sta_yn1p0";
 
 export const AVAILABLE_MODELS = {
   gemini: ["gemini-2.0-flash-live-001"],
