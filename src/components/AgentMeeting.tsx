@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
-import { AgentSettings, VITE_VIDEOSDK_TOKEN } from "./agent-meeting/types";
+import { AgentSettings, VIDEOSDK_TOKEN } from "./agent-meeting/types";
 import { MeetingInterface } from "./agent-meeting/MeetingInterface";
 import { MeetingContainer } from "./agent-meeting/MeetingContainer";
 
@@ -9,12 +10,10 @@ const AgentMeeting: React.FC = () => {
   const [meetingId, setMeetingId] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  
-  // Default agent settings - all values passed by default
-  const [agentSettings] = useState<AgentSettings>({
+  const [agentSettings, setAgentSettings] = useState<AgentSettings>({
     model: "gemini-2.0-flash-live-001",
     voice: "Puck",
-    personality: "Tutor",
+    personality: "Tutor", // Default personality selected
     temperature: 0.8,
     topP: 0.8,
     topK: 0.8,
@@ -22,12 +21,12 @@ const AgentMeeting: React.FC = () => {
 
   const createMeeting = async () => {
     try {
-      console.log("Creating meeting with token:", VITE_VIDEOSDK_TOKEN);
+      console.log("Creating meeting with token:", VIDEOSDK_TOKEN);
 
       const response = await fetch("https://api.videosdk.live/v2/rooms", {
         method: "POST",
         headers: {
-          Authorization: VITE_VIDEOSDK_TOKEN,
+          Authorization: VIDEOSDK_TOKEN,
           "Content-Type": "application/json",
         },
       });
@@ -38,6 +37,10 @@ const AgentMeeting: React.FC = () => {
         const data = await response.json();
         console.log("Meeting created successfully:", data);
         setMeetingId(data.roomId);
+        toast({
+          title: "Meeting Created",
+          description: `Meeting ID: ${data.roomId}`,
+        });
         return data.roomId;
       } else {
         const errorData = await response.text();
@@ -46,6 +49,14 @@ const AgentMeeting: React.FC = () => {
       }
     } catch (error) {
       console.error("Error creating meeting:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create meeting. Please try again.",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -69,6 +80,10 @@ const AgentMeeting: React.FC = () => {
     setMeetingId(null);
   };
 
+  const handleSettingsChange = (newSettings: AgentSettings) => {
+    setAgentSettings(newSettings);
+  };
+
   // Render different components based on connection state
   if (meetingId && isConnected) {
     return (
@@ -81,7 +96,7 @@ const AgentMeeting: React.FC = () => {
           debugMode: false,
           multiStream: false,
         }}
-        token={VITE_VIDEOSDK_TOKEN}
+        token={VIDEOSDK_TOKEN}
         reinitialiseMeetingOnConfigChange={false}
         joinWithoutUserInteraction={false}
       >
@@ -89,6 +104,7 @@ const AgentMeeting: React.FC = () => {
           meetingId={meetingId}
           onDisconnect={handleDisconnect}
           agentSettings={agentSettings}
+          onSettingsChange={handleSettingsChange}
         />
       </MeetingProvider>
     );
@@ -99,6 +115,7 @@ const AgentMeeting: React.FC = () => {
       onConnect={handleConnect}
       agentSettings={agentSettings}
       isConnecting={isConnecting}
+      onSettingsChange={handleSettingsChange}
     />
   );
 };

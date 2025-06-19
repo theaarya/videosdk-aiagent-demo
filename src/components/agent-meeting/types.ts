@@ -8,8 +8,7 @@ export interface AgentSettings {
   topK: number;
 }
 
-export const VITE_VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
-export const VITE_API_URL = import.meta.env.VITE_API_URL;
+export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI2YzkwZDk3OS01NThiLTRiYjctOTUyYi1hZTE0MzZiNzJmYzIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0ODQzNjYzOCwiZXhwIjoxNzQ5MDQxNDM4fQ.EP64Wh9KIoc1CSAzjTLoT3kwrxbJqGHl-pTwp1Ffn9c";
 
 export const AVAILABLE_MODELS = {
   gemini: ["gemini-2.0-flash-live-001"]
