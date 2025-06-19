@@ -10,7 +10,6 @@ const AgentMeeting: React.FC = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [agentSettings, setAgentSettings] = useState<AgentSettings>({
-    model: "gemini-2.0-flash-live-001",
     voice: "Puck",
     personality: "Tutor", // Default personality selected
     temperature: 0.8,

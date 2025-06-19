@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { AgentSettings, AVAILABLE_MODELS, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
+import { AgentSettings, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
 import { ChevronRight, ArrowLeft, Settings } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
@@ -13,7 +13,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   agentSettings,
   onSettingsChange,
 }) => {
-  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
   const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
   const [pipelineDropdownOpen, setPipelineDropdownOpen] = useState(false);
   const [sttDropdownOpen, setSttDropdownOpen] = useState(false);
@@ -69,53 +68,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
       </div>
 
       <div className="px-4 py-6 flex flex-col gap-4 h-full overflow-y-auto">
-        {/* Model Dropdown */}
-        <div className="mb-4 relative">
-          <div
-            className="flex items-center justify-between cursor-pointer select-none h-[34px] text-sm w-full"
-            onClick={() => setModelDropdownOpen((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-white">Model</span>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-white font-medium">
-                {agentSettings.model}
-              </span>
-              <ChevronRight
-                className={`w-4 h-4 text-white transition-transform ${
-                  modelDropdownOpen ? "rotate-90" : ""
-                }`}
-              />
-            </div>
-          </div>
-          {modelDropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 z-10 bg-[#1F1F1F] rounded-xl shadow-lg border border-[#232323] py-2 max-h-40 overflow-y-auto animate-fade-in">
-              {Object.entries(AVAILABLE_MODELS).map(([category, models]) => (
-                <div key={category}>
-                  <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {category}
-                  </div>
-                  {models.map((model) => (
-                    <div
-                      key={model}
-                      className={`px-4 py-2 text-sm cursor-pointer rounded-lg transition-colors flex items-center text-white ml-2 ${
-                        agentSettings.model === model
-                          ? "bg-blue-600 text-white"
-                          : "hover:bg-[#232323] text-white"
-                      }`}
-                      onClick={() => {
-                        setModelDropdownOpen(false);
-                        onSettingsChange?.({ ...agentSettings, model });
-                      }}
-                    >
-                      {model}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Pipeline Type Dropdown */}
         <div className="mb-4 relative">
           <div
