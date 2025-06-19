@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { AgentSettings, AVAILABLE_MODELS, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
 import { ChevronRight, ArrowLeft, Settings } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -292,6 +293,24 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Detection Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-xs font-medium text-gray-300 mb-1">
+                    Voice Activity Detection
+                  </label>
+                  <p className="text-xs text-gray-400">
+                    Enable VAD and turn detection features
+                  </p>
+                </div>
+                <Switch
+                  checked={agentSettings.detection}
+                  onCheckedChange={(checked) => {
+                    onSettingsChange?.({ ...agentSettings, detection: checked });
+                  }}
+                />
               </div>
             </div>
           </div>
