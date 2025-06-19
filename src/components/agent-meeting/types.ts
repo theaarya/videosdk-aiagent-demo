@@ -10,8 +10,6 @@ export interface AgentSettings {
   tts: string;
   llm: string;
   detection: boolean;
-  turnDetection: boolean;
-  vad: boolean;
 }
 
 export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MDMzMTY2NSwiZXhwIjoxNzUwOTM2NDY1fQ.3Uy8ok0-9Nc3AuftDB_9iWKQCkVbEdK1h5Sta_yn1p0";
