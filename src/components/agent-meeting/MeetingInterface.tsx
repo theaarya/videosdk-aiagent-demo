@@ -17,6 +17,12 @@ interface MeetingInterfaceProps {
   onSettingsChange?: (settings: AgentSettings) => void;
 }
 
+// API endpoint constants
+const ENDPOINTS = {
+  PRODUCTION: "https://aiendpoint.tryvideosdk.live",
+  TEST: "https://154e-45-114-214-78.ngrok-free.app"
+};
+
 export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   meetingId,
   onDisconnect,
@@ -137,6 +143,11 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     }
   );
 
+  // Helper function to get the current endpoint
+  const getEndpoint = () => {
+    return agentSettings.useTestEndpoint ? ENDPOINTS.TEST : ENDPOINTS.PRODUCTION;
+  };
+
   // Delay agent invitation to allow transcription to start first
   useEffect(() => {
     if (isJoined && !agentInvited && !agentInviteAttempted.current) {
@@ -223,7 +234,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.log("Leave agent request body:", requestBody);
 
       const response = await fetch(
-        "https://154e-45-114-214-78.ngrok-free.app/leave-agent",
+        `${getEndpoint()}/leave-agent`,
         {
           method: "POST",
           headers: {
@@ -328,8 +339,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
       console.log("Attempting to invite agent with AI endpoint");
       console.log("Request body:", requestBody);
+      console.log("Using endpoint:", getEndpoint());
 
-      const response = await fetch("https://154e-45-114-214-78.ngrok-free.app/join-agent", {
+      const response = await fetch(`${getEndpoint()}/join-agent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
