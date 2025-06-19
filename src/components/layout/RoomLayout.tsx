@@ -9,12 +9,14 @@ interface RoomLayoutProps {
   children: React.ReactNode;
   agentSettings: AgentSettings;
   onSettingsChange?: (settings: AgentSettings) => void;
+  transcriptionSection?: React.ReactNode;
 }
 
 export const RoomLayout: React.FC<RoomLayoutProps> = ({
   children,
   agentSettings,
   onSettingsChange,
+  transcriptionSection,
 }) => {
   return (
     <div className="min-h-screen text-white flex flex-col">
@@ -29,7 +31,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
             />
           </div>
 
-          {/* Right Panel - Meeting Interface */}
+          {/* Center Panel - Meeting Interface */}
           <div className="flex-1 flex flex-col bg-[#161616]">
             {/* Header Section */}
             <div className="flex bg-[#1F1F1F]">
@@ -41,6 +43,13 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
               {children}
             </div>
           </div>
+
+          {/* Right Panel - Transcription Chat */}
+          {transcriptionSection && (
+            <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34]">
+              {transcriptionSection}
+            </div>
+          )}
         </div>
       </div>
 

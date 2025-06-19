@@ -22,6 +22,7 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
     <RoomLayout
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
+      transcriptionSection={null}
     >
       {/* Agent Avatar with Wave Animation */}
       <WaveAvatar 

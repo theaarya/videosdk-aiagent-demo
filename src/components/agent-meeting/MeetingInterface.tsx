@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { TranscriptionPanel } from "./TranscriptionPanel";
+import { TranscriptionChat } from "./TranscriptionChat";
 import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { WaveAvatar } from "./WaveAvatar";
@@ -30,7 +30,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [transcriptionVisible, setTranscriptionVisible] = useState(false);
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
   const maxRetries = 3;
@@ -354,6 +353,14 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     <RoomLayout
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
+      transcriptionSection={
+        isJoined ? (
+          <TranscriptionChat
+            participants={participants}
+            localParticipantId={localParticipant?.id}
+          />
+        ) : null
+      }
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
         {/* Agent Avatar with Wave Animation */}
@@ -403,16 +410,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         <div className="mt-8 w-full max-w-md">
           <AgentAudioPlayer participantId={agentParticipant.id} />
         </div>
-      )}
-
-      {/* Transcription Panel */}
-      {isJoined && (
-        <TranscriptionPanel
-          participants={participants}
-          localParticipantId={localParticipant?.id}
-          isVisible={transcriptionVisible}
-          onToggleVisibility={() => setTranscriptionVisible(!transcriptionVisible)}
-        />
       )}
     </RoomLayout>
   );
