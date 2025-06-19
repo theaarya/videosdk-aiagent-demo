@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -289,7 +290,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         llm: agentSettings.llm,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
-        detection: agentSettings.detection
+        detection: agentSettings.detection,
+        vad: agentSettings.vad // Added the missing vad parameter
       };
 
       console.log("Attempting to invite agent with AI endpoint");
