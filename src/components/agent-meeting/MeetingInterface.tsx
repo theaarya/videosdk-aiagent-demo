@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -319,12 +318,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         meeting_id: meetingId,
         token: VIDEOSDK_TOKEN,
         model: agentSettings.model,
-        voice: agentSettings.voice,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
-        temperature: agentSettings.temperature,
-        topP: agentSettings.topP,
-        topK: agentSettings.topK,
       };
 
       console.log("Attempting to invite agent with CORS handling");
