@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -182,7 +181,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const leaveAgent = async () => {
     try {
       const response = await fetch(
-        "https://aiendpoint.tryvideosdk.live/leave-agent",
+        "http://aiendpoint.tryvideosdk.live/leave-agent",
         {
           method: "POST",
           headers: {
@@ -261,42 +260,65 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       // Get the system prompt for the selected personality
       const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
       
+      const requestBody = {
+        meeting_id: meetingId,
+        token: VIDEOSDK_TOKEN,
+        model: agentSettings.model,
+        voice: agentSettings.voice,
+        personality: agentSettings.personality,
+        system_prompt: systemPrompt,
+        temperature: agentSettings.temperature,
+        topP: agentSettings.topP,
+        topK: agentSettings.topK,
+      };
+
+      console.log("Attempting to invite agent with HTTP endpoint");
+      console.log("Request body:", requestBody);
+
       const response = await fetch(
-        "https://aiendpoint.tryvideosdk.live/join-agent",
+        "http://aiendpoint.tryvideosdk.live/join-agent",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            meeting_id: meetingId,
-            token: VIDEOSDK_TOKEN,
-            model: agentSettings.model,
-            voice: agentSettings.voice,
-            personality: agentSettings.personality,
-            system_prompt: systemPrompt,
-            temperature: agentSettings.temperature,
-            topP: agentSettings.topP,
-            topK: agentSettings.topK,
-          }),
+          body: JSON.stringify(requestBody),
         }
       );
 
+      console.log("Agent invite response status:", response.status);
+      console.log("Agent invite response ok:", response.ok);
+
       if (response.ok) {
+        const responseData = await response.json();
+        console.log("Agent invite successful:", responseData);
         setAgentInvited(true);
         toast({
           title: "Agent Invited",
           description: "AI Agent is joining the conversation...",
         });
       } else {
-        throw new Error("Failed to invite agent");
+        const errorText = await response.text();
+        console.error("Agent invite failed:", response.status, errorText);
+        throw new Error(`Failed to invite agent: ${response.status} - ${errorText}`);
       }
     } catch (error) {
       console.error("Error inviting agent:", error);
       agentInviteAttempted.current = false;
+      
+      // Provide more detailed error information
+      let errorMessage = "Failed to invite AI Agent. Please try again.";
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage = "Unable to connect to AI service. The server might be temporarily unavailable.";
+        } else {
+          errorMessage = `AI Agent error: ${error.message}`;
+        }
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to invite AI Agent. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
