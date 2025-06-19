@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wifi, WifiOff, Activity, Clock, Package, AlertTriangle, User, Bot } from "lucide-react";
+import { Wifi, WifiOff, Activity, Clock, Package, AlertTriangle, User, Bot, BarChart3 } from "lucide-react";
+import { LatencyCharts } from "./LatencyCharts";
 
 interface NetworkStatsProps {
   participantId: string;
@@ -22,9 +22,18 @@ interface AudioStats {
   network?: string;
 }
 
+interface NetworkDataPoint {
+  timestamp: string;
+  rtt: number;
+  jitter: number;
+  packetLoss: number;
+  bitrate: number;
+}
+
 interface ParticipantStats {
   stats: AudioStats;
   isAvailable: boolean;
+  historicalData: NetworkDataPoint[];
 }
 
 export const NetworkStats: React.FC<NetworkStatsProps> = ({
@@ -35,14 +44,19 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
   const [userStats, setUserStats] = useState<ParticipantStats>({
     stats: {},
     isAvailable: false,
+    historicalData: [],
   });
   const [agentStats, setAgentStats] = useState<ParticipantStats>({
     stats: {},
     isAvailable: false,
+    historicalData: [],
   });
+  const [activeView, setActiveView] = useState<'metrics' | 'charts'>('metrics');
 
   const { getAudioStats: getUserAudioStats } = useParticipant(participantId);
   const { getAudioStats: getAgentAudioStats } = useParticipant(agentParticipantId || "");
+
+  const MAX_DATA_POINTS = 30; // Keep last 30 data points (1 minute of data at 2s intervals)
 
   const updateParticipantStats = async (
     getStatsFunction: any,
@@ -50,7 +64,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
     participantType: string
   ) => {
     if (!getStatsFunction) {
-      setStatsFunction({ stats: {}, isAvailable: false });
+      setStatsFunction(prev => ({ ...prev, stats: {}, isAvailable: false }));
       return;
     }
 
@@ -63,24 +77,41 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
       
       if (statsArray && statsArray.length > 0) {
         const stats = statsArray[0];
-        setStatsFunction({
-          stats: {
-            jitter: stats.jitter,
-            bitrate: stats.bitrate,
-            totalPackets: stats.totalPackets,
-            packetsLost: stats.packetsLost,
-            rtt: stats.rtt,
-            codec: stats.codec,
-            network: stats.network
-          },
+        const newStats = {
+          jitter: stats.jitter,
+          bitrate: stats.bitrate,
+          totalPackets: stats.totalPackets,
+          packetsLost: stats.packetsLost,
+          rtt: stats.rtt,
+          codec: stats.codec,
+          network: stats.network
+        };
+
+        // Create new data point for historical tracking
+        const timestamp = new Date().toISOString();
+        const packetLossRate = stats.totalPackets && stats.packetsLost 
+          ? (stats.packetsLost / stats.totalPackets) * 100 
+          : 0;
+        
+        const newDataPoint: NetworkDataPoint = {
+          timestamp,
+          rtt: stats.rtt || 0,
+          jitter: stats.jitter || 0,
+          packetLoss: packetLossRate,
+          bitrate: stats.bitrate ? Math.round(stats.bitrate / 1000) : 0, // Convert to kbps
+        };
+
+        setStatsFunction(prev => ({
+          stats: newStats,
           isAvailable: true,
-        });
+          historicalData: [...prev.historicalData, newDataPoint].slice(-MAX_DATA_POINTS)
+        }));
       } else {
-        setStatsFunction({ stats: {}, isAvailable: false });
+        setStatsFunction(prev => ({ ...prev, stats: {}, isAvailable: false }));
       }
     } catch (error) {
       console.error(`Error getting ${participantType} stats:`, error);
-      setStatsFunction({ stats: {}, isAvailable: false });
+      setStatsFunction(prev => ({ ...prev, stats: {}, isAvailable: false }));
     }
   };
 
@@ -217,15 +248,48 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
     );
   };
 
+  const renderChartsContent = (participantStats: ParticipantStats, participantType: string) => {
+    return (
+      <LatencyCharts 
+        data={participantStats.historicalData} 
+        participantType={participantType}
+      />
+    );
+  };
+
   const hasAgentStats = agentParticipantId && agentStats.isAvailable;
 
   return (
     <Card className="bg-gray-900 border-gray-700 text-white">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Activity className="w-5 h-5 text-blue-500" />
-          Network Stats
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Activity className="w-5 h-5 text-blue-500" />
+            Network Stats
+          </CardTitle>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setActiveView('metrics')}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                activeView === 'metrics' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <Package className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setActiveView('charts')}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                activeView === 'charts' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         {hasAgentStats ? (
@@ -241,14 +305,25 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
               </TabsTrigger>
             </TabsList>
             <TabsContent value="user" className="mt-0">
-              {renderStatsContent(userStats, "User")}
+              {activeView === 'metrics' 
+                ? renderStatsContent(userStats, "User")
+                : renderChartsContent(userStats, "User")
+              }
             </TabsContent>
             <TabsContent value="agent" className="mt-0">
-              {renderStatsContent(agentStats, "Agent")}
+              {activeView === 'metrics' 
+                ? renderStatsContent(agentStats, "Agent")
+                : renderChartsContent(agentStats, "Agent")
+              }
             </TabsContent>
           </Tabs>
         ) : (
-          renderStatsContent(userStats, "User")
+          <div>
+            {activeView === 'metrics' 
+              ? renderStatsContent(userStats, "User")
+              : renderChartsContent(userStats, "User")
+            }
+          </div>
         )}
       </CardContent>
     </Card>
