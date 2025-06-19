@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { AgentSettings, PROMPTS } from "./types";
 import { AgentAudioPlayer } from "./AgentAudioPlayer";
-import { TranscriptionChat } from "./TranscriptionChat";
 import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { WaveAvatar } from "./WaveAvatar";
@@ -353,14 +352,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     <RoomLayout
       agentSettings={agentSettings}
       onSettingsChange={onSettingsChange}
-      transcriptionSection={
-        isJoined ? (
-          <TranscriptionChat
-            participants={participants}
-            localParticipantId={localParticipant?.id}
-          />
-        ) : null
-      }
+      participants={participants}
+      localParticipantId={localParticipant?.id}
+      isConnected={isJoined}
     >
       <div className="flex flex-col items-center justify-between h-[50%]">
         {/* Agent Avatar with Wave Animation */}

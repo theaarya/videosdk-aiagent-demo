@@ -19,11 +19,13 @@ interface TranscriptionData {
 interface TranscriptionChatProps {
   participants: Map<string, any>;
   localParticipantId?: string;
+  isConnected?: boolean;
 }
 
 export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
   participants,
   localParticipantId,
+  isConnected = false,
 }) => {
   const [transcriptions, setTranscriptions] = useState<TranscriptionData[]>([]);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -94,22 +96,31 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
     }
   }, [transcriptions]);
 
-  // Auto-start transcription when component mounts
+  // Auto-start transcription when connected
   useEffect(() => {
-    const autoStartTimer = setTimeout(() => {
-      if (!isTranscribing) {
+    if (isConnected && !isTranscribing) {
+      const autoStartTimer = setTimeout(() => {
         try {
           startTranscription({});
         } catch (error) {
           console.error("Error auto-starting transcription:", error);
         }
-      }
-    }, 2000);
+      }, 2000);
 
-    return () => clearTimeout(autoStartTimer);
-  }, []);
+      return () => clearTimeout(autoStartTimer);
+    }
+  }, [isConnected, isTranscribing]);
 
   const handleToggleTranscription = () => {
+    if (!isConnected) {
+      toast({
+        title: "Not Connected",
+        description: "Please connect to the meeting first to enable transcription",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       if (isTranscribing) {
         stopTranscription();
@@ -138,6 +149,16 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getConnectionStatus = () => {
+    if (!isConnected) {
+      return "Not connected to meeting";
+    }
+    if (isTranscribing) {
+      return "Listening for speech...";
+    }
+    return "Transcription ready";
+  };
+
   return (
     <div className="h-full flex flex-col bg-[#0F0F0F]">
       {/* Header */}
@@ -149,24 +170,26 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
         <Button
           onClick={handleToggleTranscription}
           size="sm"
+          disabled={!isConnected}
           className={cn(
             "w-8 h-8",
             isTranscribing 
               ? "bg-[#380b0b] hover:bg-[#380b0b] text-[#a13f3f]" 
-              : "bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
+              : "bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]",
+            !isConnected && "opacity-50 cursor-not-allowed"
           )}
         >
           {isTranscribing ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
         </Button>
       </div>
 
-      {/* Chat Messages */}
-      <div className="flex-1 flex flex-col">
-        <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-          <div className="space-y-4">
+      {/* Chat Messages - Fixed height with scroll */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <ScrollArea ref={scrollAreaRef} className="flex-1 h-full">
+          <div className="p-4 space-y-4 min-h-full">
             {transcriptions.length === 0 ? (
-              <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
-                {isTranscribing ? "Listening for speech..." : "Transcription will start automatically..."}
+              <div className="flex items-center justify-center h-32 text-gray-400 text-sm text-center">
+                {getConnectionStatus()}
               </div>
             ) : (
               transcriptions.map((transcription) => {
@@ -188,7 +211,7 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
                     </div>
                     <div
                       className={cn(
-                        "max-w-[80%] p-3 rounded-lg text-sm",
+                        "max-w-[80%] p-3 rounded-lg text-sm break-words",
                         isUser 
                           ? "bg-[#0b3820] text-white rounded-br-sm" 
                           : "bg-[#252A34] text-white rounded-bl-sm",
@@ -207,7 +230,7 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
 
         {/* Footer */}
         {transcriptions.length > 0 && (
-          <div className="p-4 border-t border-[#252A34] bg-[#161616]">
+          <div className="p-4 border-t border-[#252A34] bg-[#161616] flex-shrink-0">
             <Button
               onClick={clearTranscriptions}
               size="sm"

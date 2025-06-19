@@ -4,19 +4,24 @@ import { AgentSettings } from "../agent-meeting/types";
 import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
 import { ResponsiveAgentConfig } from "./ResponsiveAgentConfig";
 import RightHeaderBar from "../RightHeaderBar";
+import { TranscriptionChat } from "../agent-meeting/TranscriptionChat";
 
 interface RoomLayoutProps {
   children: React.ReactNode;
   agentSettings: AgentSettings;
   onSettingsChange?: (settings: AgentSettings) => void;
-  transcriptionSection?: React.ReactNode;
+  participants?: Map<string, any>;
+  localParticipantId?: string;
+  isConnected?: boolean;
 }
 
 export const RoomLayout: React.FC<RoomLayoutProps> = ({
   children,
   agentSettings,
   onSettingsChange,
-  transcriptionSection,
+  participants = new Map(),
+  localParticipantId,
+  isConnected = false,
 }) => {
   return (
     <div className="min-h-screen text-white flex flex-col">
@@ -44,12 +49,14 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
             </div>
           </div>
 
-          {/* Right Panel - Transcription Chat */}
-          {transcriptionSection && (
-            <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34]">
-              {transcriptionSection}
-            </div>
-          )}
+          {/* Right Panel - Transcription Chat - Always visible */}
+          <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34]">
+            <TranscriptionChat
+              participants={participants}
+              localParticipantId={localParticipantId}
+              isConnected={isConnected}
+            />
+          </div>
         </div>
       </div>
 
