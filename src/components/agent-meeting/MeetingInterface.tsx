@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, useTranscription } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -31,8 +31,23 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [isRetrying, setIsRetrying] = useState(false);
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
+  const transcriptionStarted = useRef(false);
   const maxRetries = 3;
   const retryDelay = 5000;
+
+  // Add transcription hook to start it early
+  const { startTranscription } = useTranscription({
+    onTranscriptionStateChanged: ({ status }) => {
+      console.log("Early transcription status changed:", status);
+      if (status === "TRANSCRIPTION_STARTED") {
+        transcriptionStarted.current = true;
+        console.log("Early transcription started successfully");
+      }
+    },
+    onTranscriptionText: ({ participantId, participantName, text, type }) => {
+      console.log("Early transcription captured:", { participantId, participantName, text, type });
+    },
+  });
 
   const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting(
     {
@@ -43,6 +58,19 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         setRetryAttempts(0);
         setIsRetrying(false);
         joinAttempted.current = true;
+        
+        // Start transcription immediately after joining
+        if (!transcriptionStarted.current) {
+          console.log("Starting transcription immediately after meeting join");
+          setTimeout(() => {
+            try {
+              startTranscription({});
+            } catch (error) {
+              console.error("Error starting early transcription:", error);
+            }
+          }, 200); // Very short delay to ensure meeting is fully established
+        }
+        
         toast({
           title: "Meeting Started",
           description: "You have joined the conversation",
@@ -55,6 +83,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         setIsRetrying(false);
         joinAttempted.current = false;
         agentInviteAttempted.current = false;
+        transcriptionStarted.current = false;
         onDisconnect();
       },
       onParticipantJoined: (participant) => {
@@ -108,11 +137,16 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     }
   );
 
+  // Delay agent invitation to allow transcription to start first
   useEffect(() => {
     if (isJoined && !agentInvited && !agentInviteAttempted.current) {
-      console.log("Auto-inviting agent after meeting join");
+      console.log("Delaying agent invitation to allow transcription to initialize");
       agentInviteAttempted.current = true;
-      inviteAgent();
+      
+      // Increased delay to ensure transcription is fully active before agent joins
+      setTimeout(() => {
+        inviteAgent();
+      }, 3000); // Increased from immediate to 3 seconds
     }
   }, [isJoined]);
 

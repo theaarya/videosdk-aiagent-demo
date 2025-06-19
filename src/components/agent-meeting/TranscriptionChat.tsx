@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useTranscription } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
@@ -96,16 +95,17 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
     }
   }, [transcriptions]);
 
-  // Auto-start transcription when connected
+  // Start transcription immediately when connected (reduced delay)
   useEffect(() => {
     if (isConnected && !isTranscribing) {
       const autoStartTimer = setTimeout(() => {
         try {
+          console.log("Auto-starting transcription early to capture initial sentences");
           startTranscription({});
         } catch (error) {
           console.error("Error auto-starting transcription:", error);
         }
-      }, 2000);
+      }, 500); // Reduced from 2000ms to 500ms
 
       return () => clearTimeout(autoStartTimer);
     }
