@@ -32,13 +32,27 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
   useEffect(() => {
     if (!isVisible || !getAudioStats) return;
 
-    const updateStats = () => {
+    const updateStats = async () => {
       try {
-        const stats = getAudioStats();
-        console.log("Audio stats:", stats);
+        const statsPromise = getAudioStats();
+        console.log("Audio stats promise:", statsPromise);
         
-        if (stats) {
-          setAudioStats(stats);
+        // Await the promise to get the actual stats array
+        const statsArray = await statsPromise;
+        console.log("Audio stats array:", statsArray);
+        
+        if (statsArray && statsArray.length > 0) {
+          // Use the first stats object from the array
+          const stats = statsArray[0];
+          setAudioStats({
+            jitter: stats.jitter,
+            bitrate: stats.bitrate,
+            totalPackets: stats.totalPackets,
+            packetsLost: stats.packetsLost,
+            rtt: stats.rtt,
+            codec: stats.codec,
+            network: stats.network
+          });
           setIsStatsAvailable(true);
         } else {
           setIsStatsAvailable(false);
