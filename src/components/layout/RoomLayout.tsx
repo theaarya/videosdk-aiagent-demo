@@ -5,6 +5,7 @@ import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
 import { ResponsiveAgentConfig } from "./ResponsiveAgentConfig";
 import RightHeaderBar from "../RightHeaderBar";
 import { TranscriptionChat } from "../agent-meeting/TranscriptionChat";
+import { NetworkStats } from "../agent-meeting/NetworkStats";
 
 interface RoomLayoutProps {
   children: React.ReactNode;
@@ -52,13 +53,26 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
             </div>
           </div>
 
-          {/* Right Panel - Transcription Chat - Fixed width and height */}
+          {/* Right Panel - Transcription Chat and Network Stats */}
           <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34] overflow-hidden">
-            <TranscriptionChat
-              participants={participants}
-              localParticipantId={localParticipantId}
-              isConnected={isConnected}
-            />
+            <div className="h-full flex flex-col">
+              {/* Network Stats - Fixed height */}
+              <div className="flex-shrink-0 p-4">
+                <NetworkStats
+                  participantId={localParticipantId || ""}
+                  isVisible={isConnected}
+                />
+              </div>
+              
+              {/* Transcription Chat - Flexible height */}
+              <div className="flex-1 overflow-hidden">
+                <TranscriptionChat
+                  participants={participants}
+                  localParticipantId={localParticipantId}
+                  isConnected={isConnected}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

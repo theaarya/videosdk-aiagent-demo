@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { Volume2, VolumeX } from "lucide-react";
@@ -15,7 +16,7 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [volume, setVolume] = useState(1);
 
-  const { micStream, isActiveSpeaker, displayName } = useParticipant(
+  const { micStream, isActiveSpeaker, displayName, getAudioStats } = useParticipant(
     participantId,
     {
       onStreamEnabled: (stream) => {
