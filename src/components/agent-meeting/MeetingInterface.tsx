@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -295,7 +296,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         llm: agentSettings.llm,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
-        detection: agentSettings.detection
+        detection: agentSettings.detection,
+        // Include MCP URL if provided
+        ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
       };
 
       console.log("Attempting to invite agent with AI endpoint");
