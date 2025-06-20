@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -152,6 +153,28 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Detection Settings */}
+            <div className="border-t border-[#3A3F4A] pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                      <span>Voice Activity Detection</span>
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
+                    </Label>
+                    <p className="text-xs text-gray-500">
+                      Enable VAD and turn detection for better conversation flow and interruption handling
+                    </p>
+                  </div>
+                  <Switch
+                    checked={agentSettings.detection}
+                    onCheckedChange={(checked) => onSettingChange("detection", checked)}
+                    className="data-[state=checked]:bg-cyan-500"
+                  />
                 </div>
               </div>
             </div>
