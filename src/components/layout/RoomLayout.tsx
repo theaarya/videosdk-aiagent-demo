@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { AgentSettings } from "../agent-meeting/types";
 import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
 import { ResponsiveAgentConfig } from "./ResponsiveAgentConfig";
@@ -24,11 +24,18 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   localParticipantId,
   isConnected = false,
 }) => {
-  // Find the agent participant
-  const participantsList = Array.from(participants.values());
-  const agentParticipant = participantsList.find(
-    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
-  );
+  // Memoize the agent participant to prevent unnecessary re-calculations
+  const agentParticipant = useMemo(() => {
+    const participantsList = Array.from(participants.values());
+    return participantsList.find(
+      (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+    );
+  }, [participants]);
+
+  // Memoize the agent participant ID to prevent unnecessary re-renders
+  const agentParticipantId = useMemo(() => {
+    return agentParticipant?.id;
+  }, [agentParticipant]);
 
   return (
     <div className="h-screen w-full text-white flex flex-col overflow-hidden">
@@ -66,7 +73,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
               <div className="flex-shrink-0 p-4">
                 <NetworkStats
                   participantId={localParticipantId || ""}
-                  agentParticipantId={agentParticipant?.id}
+                  agentParticipantId={agentParticipantId}
                   isVisible={isConnected}
                 />
               </div>
