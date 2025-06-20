@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Settings } from "lucide-react";
 import { AgentSettings } from "../agent-meeting/types";
 import { AgentConfiguration } from "../agent-meeting/AgentConfiguration";
@@ -29,12 +30,14 @@ export const ResponsiveAgentConfig: React.FC<ResponsiveAgentConfigProps> = ({
           </Button>
         </DrawerTrigger>
         <DrawerContent className="h-[85vh] bg-[#161616] border-t border-[#252A34]">
-          <div className="h-full overflow-hidden">
-            <AgentConfiguration
-              agentSettings={agentSettings}
-              onSettingsChange={onSettingsChange}
-            />
-          </div>
+          <ScrollArea className="h-full w-full">
+            <div className="h-full">
+              <AgentConfiguration
+                agentSettings={agentSettings}
+                onSettingsChange={onSettingsChange}
+              />
+            </div>
+          </ScrollArea>
         </DrawerContent>
       </Drawer>
     </div>
