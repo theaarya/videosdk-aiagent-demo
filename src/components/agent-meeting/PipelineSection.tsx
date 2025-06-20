@@ -1,22 +1,18 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AgentSettings } from "./types";
-
 interface PipelineSectionProps {
   agentSettings: AgentSettings;
   onSettingChange: (field: keyof AgentSettings, value: any) => void;
 }
-
 export const PipelineSection: React.FC<PipelineSectionProps> = ({
   agentSettings,
   onSettingChange
 }) => {
-  return (
-    <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
+  return <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 pointer-events-none" />
       
@@ -73,8 +69,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           </Select>
         </div>
 
-        {agentSettings.pipelineType === "cascading" && (
-          <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
+        {agentSettings.pipelineType === "cascading" && <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
             <div className="border-t border-[#3A3F4A] pt-6">
               {/* STT and TTS side by side */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -200,13 +195,10 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                         <span>Voice Activity Detection (VAD)</span>
                         <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
                       </Label>
-                      <p className="text-xs text-gray-500">Using SileroVAD for accurate voice activity detection</p>
+                      <p className="text-xs text-gray-500">Using SileroVAD for accurate voice 
+activity detection</p>
                     </div>
-                    <Switch 
-                      checked={agentSettings.detection} 
-                      onCheckedChange={checked => onSettingChange("detection", checked)} 
-                      className="data-[state=checked]:bg-cyan-500" 
-                    />
+                    <Switch checked={agentSettings.detection} onCheckedChange={checked => onSettingChange("detection", checked)} className="data-[state=checked]:bg-cyan-500" />
                   </div>
                 </div>
 
@@ -220,18 +212,12 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                       </Label>
                       <p className="text-xs text-gray-500">Using custom VideoSDK model for intelligent conversation turn management</p>
                     </div>
-                    <Switch 
-                      checked={agentSettings.detection} 
-                      onCheckedChange={checked => onSettingChange("detection", checked)} 
-                      className="data-[state=checked]:bg-purple-500" 
-                    />
+                    <Switch checked={agentSettings.detection} onCheckedChange={checked => onSettingChange("detection", checked)} className="data-[state=checked]:bg-purple-500" />
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
