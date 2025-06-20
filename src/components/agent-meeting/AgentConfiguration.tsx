@@ -97,159 +97,90 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
         </CardContent>
       </Card>
 
-      {/* Voice Settings Section */}
-      <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg text-white">Voice Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-300">Voice</Label>
-            <Select
-              value={agentSettings.voice}
-              onValueChange={(value) => handleSettingChange("voice", value)}
-            >
-              <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                <SelectItem value="Puck" className="text-white hover:bg-[#3A3F4A]">
-                  Puck
-                </SelectItem>
-                <SelectItem value="Haley" className="text-white hover:bg-[#3A3F4A]">
-                  Haley
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Advanced Parameters Section */}
-      <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg text-white">Advanced Parameters</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">
-                Temperature ({agentSettings.temperature})
-              </Label>
-              <Input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={agentSettings.temperature}
-                onChange={(e) => handleSettingChange("temperature", parseFloat(e.target.value))}
-                className="bg-[#252A34] border-[#3A3F4A]"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">
-                Top P ({agentSettings.topP})
-              </Label>
-              <Input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={agentSettings.topP}
-                onChange={(e) => handleSettingChange("topP", parseFloat(e.target.value))}
-                className="bg-[#252A34] border-[#3A3F4A]"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">
-                Top K ({agentSettings.topK})
-              </Label>
-              <Input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={agentSettings.topK}
-                onChange={(e) => handleSettingChange("topK", parseFloat(e.target.value))}
-                className="bg-[#252A34] border-[#3A3F4A]"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Pipeline Configuration Section */}
       <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg text-white">Pipeline Configuration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Pipeline Type</Label>
-              <Select
-                value={agentSettings.pipelineType}
-                onValueChange={(value) => handleSettingChange("pipelineType", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
-                    OpenAI
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">LLM Provider</Label>
-              <Select
-                value={agentSettings.llm}
-                onValueChange={(value) => handleSettingChange("llm", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
-                    OpenAI
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Speech-to-Text</Label>
-              <Select
-                value={agentSettings.stt}
-                onValueChange={(value) => handleSettingChange("stt", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A]">
-                    Deepgram
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Text-to-Speech</Label>
-              <Select
-                value={agentSettings.tts}
-                onValueChange={(value) => handleSettingChange("tts", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A]">
-                    ElevenLabs
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-300">Pipeline Type</Label>
+            <Select
+              value={agentSettings.pipelineType}
+              onValueChange={(value) => handleSettingChange("pipelineType", value)}
+            >
+              <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
+                <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
+                  OpenAI
+                </SelectItem>
+                <SelectItem value="google" className="text-white hover:bg-[#3A3F4A]">
+                  Google
+                </SelectItem>
+                <SelectItem value="aws" className="text-white hover:bg-[#3A3F4A]">
+                  AWS
+                </SelectItem>
+                <SelectItem value="cascading" className="text-white hover:bg-[#3A3F4A]">
+                  Cascading
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          {agentSettings.pipelineType === "cascading" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-300">LLM Provider</Label>
+                <Select
+                  value={agentSettings.llm}
+                  onValueChange={(value) => handleSettingChange("llm", value)}
+                >
+                  <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
+                    <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
+                      OpenAI
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-300">Speech-to-Text</Label>
+                <Select
+                  value={agentSettings.stt}
+                  onValueChange={(value) => handleSettingChange("stt", value)}
+                >
+                  <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
+                    <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A]">
+                      Deepgram
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-300">Text-to-Speech</Label>
+                <Select
+                  value={agentSettings.tts}
+                  onValueChange={(value) => handleSettingChange("tts", value)}
+                >
+                  <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
+                    <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A]">
+                      ElevenLabs
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -269,30 +200,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               value={agentSettings.mcpUrl}
               onChange={(e) => handleSettingChange("mcpUrl", e.target.value)}
               className="bg-[#252A34] border-[#3A3F4A] text-white placeholder:text-gray-500"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Detection Settings Section */}
-      <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg text-white">Detection Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label className="text-sm font-medium text-gray-300">
-                Enable Detection
-              </Label>
-              <p className="text-xs text-gray-500">
-                Enable advanced detection capabilities for the agent
-              </p>
-            </div>
-            <Switch
-              checked={agentSettings.detection}
-              onCheckedChange={(checked) => handleSettingChange("detection", checked)}
-              className="data-[state=checked]:bg-[#0066CC]"
             />
           </div>
         </CardContent>
