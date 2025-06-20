@@ -290,20 +290,24 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         console.log("Using predefined prompt for personality:", agentSettings.personality);
       }
       
-      // Create request body using the new agentSettings structure
-      const requestBody = {
+      // Create base request body
+      const requestBody: any = {
         meeting_id: meetingId,
         token: VIDEOSDK_TOKEN,
         pipeline_type: agentSettings.pipelineType,
-        stt: agentSettings.stt,
-        tts: agentSettings.tts,
-        llm: agentSettings.llm,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
         detection: agentSettings.detection,
         // Include MCP URL if provided
         ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
       };
+
+      // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
+      if (agentSettings.pipelineType === "cascading") {
+        requestBody.stt = agentSettings.stt;
+        requestBody.tts = agentSettings.tts;
+        requestBody.llm = agentSettings.llm;
+      }
 
       console.log("Attempting to invite agent with AI endpoint");
       console.log("Request body:", requestBody);

@@ -11,18 +11,23 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings)
       systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
     }
 
-    const requestBody = {
+    // Create base request body
+    const requestBody: any = {
       meeting_id: meetingId,
       token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MDMzMTY2NSwiZXhwIjoxNzUwOTM2NDY1fQ.3Uy8ok0-9Nc3AuftDB_9iWKQCkVbEdK1h5Sta_yn1p0",
       pipeline_type: agentSettings.pipelineType,
-      stt: agentSettings.stt,
-      tts: agentSettings.tts,
-      llm: agentSettings.llm,
       personality: agentSettings.personality,
       system_prompt: systemPrompt,
       detection: agentSettings.detection,
       ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
     };
+
+    // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
+    if (agentSettings.pipelineType === "cascading") {
+      requestBody.stt = agentSettings.stt;
+      requestBody.tts = agentSettings.tts;
+      requestBody.llm = agentSettings.llm;
+    }
 
     console.log("Joining agent with request:", requestBody);
 
