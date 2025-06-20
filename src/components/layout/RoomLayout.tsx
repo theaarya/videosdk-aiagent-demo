@@ -38,12 +38,12 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   }, [agentParticipant]);
 
   return (
-    <div className="h-screen w-full text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen h-screen w-full text-white flex flex-col overflow-hidden bg-[#161616]">
       {/* Content Section - Fixed height container */}
       <div className="flex flex-1 justify-center overflow-hidden">
-        <div className="w-full max-w-7xl flex h-full">
+        <div className="w-full max-w-none flex h-full">
           {/* Desktop Agent Configuration - Fixed width, scrollable content */}
-          <div className="hidden lg:block w-[400px] bg-[#161616] overflow-hidden">
+          <div className="hidden lg:block w-[400px] bg-[#161616] overflow-hidden flex-shrink-0">
             <div className="h-full overflow-y-auto">
               <AgentConfiguration
                 agentSettings={agentSettings}
@@ -53,21 +53,21 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
           </div>
 
           {/* Center Panel - Meeting Interface */}
-          <div className="flex-1 flex flex-col bg-[#161616] overflow-hidden">
+          <div className="flex-1 flex flex-col bg-[#161616] overflow-hidden min-w-0">
             {/* Header Section - Fixed */}
             <div className="flex bg-[#1F1F1F] flex-shrink-0">
               <div className="flex-1">
                 <RightHeaderBar agentSettings={agentSettings} />
               </div>
             </div>
-            {/* Main Content - Scrollable */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+            {/* Main Content - Fill remaining space */}
+            <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 overflow-hidden">
               {children}
             </div>
           </div>
 
           {/* Right Panel - Transcription Chat and Network Stats */}
-          <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34] overflow-hidden">
+          <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34] overflow-hidden flex-shrink-0">
             <div className="h-full flex flex-col">
               {/* Network Stats - Fixed height */}
               <div className="flex-shrink-0 p-4">
