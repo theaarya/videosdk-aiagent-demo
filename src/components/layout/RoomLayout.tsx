@@ -43,7 +43,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
       <div className="flex flex-1 justify-center overflow-hidden">
         <div className="w-full max-w-none flex h-full">
           {/* Desktop Agent Configuration - Fixed width, scrollable content */}
-          <div className="hidden lg:block w-[400px] bg-[#161616] overflow-hidden flex-shrink-0">
+          <div className="hidden lg:block w-[380px] bg-[#161616] overflow-hidden flex-shrink-0">
             <div className="h-full overflow-y-auto">
               <AgentConfiguration
                 agentSettings={agentSettings}
@@ -67,10 +67,10 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
           </div>
 
           {/* Right Panel - Transcription Chat and Network Stats */}
-          <div className="hidden lg:block w-[400px] bg-[#0F0F0F] border-l border-[#252A34] overflow-hidden flex-shrink-0">
-            <div className="h-full flex flex-col">
+          <div className="hidden lg:block w-[380px] bg-[#0F0F0F] overflow-hidden flex-shrink-0">
+            <div className="h-full flex flex-col p-4 space-y-4">
               {/* Network Stats - Fixed height */}
-              <div className="flex-shrink-0 p-4">
+              <div className="flex-shrink-0">
                 <NetworkStats
                   participantId={localParticipantId || ""}
                   agentParticipantId={agentParticipantId}
