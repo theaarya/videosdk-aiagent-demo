@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useTranscription } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
@@ -165,15 +164,14 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 pointer-events-none" />
       
-      {/* Header - Fixed */}
-      <div className="flex items-center justify-between p-4 border-b border-[#3A3F4A] bg-gradient-to-r from-[#1A1A1A] to-[#252A34] flex-shrink-0 relative">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-blue-600 flex items-center justify-center">
-            <MessageSquare className="w-4 h-4 text-white" />
+      {/* Header - Ultra Compact */}
+      <div className="flex items-center justify-between p-3 border-b border-[#3A3F4A] bg-gradient-to-r from-[#1A1A1A] to-[#252A34] flex-shrink-0 relative">
+        <div className="flex items-center space-x-2">
+          <div className="w-6 h-6 rounded bg-gradient-to-r from-purple-500 to-blue-600 flex items-center justify-center">
+            <MessageSquare className="w-3 h-3 text-white" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white">Live Transcription</h3>
-            <p className="text-xs text-gray-400">Real-time conversation capture</p>
+            <h3 className="text-xs font-semibold text-white">Live Transcription</h3>
           </div>
         </div>
         <Button
@@ -181,23 +179,23 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
           size="sm"
           disabled={!isConnected}
           className={cn(
-            "w-8 h-8",
+            "w-6 h-6",
             isTranscribing 
               ? "bg-[#380b0b] hover:bg-[#380b0b] text-[#a13f3f]" 
               : "bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]",
             !isConnected && "opacity-50 cursor-not-allowed"
           )}
         >
-          {isTranscribing ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          {isTranscribing ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
         </Button>
       </div>
 
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-hidden relative">
         <ScrollArea ref={scrollAreaRef} className="h-full">
-          <div className="p-4 space-y-4">
+          <div className="p-3 space-y-3">
             {transcriptions.length === 0 ? (
-              <div className="flex items-center justify-center h-32 text-gray-400 text-sm text-center">
+              <div className="flex items-center justify-center h-24 text-gray-400 text-xs text-center">
                 {getConnectionStatus()}
               </div>
             ) : (
@@ -213,14 +211,14 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
                       isUser ? "items-end" : "items-start"
                     )}
                   >
-                    <div className="flex items-center space-x-2 text-xs text-gray-400">
-                      <span>{isUser ? "You" : (isAgent ? "AI Agent" : transcription.participantName)}</span>
+                    <div className="flex items-center space-x-1 text-xs text-gray-400">
+                      <span className="text-[10px]">{isUser ? "You" : (isAgent ? "AI Agent" : transcription.participantName)}</span>
                       <span>•</span>
-                      <span>{formatTime(transcription.timestamp)}</span>
+                      <span className="text-[10px]">{formatTime(transcription.timestamp)}</span>
                     </div>
                     <div
                       className={cn(
-                        "max-w-[80%] p-3 rounded-lg text-sm break-words border",
+                        "max-w-[80%] p-2 rounded text-xs break-words border",
                         isUser 
                           ? "bg-gradient-to-r from-[#0b3820] to-[#0f4025] border-[#3fa16d]/30 text-white rounded-br-sm" 
                           : "bg-gradient-to-r from-[#252A34] to-[#2A2F3A] border-[#3A3F4A] text-white rounded-bl-sm",
@@ -238,14 +236,14 @@ export const TranscriptionChat: React.FC<TranscriptionChatProps> = ({
         </ScrollArea>
       </div>
 
-      {/* Footer - Fixed */}
+      {/* Footer - Compact */}
       {transcriptions.length > 0 && (
-        <div className="p-4 border-t border-[#3A3F4A] bg-gradient-to-r from-[#1A1A1A] to-[#252A34] flex-shrink-0 relative">
+        <div className="p-2 border-t border-[#3A3F4A] bg-gradient-to-r from-[#1A1A1A] to-[#252A34] flex-shrink-0 relative">
           <Button
             onClick={clearTranscriptions}
             size="sm"
             variant="outline"
-            className="w-full text-xs bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A]"
+            className="w-full text-xs h-6 bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A]"
           >
             Clear Chat
           </Button>
