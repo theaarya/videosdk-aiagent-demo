@@ -1,18 +1,22 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AgentSettings } from "./types";
+
 interface PipelineSectionProps {
   agentSettings: AgentSettings;
   onSettingChange: (field: keyof AgentSettings, value: any) => void;
 }
+
 export const PipelineSection: React.FC<PipelineSectionProps> = ({
   agentSettings,
   onSettingChange
 }) => {
-  return <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
+  return (
+    <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 pointer-events-none" />
       
@@ -40,7 +44,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
             <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-12">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+            <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm z-50">
               <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -69,29 +73,11 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           </Select>
         </div>
 
-        {agentSettings.pipelineType === "cascading" && <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
+        {agentSettings.pipelineType === "cascading" && (
+          <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
             <div className="border-t border-[#3A3F4A] pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
-                    <span>LLM Provider</span>
-                    <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
-                  </Label>
-                  <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
-                    <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
-                      <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                          <span>OpenAI</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
+              {/* STT and TTS side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
                     <span>Speech-to-Text</span>
@@ -101,7 +87,25 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm z-50">
+                      <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span>Google</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span>OpenAI</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                          <span>Sarvam</span>
+                        </div>
+                      </SelectItem>
                       <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -112,7 +116,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                   </Select>
                 </div>
                 
-                <div className="space-y-3 md:col-span-2">
+                <div className="space-y-3">
                   <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
                     <span>Text-to-Speech</span>
                     <div className="w-1 h-1 bg-pink-400 rounded-full"></div>
@@ -121,7 +125,25 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm z-50">
+                      <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span>Google</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span>OpenAI</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                          <span>Sarvam</span>
+                        </div>
+                      </SelectItem>
                       <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
@@ -131,6 +153,39 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* LLM Provider below */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                  <span>LLM Provider</span>
+                  <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+                </Label>
+                <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
+                  <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm z-50">
+                    <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        <span>Google</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span>OpenAI</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                        <span>Sarvam</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -145,11 +200,17 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     </Label>
                     <p className="text-xs text-gray-500">Enable Voice Activation and Turn Detection for better conversation flow and interruption handling</p>
                   </div>
-                  <Switch checked={agentSettings.detection} onCheckedChange={checked => onSettingChange("detection", checked)} className="data-[state=checked]:bg-cyan-500" />
+                  <Switch 
+                    checked={agentSettings.detection} 
+                    onCheckedChange={checked => onSettingChange("detection", checked)} 
+                    className="data-[state=checked]:bg-cyan-500" 
+                  />
                 </div>
               </div>
             </div>
-          </div>}
+          </div>
+        )}
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
