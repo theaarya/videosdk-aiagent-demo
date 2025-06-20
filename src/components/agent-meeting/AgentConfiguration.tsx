@@ -24,7 +24,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-[#0F0F0F] to-[#1A1A1A] text-white">
+    <div className="min-h-screen bg-[#161616] text-white">
       <div className="p-8 space-y-8 max-h-full overflow-y-auto">
         {/* Enhanced Header */}
         <div className="space-y-4 text-center">
