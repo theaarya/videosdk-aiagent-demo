@@ -42,7 +42,7 @@ export const McpServerSection: React.FC<McpServerSectionProps> = ({
           <div className="relative">
             <Input
               type="url"
-              placeholder="wss://your-mcp-server.com/ws"
+              placeholder="https://your-mcp-server.com/mcp"
               value={agentSettings.mcpUrl}
               onChange={(e) => onSettingChange("mcpUrl", e.target.value)}
               className="bg-[#252A34]/80 border-[#3A3F4A] text-white placeholder:text-gray-500 pl-12 h-12 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200"
