@@ -4,7 +4,6 @@ import { useParticipant } from "@videosdk.live/react-sdk";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Wifi, WifiOff, Activity, Bot } from "lucide-react";
-import { LatencyCharts } from "./LatencyCharts";
 
 interface NetworkStatsProps {
   participantId: string;
@@ -17,25 +16,14 @@ interface AudioStats {
   rtt?: number;
 }
 
-interface NetworkDataPoint {
-  timestamp: string;
-  rtt: number;
-  jitter: number;
-  packetLoss: number;
-  bitrate: number;
-}
-
 export const NetworkStats: React.FC<NetworkStatsProps> = ({
   agentParticipantId,
   isVisible,
 }) => {
   const [agentStats, setAgentStats] = useState<AudioStats>({});
   const [isAvailable, setIsAvailable] = useState(false);
-  const [historicalData, setHistoricalData] = useState<NetworkDataPoint[]>([]);
 
   const { getAudioStats: getAgentAudioStats } = useParticipant(agentParticipantId || "");
-
-  const MAX_DATA_POINTS = 20; // Reduced for better performance
 
   useEffect(() => {
     if (!isVisible || !agentParticipantId || !getAgentAudioStats) {
@@ -55,19 +43,8 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
             rtt: stats.rtt,
           };
 
-          // Create new data point for latency tracking
-          const timestamp = new Date().toISOString();
-          const newDataPoint: NetworkDataPoint = {
-            timestamp,
-            rtt: stats.rtt || 0,
-            jitter: stats.jitter || 0,
-            packetLoss: 0, // Not needed but keeping interface consistent
-            bitrate: 0, // Not needed but keeping interface consistent
-          };
-
           setAgentStats(newStats);
           setIsAvailable(true);
-          setHistoricalData(prev => [...prev, newDataPoint].slice(-MAX_DATA_POINTS));
         } else {
           setAgentStats({});
           setIsAvailable(false);
@@ -79,7 +56,7 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
       }
     };
 
-    // Update stats every 3 seconds (reduced frequency)
+    // Update stats every 3 seconds
     const interval = setInterval(updateStats, 3000);
     updateStats(); // Initial call
 
@@ -139,28 +116,19 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
             <p className="text-sm">Waiting for agent connection...</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Current Stats Summary */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="text-center p-3 bg-gray-800 rounded-lg">
-                <div className="text-gray-400 text-xs mb-1">RTT</div>
-                <div className="font-mono text-lg">
-                  {agentStats.rtt ? `${agentStats.rtt}ms` : "N/A"}
-                </div>
-              </div>
-              <div className="text-center p-3 bg-gray-800 rounded-lg">
-                <div className="text-gray-400 text-xs mb-1">Jitter</div>
-                <div className="font-mono text-lg">
-                  {agentStats.jitter ? `${agentStats.jitter.toFixed(1)}ms` : "N/A"}
-                </div>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <div className="text-gray-400 text-xs mb-1">RTT</div>
+              <div className="font-mono text-lg">
+                {agentStats.rtt ? `${agentStats.rtt}ms` : "N/A"}
               </div>
             </div>
-            
-            {/* Latency Chart */}
-            <LatencyCharts 
-              data={historicalData} 
-              participantType="Agent"
-            />
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <div className="text-gray-400 text-xs mb-1">Jitter</div>
+              <div className="font-mono text-lg">
+                {agentStats.jitter ? `${agentStats.jitter.toFixed(1)}ms` : "N/A"}
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
