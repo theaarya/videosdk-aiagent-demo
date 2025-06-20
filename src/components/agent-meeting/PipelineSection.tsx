@@ -21,86 +21,139 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
   onSettingChange,
 }) => {
   return (
-    <Card className="bg-[#1A1A1A] border-[#2A2A2A]">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg text-white">Pipeline Configuration</CardTitle>
+    <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
+      {/* Decorative gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 pointer-events-none" />
+      
+      <CardHeader className="pb-6 relative">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div>
+            <CardTitle className="text-xl text-white font-semibold">Pipeline Configuration</CardTitle>
+            <p className="text-sm text-gray-400 mt-1">Configure your AI processing pipeline and providers</p>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-300">Pipeline Type</Label>
+      
+      <CardContent className="space-y-6 relative">
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+            <span>Pipeline Type</span>
+            <div className="w-1 h-1 bg-green-400 rounded-full"></div>
+          </Label>
           <Select
             value={agentSettings.pipelineType}
             onValueChange={(value) => onSettingChange("pipelineType", value)}
           >
-            <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
+            <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-12">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-              <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
-                OpenAI
+            <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+              <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span>OpenAI</span>
+                </div>
               </SelectItem>
-              <SelectItem value="google" className="text-white hover:bg-[#3A3F4A]">
-                Google
+              <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>Google</span>
+                </div>
               </SelectItem>
-              <SelectItem value="aws" className="text-white hover:bg-[#3A3F4A]">
-                AWS
+              <SelectItem value="aws" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  <span>AWS</span>
+                </div>
               </SelectItem>
-              <SelectItem value="cascading" className="text-white hover:bg-[#3A3F4A]">
-                Cascading
+              <SelectItem value="cascading" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span>Cascading</span>
+                </div>
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {agentSettings.pipelineType === "cascading" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">LLM Provider</Label>
-              <Select
-                value={agentSettings.llm}
-                onValueChange={(value) => onSettingChange("llm", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A]">
-                    OpenAI
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Speech-to-Text</Label>
-              <Select
-                value={agentSettings.stt}
-                onValueChange={(value) => onSettingChange("stt", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A]">
-                    Deepgram
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Text-to-Speech</Label>
-              <Select
-                value={agentSettings.tts}
-                onValueChange={(value) => onSettingChange("tts", value)}
-              >
-                <SelectTrigger className="bg-[#252A34] border-[#3A3F4A] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#252A34] border-[#3A3F4A]">
-                  <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A]">
-                    ElevenLabs
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
+            <div className="border-t border-[#3A3F4A] pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                    <span>LLM Provider</span>
+                    <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+                  </Label>
+                  <Select
+                    value={agentSettings.llm}
+                    onValueChange={(value) => onSettingChange("llm", value)}
+                  >
+                    <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+                      <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span>OpenAI</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                    <span>Speech-to-Text</span>
+                    <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                  </Label>
+                  <Select
+                    value={agentSettings.stt}
+                    onValueChange={(value) => onSettingChange("stt", value)}
+                  >
+                    <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+                      <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                          <span>Deepgram</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-3 md:col-span-2">
+                  <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                    <span>Text-to-Speech</span>
+                    <div className="w-1 h-1 bg-pink-400 rounded-full"></div>
+                  </Label>
+                  <Select
+                    value={agentSettings.tts}
+                    onValueChange={(value) => onSettingChange("tts", value)}
+                  >
+                    <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#252A34] border-[#3A3F4A] backdrop-blur-sm">
+                      <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                          <span>ElevenLabs</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </div>
         )}
