@@ -189,22 +189,43 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
               </div>
             </div>
 
-            {/* Detection Settings */}
+            {/* Detection Settings - Separated VAD and Turn Detection */}
             <div className="border-t border-[#3A3F4A] pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
-                      <span>VAD and Turn Detection</span>
-                      <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
-                    </Label>
-                    <p className="text-xs text-gray-500">Enable Voice Activation and Turn Detection for better conversation flow and interruption handling</p>
+              <div className="space-y-6">
+                {/* VAD Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                        <span>Voice Activity Detection (VAD)</span>
+                        <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
+                      </Label>
+                      <p className="text-xs text-gray-500">Using SileroVAD for accurate voice activity detection</p>
+                    </div>
+                    <Switch 
+                      checked={agentSettings.detection} 
+                      onCheckedChange={checked => onSettingChange("detection", checked)} 
+                      className="data-[state=checked]:bg-cyan-500" 
+                    />
                   </div>
-                  <Switch 
-                    checked={agentSettings.detection} 
-                    onCheckedChange={checked => onSettingChange("detection", checked)} 
-                    className="data-[state=checked]:bg-cyan-500" 
-                  />
+                </div>
+
+                {/* Turn Detection Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
+                        <span>Turn Detection</span>
+                        <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                      </Label>
+                      <p className="text-xs text-gray-500">Using custom VideoSDK model for intelligent conversation turn management</p>
+                    </div>
+                    <Switch 
+                      checked={agentSettings.detection} 
+                      onCheckedChange={checked => onSettingChange("detection", checked)} 
+                      className="data-[state=checked]:bg-purple-500" 
+                    />
+                  </div>
                 </div>
               </div>
             </div>
