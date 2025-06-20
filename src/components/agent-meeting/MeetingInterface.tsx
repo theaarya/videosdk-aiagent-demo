@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -232,7 +231,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         const errorText = await response.text();
         console.error("Leave agent failed:", response.status, errorText);
         
-        // Even if the API call fails, end the meeting locally
         console.log("API failed, but ending meeting locally");
         end();
         toast({
@@ -245,7 +243,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     } catch (error) {
       console.error("Error calling leave-agent API:", error);
       
-      // Even if there's an error, end the meeting locally
       console.log("Error occurred, but ending meeting locally");
       end();
       toast({
@@ -283,8 +280,15 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       console.log("Sending agent settings:", agentSettings);
       
-      // Get the system prompt for the selected personality
-      const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
+      // Determine the system prompt based on personality
+      let systemPrompt = "";
+      if (agentSettings.personality === "Custom" && agentSettings.customPrompt) {
+        systemPrompt = agentSettings.customPrompt;
+        console.log("Using custom prompt:", systemPrompt);
+      } else {
+        systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
+        console.log("Using predefined prompt for personality:", agentSettings.personality);
+      }
       
       // Create request body using the new agentSettings structure
       const requestBody = {
@@ -333,7 +337,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.error("Error inviting agent:", error);
       agentInviteAttempted.current = false;
       
-      // Provide detailed error information
       let errorMessage = "Failed to invite AI Agent.";
       
       if (error instanceof Error) {
