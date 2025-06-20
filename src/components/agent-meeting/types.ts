@@ -2,6 +2,8 @@
 export interface AgentSettings {
   voice: string;
   personality: string;
+  customPrompt?: string;
+  mcpUrl?: string;
   temperature: number;
   topP: number;
   topK: number;
@@ -16,7 +18,7 @@ export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXki
 
 export const AVAILABLE_VOICES = ["Puck", "Charon", "Kore", "Fenrir", "Aoede"];
 
-export const PERSONALITY_OPTIONS = ["Tutor", "Doctor", "Recruiter", "Companion", "Storyteller", "Confession", "Famous"];
+export const PERSONALITY_OPTIONS = ["Tutor", "Doctor", "Recruiter", "Companion", "Storyteller", "Confession", "Famous", "Custom"];
 
 export const PIPELINE_TYPES = ["openai", "google", "aws", "cascading"];
 

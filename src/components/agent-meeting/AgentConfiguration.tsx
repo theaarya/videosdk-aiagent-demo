@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import { AgentSettings, PERSONALITY_OPTIONS, PROMPTS, PIPELINE_TYPES, STT_OPTIONS, TTS_OPTIONS, LLM_OPTIONS } from "./types";
-import { ChevronRight, ArrowLeft, Settings, Mic, RotateCw } from "lucide-react";
+import { ChevronRight, ArrowLeft, Settings, Mic, RotateCw, Server } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -34,6 +34,10 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   const isCascadingPipeline = agentSettings.pipelineType === "cascading";
 
   if (selectedPersonality) {
+    const promptContent = selectedPersonality === "Custom" 
+      ? (agentSettings.customPrompt || "Enter your custom system prompt here...")
+      : PROMPTS[selectedPersonality as keyof typeof PROMPTS];
+
     return (
       <div className="bg-[#161616] h-full border-r-[1px] border-[#252A34] lg:border-r lg:border-0">
         {/* Header Section */}
@@ -51,9 +55,26 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
 
         <div className="px-4 py-6 h-full overflow-y-auto">
           <div className="bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
-            <pre className="text-white text-sm leading-relaxed whitespace-pre-wrap font-sans">
-              {PROMPTS[selectedPersonality as keyof typeof PROMPTS]}
-            </pre>
+            {selectedPersonality === "Custom" ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Custom System Prompt
+                </label>
+                <Textarea
+                  value={agentSettings.customPrompt || ""}
+                  onChange={(e) => onSettingsChange?.({ 
+                    ...agentSettings, 
+                    customPrompt: e.target.value 
+                  })}
+                  placeholder="Enter your custom system prompt here..."
+                  className="min-h-[400px] bg-[#161616] border-[#232323] text-white placeholder-gray-400 resize-none"
+                />
+              </div>
+            ) : (
+              <pre className="text-white text-sm leading-relaxed whitespace-pre-wrap font-sans">
+                {promptContent}
+              </pre>
+            )}
           </div>
         </div>
       </div>
@@ -323,6 +344,36 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           </div>
         )}
 
+        {/* MCP Server URL Section */}
+        <div className="mb-6 bg-[#1F1F1F] border border-[#232323] rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Server className="w-4 h-4 text-purple-400" />
+            <h3 className="text-sm font-semibold text-white">MCP Server Configuration</h3>
+          </div>
+          <p className="text-xs text-gray-400 mb-4">
+            Configure Model Context Protocol (MCP) server for enhanced AI capabilities
+          </p>
+          
+          <div>
+            <label className="block text-xs font-medium text-gray-300 mb-2">
+              MCP Server URL
+            </label>
+            <input
+              type="url"
+              value={agentSettings.mcpUrl || ""}
+              onChange={(e) => onSettingsChange?.({ 
+                ...agentSettings, 
+                mcpUrl: e.target.value 
+              })}
+              placeholder="https://your-mcp-server.com"
+              className="w-full h-[36px] bg-[#161616] border border-[#232323] rounded-lg px-3 text-sm text-white placeholder-gray-400 hover:border-[#404040] focus:border-purple-500 focus:outline-none transition-colors"
+            />
+            <p className="text-xs text-gray-400 mt-2">
+              Optional: Provide a URL to your MCP server for additional context and capabilities
+            </p>
+          </div>
+        </div>
+
         {/* Personality Dropdown */}
         <div className="mb-6 relative">
           <div
@@ -353,12 +404,28 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                   }`}
                   onClick={() => handlePersonalitySelect(personality)}
                 >
-                  {personality}
+                  <div className="flex flex-col">
+                    <span className="font-medium">{personality}</span>
+                    {personality === "Custom" && (
+                      <span className="text-xs text-gray-400 mt-1">
+                        Create your own system prompt
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Show custom prompt hint when Custom is selected */}
+        {agentSettings.personality === "Custom" && (
+          <div className="mb-4 p-3 bg-[#1F1F1F] border border-[#232323] rounded-lg">
+            <p className="text-xs text-gray-400">
+              Click on "Custom Prompt" above to edit your system prompt
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
