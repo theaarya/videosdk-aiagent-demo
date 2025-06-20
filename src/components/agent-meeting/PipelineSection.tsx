@@ -1,28 +1,18 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AgentSettings } from "./types";
-
 interface PipelineSectionProps {
   agentSettings: AgentSettings;
   onSettingChange: (field: keyof AgentSettings, value: any) => void;
 }
-
 export const PipelineSection: React.FC<PipelineSectionProps> = ({
   agentSettings,
-  onSettingChange,
+  onSettingChange
 }) => {
-  return (
-    <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
+  return <Card className="bg-gradient-to-br from-[#1A1A1A] to-[#252A34] border-[#3A3F4A] shadow-2xl overflow-hidden relative">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/5 pointer-events-none" />
       
@@ -46,10 +36,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
             <span>Pipeline Type</span>
             <div className="w-1 h-1 bg-green-400 rounded-full"></div>
           </Label>
-          <Select
-            value={agentSettings.pipelineType}
-            onValueChange={(value) => onSettingChange("pipelineType", value)}
-          >
+          <Select value={agentSettings.pipelineType} onValueChange={value => onSettingChange("pipelineType", value)}>
             <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-12">
               <SelectValue />
             </SelectTrigger>
@@ -82,8 +69,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           </Select>
         </div>
 
-        {agentSettings.pipelineType === "cascading" && (
-          <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
+        {agentSettings.pipelineType === "cascading" && <div className="space-y-6 animate-in slide-in-from-top-2 duration-300">
             <div className="border-t border-[#3A3F4A] pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
@@ -91,10 +77,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <span>LLM Provider</span>
                     <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
                   </Label>
-                  <Select
-                    value={agentSettings.llm}
-                    onValueChange={(value) => onSettingChange("llm", value)}
-                  >
+                  <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
                     <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
                       <SelectValue />
                     </SelectTrigger>
@@ -114,10 +97,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <span>Speech-to-Text</span>
                     <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
                   </Label>
-                  <Select
-                    value={agentSettings.stt}
-                    onValueChange={(value) => onSettingChange("stt", value)}
-                  >
+                  <Select value={agentSettings.stt} onValueChange={value => onSettingChange("stt", value)}>
                     <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
                       <SelectValue />
                     </SelectTrigger>
@@ -137,10 +117,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <span>Text-to-Speech</span>
                     <div className="w-1 h-1 bg-pink-400 rounded-full"></div>
                   </Label>
-                  <Select
-                    value={agentSettings.tts}
-                    onValueChange={(value) => onSettingChange("tts", value)}
-                  >
+                  <Select value={agentSettings.tts} onValueChange={value => onSettingChange("tts", value)}>
                     <SelectTrigger className="bg-[#252A34]/80 border-[#3A3F4A] text-white hover:bg-[#2A2F3A] transition-all duration-200 h-11">
                       <SelectValue />
                     </SelectTrigger>
@@ -163,24 +140,16 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <Label className="text-sm font-medium text-gray-300 flex items-center space-x-2">
-                      <span>Voice Activity Detection</span>
+                      <span>VAD and Turn Detection</span>
                       <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
                     </Label>
-                    <p className="text-xs text-gray-500">
-                      Enable VAD and turn detection for better conversation flow and interruption handling
-                    </p>
+                    <p className="text-xs text-gray-500">Enable Voice Activation and Turn Detection for better conversation flow and interruption handling</p>
                   </div>
-                  <Switch
-                    checked={agentSettings.detection}
-                    onCheckedChange={(checked) => onSettingChange("detection", checked)}
-                    className="data-[state=checked]:bg-cyan-500"
-                  />
+                  <Switch checked={agentSettings.detection} onCheckedChange={checked => onSettingChange("detection", checked)} className="data-[state=checked]:bg-cyan-500" />
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
