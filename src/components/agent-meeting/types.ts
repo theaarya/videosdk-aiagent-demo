@@ -23,11 +23,11 @@ export const PERSONALITY_OPTIONS = ["Tutor", "Doctor", "Recruiter", "Companion",
 
 export const PIPELINE_TYPES = ["openai", "google", "aws", "cascading"];
 
-export const STT_OPTIONS = ["deepgram", "whisper", "azure"];
+export const STT_OPTIONS = ["deepgram", "openai", "google", "sarvam"];
 
-export const TTS_OPTIONS = ["elevenlabs", "azure", "openai"];
+export const TTS_OPTIONS = ["openai", "elevenlabs", "google", "sarvam"];
 
-export const LLM_OPTIONS = ["openai", "anthropic", "gemini"];
+export const LLM_OPTIONS = ["openai", "google", "sarvam"];
 
 export const PROMPTS = {
   "Tutor": `You are an AI Tutor participating in a live audio/video session with a student. Your job is to help the student understand academic concepts clearly, patiently, and interactively.

@@ -44,25 +44,25 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
               <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span>OpenAI</span>
+                  <span>OpenAI Real-time</span>
                 </div>
               </SelectItem>
               <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span>Google</span>
+                  <span>Google Gemini Live</span>
                 </div>
               </SelectItem>
               <SelectItem value="aws" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span>AWS</span>
+                  <span>AWS Nova Sonic</span>
                 </div>
               </SelectItem>
               <SelectItem value="cascading" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  <span>Cascading</span>
+                  <span>Cascading Pipeline</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -98,7 +98,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                       <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                          <span>Sarvam</span>
+                          <span>Sarvam AI</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="deepgram" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
@@ -136,7 +136,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                       <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                          <span>Sarvam</span>
+                          <span>Sarvam AI</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
@@ -164,19 +164,19 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
                     <SelectItem value="google" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <span>Google</span>
+                        <span>Google Gemini</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="openai" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <span>OpenAI</span>
+                        <span>OpenAI GPT</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="sarvam" className="text-white hover:bg-[#3A3F4A] focus:bg-[#3A3F4A] cursor-pointer">
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                        <span>Sarvam</span>
+                        <span>Sarvam AI</span>
                       </div>
                     </SelectItem>
                   </SelectContent>

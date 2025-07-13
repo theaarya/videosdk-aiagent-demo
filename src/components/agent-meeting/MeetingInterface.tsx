@@ -9,6 +9,7 @@ import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { WaveAvatar } from "./WaveAvatar";
 import { RoomLayout } from "../layout/RoomLayout";
+import { leaveAgent as leaveAgentAPI } from "./JoinAgentRequest";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -186,52 +187,30 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      console.log("Attempting to remove agent using AI endpoint");
+      console.log("Attempting to remove agent using backend server");
       
-      const requestBody = {
-        meeting_id: meetingId,
-      };
-
-      console.log("Leave agent request body:", requestBody);
-
-      const response = await fetch(
-        "https://aiendpoint.tryvideosdk.live/leave-agent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      console.log("Leave agent response status:", response.status);
-      console.log("Leave agent response ok:", response.ok);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Agent leave successful:", responseData);
-        
-        if (responseData.status === "removed") {
-          console.log("Agent successfully removed, ending meeting");
-          end();
-          toast({
-            title: "Agent Removed",
-            description: "AI Agent has been removed from the meeting",
-          });
-        } else if (responseData.status === "not_found") {
-          console.log("No agent session found, ending meeting anyway");
-          end();
-          toast({
-            title: "No Agent Found",
-            description: "No AI agent session was found, ending meeting",
-          });
-        }
+      // Use localhost for development, you can make this configurable
+      const backendUrl = "http://localhost:8000";
+      const responseData = await leaveAgentAPI(meetingId, backendUrl);
+      
+      console.log("Agent leave response:", responseData);
+      
+      if (responseData.status === "success") {
+        console.log("Agent successfully removed, ending meeting");
+        end();
+        toast({
+          title: "Agent Removed",
+          description: "AI Agent has been removed from the meeting",
+        });
+      } else if (responseData.status === "not_found") {
+        console.log("No agent session found, ending meeting anyway");
+        end();
+        toast({
+          title: "No Agent Found",
+          description: "No AI agent session was found, ending meeting",
+        });
       } else {
-        const errorText = await response.text();
-        console.error("Leave agent failed:", response.status, errorText);
-        
-        console.log("API failed, but ending meeting locally");
+        console.log("API response unclear, ending meeting locally");
         end();
         toast({
           title: "Warning",
@@ -290,14 +269,15 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         console.log("Using predefined prompt for personality:", agentSettings.personality);
       }
       
-      // Create base request body
+      // Create base request body matching backend MeetingReqConfig
       const requestBody: any = {
         meeting_id: meetingId,
         token: VIDEOSDK_TOKEN,
         pipeline_type: agentSettings.pipelineType,
         personality: agentSettings.personality,
         system_prompt: systemPrompt,
-        detection: agentSettings.detection,
+        detection: agentSettings.detection || true,
+        avatar: agentSettings.agentType === 'avatar', // Convert agentType to avatar boolean
         // Include MCP URL if provided
         ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
       };
@@ -309,10 +289,12 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         requestBody.llm = agentSettings.llm;
       }
 
-      console.log("Attempting to invite agent with AI endpoint");
+      console.log("Attempting to invite agent with backend server");
       console.log("Request body:", requestBody);
 
-      const response = await fetch("https://aiendpoint.tryvideosdk.live/join-agent", {
+      // Use localhost for development, you can make this configurable
+      const backendUrl = "http://localhost:8000";
+      const response = await fetch(`${backendUrl}/join-agent`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
