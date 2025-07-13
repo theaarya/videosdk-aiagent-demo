@@ -153,7 +153,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
         </div>
 
         {/* Right Panel - Avatar Selection */}
-        <div className="w-80 p-6 border-l border-gray-700 flex flex-col items-center justify-center space-y-8">
+        <div className="flex-1 p-6 border-l border-gray-700 flex flex-col items-center justify-center space-y-8">
           <div className="text-center space-y-4">
             <h3 className="text-sm font-medium text-gray-300">Select Avatar Or Voice Agent</h3>
             
