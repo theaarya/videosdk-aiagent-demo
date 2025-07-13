@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PipelineSection } from "./PipelineSection";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -125,6 +126,16 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                   </SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          )}
+
+          {/* Cascading Pipeline Options - Only show when Cascading is selected */}
+          {agentSettings.pipelineType === "cascading" && (
+            <div className="space-y-6">
+              <PipelineSection 
+                agentSettings={agentSettings}
+                onSettingChange={handleSettingChange}
+              />
             </div>
           )}
 
