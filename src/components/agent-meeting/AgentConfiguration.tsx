@@ -42,7 +42,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Left Panel - Configuration */}
-        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+        <div className="w-96 p-6 space-y-6 overflow-y-auto">
           {/* Use cases */}
           <div className="space-y-3">
             <h3 className="text-sm font-medium text-gray-300">Use cases</h3>
