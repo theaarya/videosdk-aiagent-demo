@@ -23,6 +23,7 @@ const AgentMeeting: React.FC = () => {
     tts: "elevenlabs", 
     llm: "openai",
     detection: false,
+    agentType: "voice", // Default to voice agent
   });
 
   const createMeeting = async () => {

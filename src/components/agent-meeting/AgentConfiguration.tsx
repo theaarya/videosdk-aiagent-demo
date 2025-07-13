@@ -1,18 +1,23 @@
 
 import React from "react";
-import { AgentSettings } from "./types";
-import { PersonalitySection } from "./PersonalitySection";
-import { PipelineSection } from "./PipelineSection";
-import { McpServerSection } from "./McpServerSection";
+import { AgentSettings, PROMPTS, PERSONALITY_OPTIONS } from "./types";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
   onSettingsChange?: (settings: AgentSettings) => void;
+  onConnect?: () => void;
+  isConnecting?: boolean;
 }
 
 export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   agentSettings,
   onSettingsChange,
+  onConnect,
+  isConnecting = false,
 }) => {
   const handleSettingChange = (field: keyof AgentSettings, value: any) => {
     if (onSettingsChange) {
@@ -23,46 +28,167 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
     }
   };
 
+  const systemPrompt = agentSettings.personality === "Custom" 
+    ? agentSettings.customPrompt || ""
+    : PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
+
   return (
-    <div className="min-h-screen bg-[#161616] text-white">
-      <div className="p-4 space-y-4 max-h-full overflow-y-auto">
-        {/* Ultra Compact Header */}
-        <div className="space-y-1 text-center pb-1">
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-700">
+        <h1 className="text-xl font-semibold text-white">Agent Configuration</h1>
+      </div>
+
+      <div className="flex h-[calc(100vh-80px)]">
+        {/* Left Panel - Configuration */}
+        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+          {/* Use cases */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">Use cases</h3>
+            <p className="text-xs text-gray-500">Define how your agent communicate and behaves</p>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {["Custom", "Recruiter", "Doctor", "Tutor"].map((personality) => (
+                <Button
+                  key={personality}
+                  variant={agentSettings.personality === personality ? "default" : "outline"}
+                  className={`h-10 text-sm ${
+                    agentSettings.personality === personality
+                      ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                      : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                  }`}
+                  onClick={() => handleSettingChange("personality", personality)}
+                >
+                  {personality}
+                </Button>
+              ))}
+            </div>
           </div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-            Agent Config
-          </h1>
+
+          {/* System Prompt */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">System Prompt</h3>
+            <Textarea
+              value={systemPrompt}
+              onChange={(e) => {
+                if (agentSettings.personality === "Custom") {
+                  handleSettingChange("customPrompt", e.target.value);
+                }
+              }}
+              placeholder="You're a health bot"
+              className="min-h-[100px] bg-[#252a34] border-gray-600 text-white placeholder:text-gray-500 resize-none"
+              disabled={agentSettings.personality !== "Custom"}
+            />
+          </div>
+
+          {/* AI Agent Pipelines */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">AI Agent Pipelines</h3>
+            
+            <div className="flex gap-3">
+              <Button
+                variant={agentSettings.pipelineType === "openai" ? "default" : "outline"}
+                className={`h-10 text-sm ${
+                  agentSettings.pipelineType === "openai"
+                    ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                    : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                }`}
+                onClick={() => handleSettingChange("pipelineType", "openai")}
+              >
+                Real Time
+              </Button>
+              <Button
+                variant={agentSettings.pipelineType === "cascading" ? "default" : "outline"}
+                className={`h-10 text-sm ${
+                  agentSettings.pipelineType === "cascading"
+                    ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                    : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                }`}
+                onClick={() => handleSettingChange("pipelineType", "cascading")}
+              >
+                Cascading
+              </Button>
+            </div>
+          </div>
+
+          {/* Select Real Time Models - Only show when Real Time is selected */}
+          {agentSettings.pipelineType === "openai" && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-300">Select Real Time Models</h3>
+              <Select value="gpt-4o-realtime-preview-2024-10-01" onValueChange={() => {}}>
+                <SelectTrigger className="bg-[#252a34] border-gray-600 text-white h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#252a34] border-gray-600">
+                  <SelectItem value="gpt-4o-realtime-preview-2024-10-01" className="text-white hover:bg-gray-700">
+                    gpt-4o-realtime-preview-2024-10-01
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* MCP Server */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">MCP Server</h3>
+            <Input
+              type="url"
+              placeholder="https://your-mcp-server.com/mcp"
+              value={agentSettings.mcpUrl || ""}
+              onChange={(e) => handleSettingChange("mcpUrl", e.target.value)}
+              className="bg-[#252a34] border-gray-600 text-white placeholder:text-gray-500 h-10"
+            />
+          </div>
         </div>
 
-        {/* Configuration Sections - Compact */}
-        <div className="space-y-3">
-          <PersonalitySection 
-            agentSettings={agentSettings}
-            onSettingChange={handleSettingChange}
-          />
+        {/* Right Panel - Avatar Selection */}
+        <div className="w-80 p-6 border-l border-gray-700 flex flex-col items-center justify-center space-y-8">
+          <div className="text-center space-y-4">
+            <h3 className="text-sm font-medium text-gray-300">Select Avatar Or Voice Agent</h3>
+            
+            <div className="flex gap-6">
+              {/* Voice Agent */}
+              <div 
+                className={`flex flex-col items-center space-y-3 cursor-pointer p-4 rounded-lg transition-all ${
+                  agentSettings.agentType === 'voice' 
+                    ? 'border-2 border-blue-500' 
+                    : 'border-2 border-transparent hover:border-gray-600'
+                }`}
+                onClick={() => handleSettingChange('agentType', 'voice')}
+              >
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-300 to-blue-500"></div>
+                </div>
+                <span className="text-sm text-gray-300">Voice Agent</span>
+              </div>
 
-          <PipelineSection 
-            agentSettings={agentSettings}
-            onSettingChange={handleSettingChange}
-          />
-
-          <McpServerSection 
-            agentSettings={agentSettings}
-            onSettingChange={handleSettingChange}
-          />
-        </div>
-
-        {/* Minimal Footer */}
-        <div className="pt-2 text-center">
-          <div className="inline-flex items-center space-x-1 text-xs text-gray-500">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-            <span>Ready</span>
+              {/* Avatar */}
+              <div 
+                className={`flex flex-col items-center space-y-3 cursor-pointer p-4 rounded-lg transition-all ${
+                  agentSettings.agentType === 'avatar' 
+                    ? 'border-2 border-blue-500' 
+                    : 'border-2 border-transparent hover:border-gray-600'
+                }`}
+                onClick={() => handleSettingChange('agentType', 'avatar')}
+              >
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+                  <svg className="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/>
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-300">Avatar</span>
+              </div>
+            </div>
           </div>
+
+          {/* Connect Button */}
+          <Button
+            onClick={onConnect}
+            disabled={isConnecting}
+            className="w-32 h-12 bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white rounded-full text-sm font-medium transition-all"
+          >
+            {isConnecting ? "Connecting..." : "Connect"}
+          </Button>
         </div>
       </div>
     </div>
