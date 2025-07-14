@@ -37,7 +37,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   return (
     <div className="min-h-screen bg-[#121619] text-white">
       {/* Header */}
-      <div className="p-6 border-b border-[#252A34] bg-[#1A1F23]">
+      <div className="px-6 py-8 border-b border-[#252A34] bg-[#1A1F23]">
         <h1 className="text-xl font-semibold text-white">Agent Configuration</h1>
       </div>
 
