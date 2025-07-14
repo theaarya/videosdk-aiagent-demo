@@ -121,12 +121,12 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 value={agentSettings.realtimeModel || REALTIME_MODEL_OPTIONS[0]} 
                 onValueChange={(value) => handleSettingChange("realtimeModel", value)}
               >
-                <SelectTrigger className="bg-[#25252540] border-[#393939] text-white h-10 focus:border-[#393939]">
+                <SelectTrigger className="bg-[#121619] border-[#393939] text-white h-10 focus:border-[#393939]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#252525] border-[#393939]">
+                <SelectContent className="bg-[#121619] border-[#393939] rounded-lg z-50">
                   {REALTIME_MODEL_OPTIONS.map((model) => (
-                    <SelectItem key={model} value={model} className="text-white hover:bg-[#38BDF8]/20">
+                    <SelectItem key={model} value={model} className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
                       {model}
                     </SelectItem>
                   ))}
