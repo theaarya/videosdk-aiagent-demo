@@ -155,6 +155,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
       }
       
       await end();
+      onDisconnect();
     } catch (error) {
       console.error("Error during disconnect:", error);
       onDisconnect();
