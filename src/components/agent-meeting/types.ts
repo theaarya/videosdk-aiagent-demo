@@ -31,13 +31,12 @@ export const TTS_OPTIONS = ["openai", "elevenlabs", "google", "sarvam"];
 export const LLM_OPTIONS = ["openai", "google", "sarvam"];
 
 export const REALTIME_MODEL_OPTIONS = [
-  "gpt-4o-realtime-preview-2024-10-01",
-  "gpt-4o-realtime-preview-2024-12-17",
-  "claude-3-5-sonnet-20241022",
-  "claude-3-5-haiku-20241022",
-  "claude-3-opus-20240229",
-  "claude-sonnet-4-20250514",
-  "claude-opus-4-20250514",
+  "gpt-4o-realtime-preview-2025-06-03",
+  "gemini-2.5-flash-preview-native-audio-dialog",
+  "gemini-2.5-flash-exp-native-audio-thinking-dialog",
+  "gemini-live-2.5-flash-preview",
+  "gemini-2.0-flash-live-001",
+  "amazon.nova-sonic-v1:0",
 ];
 
 export const PROMPTS = {
