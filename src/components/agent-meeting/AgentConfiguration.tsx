@@ -153,11 +153,11 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
         </div>
 
         {/* Right Panel - Avatar Selection */}
-        <div className="flex-1 p-6 border-l border-[#38BDF8]/30 flex flex-col items-center justify-center space-y-8">
-          <div className="text-center space-y-4">
+        <div className="flex-1 p-6 border-l border-[#38BDF8]/30 flex flex-col items-center justify-center">
+          <div className="text-center space-y-8">
             <h3 className="text-sm font-medium text-gray-300">Select Avatar Or Voice Agent</h3>
             
-            <div className="flex gap-6">
+            <div className="flex flex-col gap-[31px] items-center">
               {/* Voice Agent */}
               <div 
                 className={`flex flex-col items-center space-y-3 cursor-pointer p-4 rounded-lg transition-all ${
