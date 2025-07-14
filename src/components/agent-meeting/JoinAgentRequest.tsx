@@ -23,6 +23,11 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
       ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
     };
 
+    // Add model for real-time pipeline
+    if (agentSettings.pipelineType === "openai" && agentSettings.realtimeModel) {
+      requestBody.model = agentSettings.realtimeModel;
+    }
+
     // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
     if (agentSettings.pipelineType === "cascading") {
       requestBody.stt = agentSettings.stt;

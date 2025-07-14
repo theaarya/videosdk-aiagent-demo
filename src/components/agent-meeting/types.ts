@@ -13,6 +13,7 @@ export interface AgentSettings {
   llm: string;
   detection: boolean;
   agentType: 'voice' | 'avatar';
+  realtimeModel?: string;
 }
 
 export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MDMzMTY2NSwiZXhwIjoxNzUwOTM2NDY1fQ.3Uy8ok0-9Nc3AuftDB_9iWKQCkVbEdK1h5Sta_yn1p0";
@@ -28,6 +29,16 @@ export const STT_OPTIONS = ["deepgram", "openai", "google", "sarvam"];
 export const TTS_OPTIONS = ["openai", "elevenlabs", "google", "sarvam"];
 
 export const LLM_OPTIONS = ["openai", "google", "sarvam"];
+
+export const REALTIME_MODEL_OPTIONS = [
+  "gpt-4o-realtime-preview-2024-10-01",
+  "gpt-4o-realtime-preview-2024-12-17",
+  "claude-3-5-sonnet-20241022",
+  "claude-3-5-haiku-20241022",
+  "claude-3-opus-20240229",
+  "claude-sonnet-4-20250514",
+  "claude-opus-4-20250514",
+];
 
 export const PROMPTS = {
   "Tutor": `You are an AI Tutor participating in a live audio/video session with a student. Your job is to help the student understand academic concepts clearly, patiently, and interactively.
