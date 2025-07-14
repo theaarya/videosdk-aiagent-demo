@@ -187,11 +187,16 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      console.log("Attempting to remove agent using backend server");
+      console.log("=== LEAVE AGENT START ===");
+      console.log("Meeting ID:", meetingId);
+      console.log("Agent invited status:", agentInvited);
       
       // Use localhost for development, you can make this configurable
       const backendUrl = "http://localhost:8000";
+      console.log("Calling leave-agent API with URL:", `${backendUrl}/leave-agent`);
+      
       const responseData = await leaveAgentAPI(meetingId, backendUrl);
+      console.log("=== LEAVE AGENT API RESPONSE ===", responseData);
       
       console.log("Agent leave response:", responseData);
       
@@ -220,7 +225,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       }
 
     } catch (error) {
-      console.error("Error calling leave-agent API:", error);
+      console.error("=== LEAVE AGENT ERROR ===", error);
+      console.error("Error type:", typeof error);
+      console.error("Error message:", error instanceof Error ? error.message : String(error));
       
       console.log("Error occurred, but ending meeting locally");
       end();
