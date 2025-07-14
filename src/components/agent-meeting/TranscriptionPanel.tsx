@@ -148,10 +148,10 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
             onClick={handleToggleTranscription}
             size="sm"
             className={cn(
-              "w-8 h-8",
+              "w-8 h-8 bg-transparent border-2",
               isTranscribing 
-                ? "bg-red-900/50 hover:bg-red-900/70 text-red-400 border border-red-500/30" 
-                : "bg-[#25252540] hover:bg-[#38BDF8]/20 text-[#38BDF8] border border-[#38BDF8]/30"
+                ? "border-red-400 text-red-400 hover:bg-red-400/10" 
+                : "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
             )}
           >
             {isTranscribing ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
