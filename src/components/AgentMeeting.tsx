@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
 import { AgentSettings, VIDEOSDK_TOKEN } from "./agent-meeting/types";
-import { MeetingInterface } from "./agent-meeting/MeetingInterface";
+import { SimplifiedMeetingInterface } from "./agent-meeting/SimplifiedMeetingInterface";
 import { MeetingContainer } from "./agent-meeting/MeetingContainer";
 
 const AgentMeeting: React.FC = () => {
@@ -113,11 +113,10 @@ const AgentMeeting: React.FC = () => {
         reinitialiseMeetingOnConfigChange={false}
         joinWithoutUserInteraction={false}
       >
-        <MeetingInterface
+        <SimplifiedMeetingInterface
           meetingId={meetingId}
           onDisconnect={handleDisconnect}
           agentSettings={agentSettings}
-          onSettingsChange={handleSettingsChange}
         />
       </MeetingProvider>
     );

@@ -32,9 +32,15 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
       return;
     }
 
+    let isMounted = true;
+
     const updateStats = async () => {
+      if (!isMounted) return;
+      
       try {
         const statsArray = await getAgentAudioStats();
+        
+        if (!isMounted) return;
         
         if (statsArray && statsArray.length > 0) {
           const stats = statsArray[0];
@@ -50,9 +56,11 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
           setIsAvailable(false);
         }
       } catch (error) {
-        console.error("Error getting agent stats:", error);
-        setAgentStats({});
-        setIsAvailable(false);
+        if (isMounted) {
+          console.error("Error getting agent stats:", error);
+          setAgentStats({});
+          setIsAvailable(false);
+        }
       }
     };
 
@@ -60,7 +68,10 @@ export const NetworkStats: React.FC<NetworkStatsProps> = ({
     const interval = setInterval(updateStats, 3000);
     updateStats(); // Initial call
 
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [isVisible, getAgentAudioStats, agentParticipantId]);
 
   if (!isVisible || !agentParticipantId) return null;
