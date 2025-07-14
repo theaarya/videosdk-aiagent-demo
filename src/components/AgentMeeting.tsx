@@ -24,6 +24,7 @@ const AgentMeeting: React.FC = () => {
     llm: "openai",
     detection: false,
     agentType: "voice", // Default to voice agent
+    realtimeModel: "gpt-4o-realtime-preview-2025-06-03", // Default real-time model
   });
 
   const createMeeting = async () => {

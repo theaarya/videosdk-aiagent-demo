@@ -12,10 +12,13 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
     }
 
     // Create base request body matching backend MeetingReqConfig
+    // Map frontend pipeline types to server expected types
+    const serverPipelineType = agentSettings.pipelineType === "openai" ? "realtime" : agentSettings.pipelineType;
+    
     const requestBody: any = {
       meeting_id: meetingId,
       token: VIDEOSDK_TOKEN,
-      pipeline_type: agentSettings.pipelineType,
+      pipeline_type: serverPipelineType,
       personality: agentSettings.personality,
       system_prompt: systemPrompt,
       detection: agentSettings.detection || true,
@@ -23,7 +26,7 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
       ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
     };
 
-    // Add model for real-time pipeline
+    // Add model for real-time pipeline (openai -> realtime)
     if (agentSettings.pipelineType === "openai" && agentSettings.realtimeModel) {
       requestBody.model = agentSettings.realtimeModel;
     }
