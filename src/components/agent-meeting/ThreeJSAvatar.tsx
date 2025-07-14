@@ -112,24 +112,33 @@ export const ThreeJSAvatar: React.FC<ThreeJSAvatarProps> = ({
     const animate = () => {
       const time = Date.now() * 0.001;
       
-      // Update shader time
-      if (material.uniforms.time) {
-        material.uniforms.time.value = time;
-      }
+      // Only update animations when agent is speaking
+      if (isConnected) {
+        // Update shader time only when speaking
+        if (material.uniforms.time) {
+          material.uniforms.time.value = time;
+        }
 
-      // Rotate sphere
-      if (sphereRef.current) {
-        sphereRef.current.rotation.y = time * 0.5;
-        sphereRef.current.rotation.x = Math.sin(time) * 0.1;
-        
-        // Audio-reactive scaling simulation
-        if (isConnected) {
+        // Rotate and scale when speaking
+        if (sphereRef.current) {
+          sphereRef.current.rotation.y = time * 0.5;
+          sphereRef.current.rotation.x = Math.sin(time) * 0.1;
+          
+          // Audio-reactive scaling when speaking
           const scale = 1 + Math.sin(time * 4) * 0.1;
           sphereRef.current.scale.setScalar(scale);
-        } else {
-          // Gentle breathing animation when not connected
-          const scale = 1 + Math.sin(time * 2) * 0.05;
-          sphereRef.current.scale.setScalar(scale);
+        }
+      } else {
+        // Static state when not speaking - no animations
+        if (sphereRef.current) {
+          sphereRef.current.rotation.y = 0;
+          sphereRef.current.rotation.x = 0;
+          sphereRef.current.scale.setScalar(1);
+        }
+        
+        // Keep shader time static to prevent flickering
+        if (material.uniforms.time) {
+          material.uniforms.time.value = 0;
         }
       }
 
