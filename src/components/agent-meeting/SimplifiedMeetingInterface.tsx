@@ -397,12 +397,32 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
         <div className="flex flex-col items-center gap-8">
           {/* Avatar */}
           <div>
-            <ThreeJSAvatar
-              participantId={agentParticipant?.id}
-              isConnected={!!agentParticipant}
-              size="xl"
-              className="drop-shadow-2xl"
-            />
+            {agentSettings.agentType === 'avatar' ? (
+              <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl">
+                <img 
+                  src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png" 
+                  alt="AI Avatar" 
+                  className="w-full h-full object-cover"
+                />
+                {/* Voice activity indicator overlay for avatar */}
+                {agentParticipant && (
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent transition-all duration-300"
+                    style={{
+                      borderColor: 'rgba(56, 189, 248, 0.5)',
+                      boxShadow: '0 0 30px rgba(56, 189, 248, 0.3)',
+                      animation: 'pulse 2s ease-in-out infinite'
+                    }}
+                  />
+                )}
+              </div>
+            ) : (
+              <ThreeJSAvatar
+                participantId={agentParticipant?.id}
+                isConnected={!!agentParticipant}
+                size="xl"
+                className="drop-shadow-2xl"
+              />
+            )}
           </div>
 
           {/* Control Icons */}
