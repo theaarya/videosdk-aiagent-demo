@@ -107,12 +107,12 @@ const AgentMeeting: React.FC = () => {
           micEnabled: true,
           webcamEnabled: false,
           name: "User",
-          debugMode: false,
-          multiStream: false,
+          debugMode: true, // Enable debug mode for better logging
+          multiStream: true, // Enable multistream for better agent support
         }}
         token={VIDEOSDK_TOKEN}
         reinitialiseMeetingOnConfigChange={false}
-        joinWithoutUserInteraction={false}
+        joinWithoutUserInteraction={true} // Auto-join for smoother experience
       >
         <SimplifiedMeetingInterface
           meetingId={meetingId}

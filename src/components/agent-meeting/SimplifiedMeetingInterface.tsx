@@ -32,141 +32,161 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
   const [agentInvited, setAgentInvited] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
-  const [isRetrying, setIsRetrying] = useState(false);
-  const [agentInviteAttempts, setAgentInviteAttempts] = useState(0);
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const joinAttempted = useRef(false);
+  const agentInviteAttempted = useRef(false);
 
   const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting({
     onMeetingJoined: () => {
-      console.log("Meeting joined successfully");
+      console.log("=== MEETING JOINED ===");
       setIsJoined(true);
       setConnectionError(null);
       setRetryAttempts(0);
+      joinAttempted.current = true;
+      
+      toast({
+        title: "Meeting Connected",
+        description: "Successfully joined the conversation",
+      });
     },
     onMeetingLeft: () => {
-      console.log("Meeting left");
+      console.log("=== MEETING LEFT ===");
       setIsJoined(false);
+      setAgentInvited(false);
+      joinAttempted.current = false;
+      agentInviteAttempted.current = false;
       onDisconnect();
     },
     onParticipantJoined: (participant: any) => {
-      console.log("Participant joined:", participant.id);
+      console.log("=== PARTICIPANT JOINED ===", participant.displayName || participant.id);
+      if (participant.displayName?.includes("Agent") || participant.displayName?.includes("Haley")) {
+        toast({
+          title: "AI Agent Connected",
+          description: `${participant.displayName} is ready to speak`,
+        });
+      }
     },
     onParticipantLeft: (participant: any) => {
-      console.log("Participant left:", participant.id);
-    },
-    onSpeakerChanged: (activeSpeakerId: string) => {
-      console.log("Active speaker changed:", activeSpeakerId);
+      console.log("=== PARTICIPANT LEFT ===", participant.displayName || participant.id);
     },
     onError: (error: any) => {
-      console.error("Meeting error:", error);
+      console.error("=== MEETING ERROR ===", error);
       setConnectionError(error.message || "Connection failed");
       
-      if (retryAttempts < 3) {
-        handleRetryConnection();
+      // Handle specific quota errors
+      if (error.message?.includes("quota") || error.message?.includes("QUOTA")) {
+        toast({
+          title: "API Quota Exceeded",
+          description: "Google Gemini API quota exceeded. Check your billing settings.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Only retry on connection errors, not API errors
+      if (retryAttempts < 2 && !error.message?.includes("quota")) {
+        console.log(`Retrying connection (${retryAttempts + 1}/2)`);
+        setRetryAttempts(prev => prev + 1);
+        setTimeout(() => {
+          if (!isJoined) {
+            join();
+          }
+        }, 3000);
       }
     },
   });
 
-  const handleRetryConnection = useCallback(() => {
-    if (isRetrying) return;
-    
-    setIsRetrying(true);
-    setRetryAttempts(prev => prev + 1);
-    
-    retryTimeoutRef.current = setTimeout(() => {
-      console.log(`Retrying connection (attempt ${retryAttempts + 1})`);
+  // Single join attempt on mount
+  useEffect(() => {
+    if (!joinAttempted.current) {
+      console.log("=== JOINING MEETING ===", meetingId);
+      joinAttempted.current = true;
       join();
-      setIsRetrying(false);
-    }, 2000);
-  }, [join, retryAttempts, isRetrying]);
-
-  useEffect(() => {
-    join();
-
-    return () => {
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-    };
-  }, [join]);
-
-  // Auto-invite agent after joining
-  useEffect(() => {
-    if (isJoined && !agentInvited && agentInviteAttempts < 3) {
-      inviteAgent();
     }
-  }, [isJoined, agentInvited, agentInviteAttempts]);
+  }, [join, meetingId]);
+
+  // Auto-invite agent after successful meeting join with proper timing
+  useEffect(() => {
+    if (isJoined && !agentInvited && !agentInviteAttempted.current) {
+      console.log("=== SCHEDULING AGENT INVITATION ===");
+      agentInviteAttempted.current = true;
+      
+      // Wait 3 seconds for meeting to stabilize before inviting agent
+      setTimeout(() => {
+        if (isJoined) { // Double-check we're still joined
+          inviteAgent();
+        }
+      }, 3000);
+    }
+  }, [isJoined]);
 
   const inviteAgent = async () => {
-    if (agentInvited || agentInviteAttempts >= 3) return;
-
-    setAgentInvited(true);
-    setAgentInviteAttempts(prev => prev + 1);
-    console.log(`Inviting agent to meeting... (attempt ${agentInviteAttempts + 1})`);
-
+    console.log("=== INVITING AGENT ===");
+    console.log("Meeting ID:", meetingId);
+    console.log("Agent Settings:", agentSettings);
+    
     try {
-      const data = await joinAgent(meetingId, agentSettings);
-      console.log("Agent invited successfully:", data);
-      toast({
-        title: "Agent Connected",
-        description: "Your AI agent has joined the conversation",
-      });
-    } catch (error) {
-      console.error("Error inviting agent:", error);
+      const backendUrl = "http://localhost:8000";
+      const data = await joinAgent(meetingId, agentSettings, backendUrl);
+      console.log("=== AGENT INVITATION SUCCESS ===", data);
       
-      if (agentInviteAttempts < 3) {
-        toast({
-          title: "Agent Connection Failed",
-          description: `Failed to connect the AI agent. Retrying... (${agentInviteAttempts}/3)`,
-          variant: "destructive",
-        });
-        setAgentInvited(false);
-      } else {
-        toast({
-          title: "Agent Connection Failed",
-          description: "Failed to connect the AI agent after 3 attempts. Please try again later.",
-          variant: "destructive",
-        });
+      setAgentInvited(true);
+      toast({
+        title: "AI Agent Connecting...",
+        description: "Agent is joining the conversation and should start speaking soon",
+      });
+      
+    } catch (error) {
+      console.error("=== AGENT INVITATION ERROR ===", error);
+      agentInviteAttempted.current = false; // Allow retry
+      
+      // Parse error message for better user feedback
+      let errorMessage = "Failed to connect AI agent";
+      if (error instanceof Error) {
+        if (error.message.includes("quota") || error.message.includes("QUOTA")) {
+          errorMessage = "Google Gemini API quota exceeded. Check your billing settings.";
+        } else if (error.message.includes("Failed to fetch")) {
+          errorMessage = "Cannot reach the AI service. Is the backend server running?";
+        } else if (error.message.includes("500")) {
+          errorMessage = "Server error. Please check server logs.";
+        } else {
+          errorMessage = `AI service error: ${error.message}`;
+        }
       }
+      
+      toast({
+        title: "Agent Connection Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 
   const handleDisconnect = async () => {
+    console.log("=== DISCONNECT INITIATED ===");
+    
     try {
-      console.log("Disconnecting from meeting...");
-      
-      // Stop all media streams by getting fresh media access and stopping them
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(track => {
-          console.log("Stopping track:", track.kind);
-          track.stop();
-        });
-      } catch (err) {
-        console.log("No media streams to stop or access denied");
+      // Remove agent first if present
+      if (agentInvited) {
+        console.log("=== REMOVING AGENT ===");
+        const backendUrl = "http://localhost:8000";
+        await leaveAgent(meetingId, backendUrl);
+        console.log("=== AGENT REMOVED ===");
       }
       
-      // Remove agent if present
-      const agentParticipant = Object.values(participants).find(
-        (p: any) => p.displayName?.includes("Agent") || p.displayName?.includes("Bot")
-      );
+      // End the meeting (more reliable than leave)
+      console.log("=== ENDING MEETING ===");
+      end();
       
-      console.log("Agent participant found:", !!agentParticipant);
-      
-      if (agentParticipant) {
-        console.log("Calling leaveAgent...");
-        await leaveAgent(meetingId);
-        console.log("Agent removal completed");
-      }
-      
-      console.log("Leaving meeting...");
-      await leave();
-      console.log("Meeting left successfully");
-      
-      onDisconnect();
     } catch (error) {
-      console.error("Error during disconnect:", error);
-      console.log("Disconnect error, calling onDisconnect anyway");
+      console.error("=== DISCONNECT ERROR ===", error);
+      // Force disconnect even on error
+      end();
+    } finally {
+      // Clean up state
+      setIsJoined(false);
+      setAgentInvited(false);
+      joinAttempted.current = false;
+      agentInviteAttempted.current = false;
       onDisconnect();
     }
   };
@@ -178,9 +198,10 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
   };
 
   const handleManualRetry = () => {
-    if (!isRetrying) {
-      handleRetryConnection();
-    }
+    console.log("=== MANUAL RETRY ===");
+    setConnectionError(null);
+    joinAttempted.current = false;
+    join();
   };
 
   // Find agent participant
