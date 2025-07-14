@@ -22,7 +22,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
             <SelectItem value="deepgram" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Deepgram
             </SelectItem>
@@ -43,7 +43,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
             <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               OpenAI
             </SelectItem>
@@ -64,7 +64,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
           <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
             <SelectItem value="google" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Gemini
             </SelectItem>
