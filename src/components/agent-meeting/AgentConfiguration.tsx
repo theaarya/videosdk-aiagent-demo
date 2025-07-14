@@ -190,10 +190,12 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 }`}
                 onClick={() => handleSettingChange('agentType', 'avatar')}
               >
-                <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
-                  <svg className="w-12 h-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/>
-                  </svg>
+                <div className="w-20 h-20 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png" 
+                    alt="AI Avatar" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span className="text-sm text-gray-300">Avatar</span>
               </div>
