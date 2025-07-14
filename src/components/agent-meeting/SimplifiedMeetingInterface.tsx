@@ -384,7 +384,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
       </div>
 
       {/* Center Section - Avatar */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#121619] relative">
+      <div className="flex-1 flex flex-col items-center justify-start pt-32 bg-[#121619] relative">
         <div className="flex flex-col items-center gap-8">
           {/* Avatar */}
           <div>
