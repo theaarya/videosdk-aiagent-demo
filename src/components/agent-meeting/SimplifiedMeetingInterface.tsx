@@ -104,7 +104,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     console.log(`Inviting agent to meeting... (attempt ${agentInviteAttempts + 1})`);
 
     try {
-      const response = await fetch("https://api.videosdk.live/api/start-agent", {
+      const response = await fetch("http://localhost:8000/api/start-agent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -204,7 +204,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
   const leaveAgent = async () => {
     try {
       console.log("Making API call to stop agent...");
-      const response = await fetch("https://api.videosdk.live/api/stop-agent", {
+      const response = await fetch("http://localhost:8000/api/stop-agent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
