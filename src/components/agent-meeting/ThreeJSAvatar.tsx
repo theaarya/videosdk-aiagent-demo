@@ -231,7 +231,10 @@ export const ThreeJSAvatar: React.FC<ThreeJSAvatarProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: "-10px",
+            top: "-20px",
+            left: "-10px",
+            right: "-10px",
+            bottom: "-10px",
             borderRadius: "50%",
             background: `radial-gradient(circle, rgba(90, 194, 238, ${
               isAgentConnected ? (isAgentSpeaking ? 0.4 : 0.2) : 0.15
