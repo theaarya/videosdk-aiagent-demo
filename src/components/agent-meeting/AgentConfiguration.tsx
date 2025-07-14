@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PipelineSection } from "./PipelineSection";
+import { ThreeJSAvatar } from "./ThreeJSAvatar";
 
 interface AgentConfigurationProps {
   agentSettings: AgentSettings;
@@ -167,9 +168,11 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 }`}
                 onClick={() => handleSettingChange('agentType', 'voice')}
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#38BDF8] to-[#38BDF8]/70 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#38BDF8]/80 to-[#38BDF8]/50"></div>
-                </div>
+                <ThreeJSAvatar 
+                  size="md" 
+                  isConnected={false}
+                  className="drop-shadow-lg"
+                />
                 <span className="text-sm text-gray-300">Voice Agent</span>
               </div>
 
