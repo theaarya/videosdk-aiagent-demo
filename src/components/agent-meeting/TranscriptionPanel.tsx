@@ -128,20 +128,20 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
     return (
       <Button
         onClick={onToggleVisibility}
-        className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-[#1F1F1F] hover:bg-[#252A34] border border-[#252A34] shadow-lg"
+        className="fixed bottom-4 right-4 w-14 h-14 rounded-full bg-gray-800 hover:bg-gray-700 border border-cyan-500/30 shadow-lg"
       >
-        <MessageSquare className="w-6 h-6 text-white" />
+        <MessageSquare className="w-6 h-6 text-cyan-400" />
       </Button>
     );
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-[#161616] border border-[#252A34] rounded-lg shadow-xl flex flex-col">
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-gray-900 border border-cyan-500/30 rounded-lg shadow-xl flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[#252A34]">
+      <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center space-x-2">
-          <MessageSquare className="w-5 h-5 text-white" />
-          <h3 className="text-sm font-medium text-white">Live Transcription</h3>
+          <MessageSquare className="w-5 h-5 text-cyan-400" />
+          <h3 className="text-sm font-medium text-white">Transcript</h3>
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -150,8 +150,8 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
             className={cn(
               "w-8 h-8",
               isTranscribing 
-                ? "bg-[#380b0b] hover:bg-[#380b0b] text-[#a13f3f]" 
-                : "bg-[#0b3820] hover:bg-[#0b3820] text-[#3fa16d]"
+                ? "bg-red-900/50 hover:bg-red-900/70 text-red-400 border border-red-500/30" 
+                : "bg-cyan-900/50 hover:bg-cyan-900/70 text-cyan-400 border border-cyan-500/30"
             )}
           >
             {isTranscribing ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -159,9 +159,9 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
           <Button
             onClick={onToggleVisibility}
             size="sm"
-            className="w-8 h-8 bg-[#1F1F1F] hover:bg-[#252A34]"
+            className="w-8 h-8 bg-gray-800 hover:bg-gray-700 text-gray-300"
           >
-            <X className="w-4 h-4 text-white" />
+            <X className="w-4 h-4" />
           </Button>
         </div>
       </div>
@@ -191,12 +191,12 @@ export const TranscriptionPanel: React.FC<TranscriptionPanelProps> = ({
 
         {/* Footer */}
         {transcriptions.length > 0 && (
-          <div className="p-3 border-t border-[#252A34]">
+          <div className="p-3 border-t border-gray-700">
             <Button
               onClick={clearTranscriptions}
               size="sm"
               variant="outline"
-              className="w-full text-xs"
+              className="w-full text-xs border-gray-600 text-gray-300 hover:bg-gray-800"
             >
               Clear All
             </Button>
