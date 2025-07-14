@@ -25,7 +25,7 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
       pipeline_type: serverPipelineType,
       personality: agentSettings.personality,
       system_prompt: systemPrompt,
-      detection: agentSettings.detection || true,
+      detection: agentSettings.detection || false,
       avatar: agentSettings.agentType === 'avatar', // Convert agentType to avatar boolean
       ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
     };

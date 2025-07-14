@@ -9,7 +9,7 @@ import { VIDEOSDK_TOKEN } from "./types";
 import MicWithSlash from "../icons/MicWithSlash";
 import { WaveAvatar } from "./WaveAvatar";
 import { RoomLayout } from "../layout/RoomLayout";
-import { leaveAgent as leaveAgentAPI } from "./JoinAgentRequest";
+import { joinAgent, leaveAgent as leaveAgentAPI } from "./JoinAgentRequest";
 
 interface MeetingInterfaceProps {
   meetingId: string;
@@ -259,65 +259,15 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       console.log("Sending agent settings:", agentSettings);
       
-      // Determine the system prompt based on personality
-      let systemPrompt = "";
-      if (agentSettings.personality === "Custom" && agentSettings.customPrompt) {
-        systemPrompt = agentSettings.customPrompt;
-        console.log("Using custom prompt:", systemPrompt);
-      } else {
-        systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
-        console.log("Using predefined prompt for personality:", agentSettings.personality);
-      }
-      
-      // Create base request body matching backend MeetingReqConfig
-      const requestBody: any = {
-        meeting_id: meetingId,
-        token: VIDEOSDK_TOKEN,
-        pipeline_type: agentSettings.pipelineType,
-        personality: agentSettings.personality,
-        system_prompt: systemPrompt,
-        detection: agentSettings.detection || true,
-        avatar: agentSettings.agentType === 'avatar', // Convert agentType to avatar boolean
-        // Include MCP URL if provided
-        ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
-      };
-
-      // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
-      if (agentSettings.pipelineType === "cascading") {
-        requestBody.stt = agentSettings.stt;
-        requestBody.tts = agentSettings.tts;
-        requestBody.llm = agentSettings.llm;
-      }
-
-      console.log("Attempting to invite agent with backend server");
-      console.log("Request body:", requestBody);
-
-      // Use localhost for development, you can make this configurable
       const backendUrl = "http://localhost:8000";
-      const response = await fetch(`${backendUrl}/join-agent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+      const responseData = await joinAgent(meetingId, agentSettings, backendUrl);
+      
+      console.log("Agent invite successful:", responseData);
+      setAgentInvited(true);
+      toast({
+        title: "Agent Invited",
+        description: "AI Agent is joining the conversation...",
       });
-
-      console.log("Invite agent response status:", response.status);
-      console.log("Invite agent response ok:", response.ok);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Agent invite successful:", responseData);
-        setAgentInvited(true);
-        toast({
-          title: "Agent Invited",
-          description: "AI Agent is joining the conversation...",
-        });
-      } else {
-        const errorText = await response.text();
-        console.error("Agent invite failed:", response.status, errorText);
-        throw new Error(`Request failed: ${response.status} - ${errorText}`);
-      }
 
     } catch (error) {
       console.error("Error inviting agent:", error);
