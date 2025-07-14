@@ -11,6 +11,7 @@ import { ThreeJSAvatar } from "./ThreeJSAvatar";
 import { TranscriptionChat } from "./TranscriptionChat";
 import { AgentSettings, REALTIME_MODEL_OPTIONS, PROMPTS } from "./types";
 import { PipelineSection } from "./PipelineSection";
+import { joinAgent, leaveAgent } from "./JoinAgentRequest";
 import { Wifi, WifiOff } from "lucide-react";
 import MicIcon from "../icons/MicIcon";
 import MicWithSlash from "../icons/MicWithSlash";
@@ -104,57 +105,26 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     console.log(`Inviting agent to meeting... (attempt ${agentInviteAttempts + 1})`);
 
     try {
-      const response = await fetch("http://localhost:8000/api/start-agent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: meetingId,
-          agentSettings,
-        }),
+      const data = await joinAgent(meetingId, agentSettings);
+      console.log("Agent invited successfully:", data);
+      toast({
+        title: "Agent Connected",
+        description: "Your AI agent has joined the conversation",
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Agent invited successfully:", data);
-        toast({
-          title: "Agent Connected",
-          description: "Your AI agent has joined the conversation",
-        });
-      } else {
-        const errorData = await response.text();
-        console.error("Failed to invite agent:", errorData);
-        
-        if (agentInviteAttempts < 3) {
-          toast({
-            title: "Agent Connection Failed",
-            description: `Failed to connect the AI agent. Retrying... (${agentInviteAttempts}/3)`,
-            variant: "destructive",
-          });
-          setAgentInvited(false);
-        } else {
-          toast({
-            title: "Agent Connection Failed",
-            description: "Failed to connect the AI agent after 3 attempts. Please try again later.",
-            variant: "destructive",
-          });
-        }
-      }
     } catch (error) {
       console.error("Error inviting agent:", error);
       
       if (agentInviteAttempts < 3) {
         toast({
-          title: "Agent Connection Error",
-          description: `Error connecting the AI agent. Retrying... (${agentInviteAttempts}/3)`,
+          title: "Agent Connection Failed",
+          description: `Failed to connect the AI agent. Retrying... (${agentInviteAttempts}/3)`,
           variant: "destructive",
         });
         setAgentInvited(false);
       } else {
         toast({
-          title: "Agent Connection Error",
-          description: "Error connecting the AI agent after 3 attempts. Please check your connection and try again later.",
+          title: "Agent Connection Failed",
+          description: "Failed to connect the AI agent after 3 attempts. Please try again later.",
           variant: "destructive",
         });
       }
@@ -185,7 +155,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
       
       if (agentParticipant) {
         console.log("Calling leaveAgent...");
-        await leaveAgent();
+        await leaveAgent(meetingId);
         console.log("Agent removal completed");
       }
       
@@ -201,32 +171,6 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     }
   };
 
-  const leaveAgent = async () => {
-    try {
-      console.log("Making API call to stop agent...");
-      const response = await fetch("http://localhost:8000/api/stop-agent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          roomId: meetingId,
-        }),
-      });
-
-      console.log("Agent stop API response status:", response.status);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Agent removed successfully:", data);
-      } else {
-        const errorText = await response.text();
-        console.error("Failed to remove agent:", errorText);
-      }
-    } catch (error) {
-      console.error("Error removing agent:", error);
-    }
-  };
 
   const handleToggleMic = () => {
     toggleMic();

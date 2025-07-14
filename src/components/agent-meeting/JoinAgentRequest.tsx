@@ -1,5 +1,5 @@
 
-import { AgentSettings, PROMPTS } from "./types";
+import { AgentSettings, PROMPTS, VIDEOSDK_TOKEN } from "./types";
 
 export const joinAgent = async (meetingId: string, agentSettings: AgentSettings, backendUrl: string = "http://localhost:8000") => {
   try {
@@ -14,7 +14,7 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
     // Create base request body matching backend MeetingReqConfig
     const requestBody: any = {
       meeting_id: meetingId,
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MDMzMTY2NSwiZXhwIjoxNzUwOTM2NDY1fQ.3Uy8ok0-9Nc3AuftDB_9iWKQCkVbEdK1h5Sta_yn1p0",
+      token: VIDEOSDK_TOKEN,
       pipeline_type: agentSettings.pipelineType,
       personality: agentSettings.personality,
       system_prompt: systemPrompt,
