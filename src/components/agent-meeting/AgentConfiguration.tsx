@@ -196,7 +196,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           <Button
             onClick={onConnect}
             disabled={isConnecting}
-            className="w-32 h-12 bg-transparent border-2 border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 rounded-full text-sm font-medium transition-all"
+            className="w-32 h-12 bg-transparent border-2 border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 rounded-full text-sm font-medium transition-all mt-4"
           >
             {isConnecting ? "Connecting..." : "Connect"}
           </Button>
