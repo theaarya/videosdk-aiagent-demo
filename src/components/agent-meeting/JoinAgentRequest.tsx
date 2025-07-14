@@ -12,8 +12,12 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
     }
 
     // Create base request body matching backend MeetingReqConfig
-    // Map frontend pipeline types to server expected types
-    const serverPipelineType = agentSettings.pipelineType === "openai" ? "realtime" : agentSettings.pipelineType;
+    // For Real Time pipelines, use the actual model name as pipeline_type
+    // For Cascading pipelines, use "cascading" as pipeline_type
+    let serverPipelineType = agentSettings.pipelineType;
+    if (agentSettings.pipelineType === "openai") {
+      serverPipelineType = agentSettings.realtimeModel || "gpt-4o-realtime-preview-2025-06-03";
+    }
     
     const requestBody: any = {
       meeting_id: meetingId,
@@ -25,11 +29,6 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
       avatar: agentSettings.agentType === 'avatar', // Convert agentType to avatar boolean
       ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
     };
-
-    // Add model for real-time pipeline (openai -> realtime)
-    if (agentSettings.pipelineType === "openai" && agentSettings.realtimeModel) {
-      requestBody.model = agentSettings.realtimeModel;
-    }
 
     // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
     if (agentSettings.pipelineType === "cascading") {
