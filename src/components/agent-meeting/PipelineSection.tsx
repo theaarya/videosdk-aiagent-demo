@@ -23,13 +23,13 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
-            <SelectItem value="deepgram" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="deepgram" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Deepgram
             </SelectItem>
-            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               OpenAI
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Sarvam
             </SelectItem>
           </SelectContent>
@@ -44,13 +44,13 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
-            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               OpenAI
             </SelectItem>
-            <SelectItem value="elevenlabs" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="elevenlabs" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               ElevenLabs
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Sarvam
             </SelectItem>
           </SelectContent>
@@ -65,13 +65,13 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
-            <SelectItem value="google" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="google" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Gemini
             </SelectItem>
-            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               OpenAI GPT
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Sarvam AI
             </SelectItem>
           </SelectContent>
