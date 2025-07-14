@@ -90,10 +90,10 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className={`h-10 text-sm bg-transparent border-2 transition-all ${
+                className={`h-10 text-sm border-2 transition-all ${
                   agentSettings.pipelineType === "openai"
-                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
-                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
+                    ? "border-[#38BDF8] text-[#38BDF8] bg-[#1A1F23] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
+                    : "border-[#25252540] text-gray-300 bg-[#1A1F23] hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "openai")}
               >
@@ -101,10 +101,10 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               </Button>
               <Button
                 variant="outline"
-                className={`h-10 text-sm bg-transparent border-2 transition-all ${
+                className={`h-10 text-sm border-2 transition-all ${
                   agentSettings.pipelineType === "cascading"
-                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
-                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
+                    ? "border-[#38BDF8] text-[#38BDF8] bg-[#1A1F23] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
+                    : "border-[#25252540] text-gray-300 bg-[#1A1F23] hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "cascading")}
               >
