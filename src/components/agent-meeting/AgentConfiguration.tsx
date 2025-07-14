@@ -190,7 +190,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 }`}
                 onClick={() => handleSettingChange('agentType', 'avatar')}
               >
-                <div className="w-20 h-20 rounded-full overflow-hidden">
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden">
                   <img 
                     src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png" 
                     alt="AI Avatar" 
