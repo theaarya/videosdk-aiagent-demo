@@ -37,7 +37,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   return (
     <div className="min-h-screen bg-[#121619] text-white">
       {/* Header */}
-      <div className="px-6 py-3 border-b border-[#252A34] bg-[#1A1F23]">
+      <div className="px-6 py-3 border-b border-[#393939] bg-[#1A1F23]">
         <h1 className="text-xl font-semibold text-white">Agent Configuration</h1>
       </div>
 
@@ -153,13 +153,13 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               placeholder="https://your-mcp-server.com/mcp"
               value={agentSettings.mcpUrl || ""}
               onChange={(e) => handleSettingChange("mcpUrl", e.target.value)}
-              className="bg-[#25252540] border-[#38BDF8]/30 text-white placeholder:text-gray-500 h-10 focus:border-[#38BDF8]"
+              className="bg-[#25252540] border-[#393939] text-white placeholder:text-gray-500 h-10 focus:border-[#393939]"
             />
           </div>
         </div>
 
         {/* Right Panel - Avatar Selection */}
-        <div className="flex-1 p-6 border-l border-[#38BDF8]/30 flex flex-col items-center justify-center">
+        <div className="flex-1 p-6 border-l border-[#393939] flex flex-col items-center justify-center">
           <div className="text-center space-y-8">
             <h3 className="text-sm font-medium text-gray-300">Select Avatar Or Voice Agent</h3>
             
