@@ -34,9 +34,9 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
     : PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="min-h-screen bg-[#121619] text-white">
       {/* Header */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-[#38BDF8]/30">
         <h1 className="text-xl font-semibold text-white">Agent Configuration</h1>
       </div>
 
@@ -52,11 +52,11 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               {["Custom", "Recruiter", "Doctor", "Tutor"].map((personality) => (
                 <Button
                   key={personality}
-                  variant={agentSettings.personality === personality ? "default" : "outline"}
-                  className={`h-10 text-sm ${
+                  variant="outline"
+                  className={`h-10 text-sm bg-transparent border-2 transition-all ${
                     agentSettings.personality === personality
-                      ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                      : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                      ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
+                      : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
                   }`}
                   onClick={() => handleSettingChange("personality", personality)}
                 >
@@ -77,7 +77,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 }
               }}
               placeholder="You're a health bot"
-              className="min-h-[100px] bg-[#252a34] border-gray-600 text-white placeholder:text-gray-500 resize-none"
+              className="min-h-[100px] bg-[#25252540] border-[#38BDF8]/30 text-white placeholder:text-gray-500 resize-none focus:border-[#38BDF8]"
               disabled={agentSettings.personality !== "Custom"}
             />
           </div>
@@ -88,22 +88,22 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
             
             <div className="flex gap-3">
               <Button
-                variant={agentSettings.pipelineType === "openai" ? "default" : "outline"}
-                className={`h-10 text-sm ${
+                variant="outline"
+                className={`h-10 text-sm bg-transparent border-2 transition-all ${
                   agentSettings.pipelineType === "openai"
-                    ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                    : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
+                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "openai")}
               >
                 Real Time
               </Button>
               <Button
-                variant={agentSettings.pipelineType === "cascading" ? "default" : "outline"}
-                className={`h-10 text-sm ${
+                variant="outline"
+                className={`h-10 text-sm bg-transparent border-2 transition-all ${
                   agentSettings.pipelineType === "cascading"
-                    ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                    : "bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700"
+                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
+                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "cascading")}
               >
@@ -116,12 +116,12 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           {agentSettings.pipelineType === "openai" && (
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-gray-300">Select Real Time Models</h3>
-              <Select value="gpt-4o-realtime-preview-2024-10-01" onValueChange={() => {}}>
-                <SelectTrigger className="bg-[#252a34] border-gray-600 text-white h-10">
+               <Select value="gpt-4o-realtime-preview-2024-10-01" onValueChange={() => {}}>
+                <SelectTrigger className="bg-[#25252540] border-[#38BDF8]/30 text-white h-10 focus:border-[#38BDF8]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#252a34] border-gray-600">
-                  <SelectItem value="gpt-4o-realtime-preview-2024-10-01" className="text-white hover:bg-gray-700">
+                <SelectContent className="bg-[#25252540] border-[#38BDF8]/30">
+                  <SelectItem value="gpt-4o-realtime-preview-2024-10-01" className="text-white hover:bg-[#38BDF8]/20">
                     gpt-4o-realtime-preview-2024-10-01
                   </SelectItem>
                 </SelectContent>
@@ -147,13 +147,13 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               placeholder="https://your-mcp-server.com/mcp"
               value={agentSettings.mcpUrl || ""}
               onChange={(e) => handleSettingChange("mcpUrl", e.target.value)}
-              className="bg-[#252a34] border-gray-600 text-white placeholder:text-gray-500 h-10"
+              className="bg-[#25252540] border-[#38BDF8]/30 text-white placeholder:text-gray-500 h-10 focus:border-[#38BDF8]"
             />
           </div>
         </div>
 
         {/* Right Panel - Avatar Selection */}
-        <div className="flex-1 p-6 border-l border-gray-700 flex flex-col items-center justify-center space-y-8">
+        <div className="flex-1 p-6 border-l border-[#38BDF8]/30 flex flex-col items-center justify-center space-y-8">
           <div className="text-center space-y-4">
             <h3 className="text-sm font-medium text-gray-300">Select Avatar Or Voice Agent</h3>
             
@@ -162,13 +162,13 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               <div 
                 className={`flex flex-col items-center space-y-3 cursor-pointer p-4 rounded-lg transition-all ${
                   agentSettings.agentType === 'voice' 
-                    ? 'border-2 border-blue-500' 
-                    : 'border-2 border-transparent hover:border-gray-600'
+                    ? 'border-2 border-[#38BDF8]' 
+                    : 'border-2 border-transparent hover:border-[#38BDF8]/30'
                 }`}
                 onClick={() => handleSettingChange('agentType', 'voice')}
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-300 to-blue-500"></div>
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#38BDF8] to-[#38BDF8]/70 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#38BDF8]/80 to-[#38BDF8]/50"></div>
                 </div>
                 <span className="text-sm text-gray-300">Voice Agent</span>
               </div>
@@ -177,8 +177,8 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
               <div 
                 className={`flex flex-col items-center space-y-3 cursor-pointer p-4 rounded-lg transition-all ${
                   agentSettings.agentType === 'avatar' 
-                    ? 'border-2 border-blue-500' 
-                    : 'border-2 border-transparent hover:border-gray-600'
+                    ? 'border-2 border-[#38BDF8]' 
+                    : 'border-2 border-transparent hover:border-[#38BDF8]/30'
                 }`}
                 onClick={() => handleSettingChange('agentType', 'avatar')}
               >
@@ -196,7 +196,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
           <Button
             onClick={onConnect}
             disabled={isConnecting}
-            className="w-32 h-12 bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white rounded-full text-sm font-medium transition-all"
+            className="w-32 h-12 bg-transparent border-2 border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 rounded-full text-sm font-medium transition-all"
           >
             {isConnecting ? "Connecting..." : "Connect"}
           </Button>
