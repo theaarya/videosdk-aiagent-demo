@@ -32,6 +32,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [agentInviteAttempts, setAgentInviteAttempts] = useState(0);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting({
@@ -90,16 +91,17 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
 
   // Auto-invite agent after joining
   useEffect(() => {
-    if (isJoined && !agentInvited) {
+    if (isJoined && !agentInvited && agentInviteAttempts < 3) {
       inviteAgent();
     }
-  }, [isJoined, agentInvited]);
+  }, [isJoined, agentInvited, agentInviteAttempts]);
 
   const inviteAgent = async () => {
-    if (agentInvited) return;
+    if (agentInvited || agentInviteAttempts >= 3) return;
 
     setAgentInvited(true);
-    console.log("Inviting agent to meeting...");
+    setAgentInviteAttempts(prev => prev + 1);
+    console.log(`Inviting agent to meeting... (attempt ${agentInviteAttempts + 1})`);
 
     try {
       const response = await fetch("https://api.videosdk.live/api/start-agent", {
@@ -123,21 +125,39 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
       } else {
         const errorData = await response.text();
         console.error("Failed to invite agent:", errorData);
-        toast({
-          title: "Agent Connection Failed",
-          description: "Failed to connect the AI agent. Please try again.",
-          variant: "destructive",
-        });
-        setAgentInvited(false);
+        
+        if (agentInviteAttempts < 3) {
+          toast({
+            title: "Agent Connection Failed",
+            description: `Failed to connect the AI agent. Retrying... (${agentInviteAttempts}/3)`,
+            variant: "destructive",
+          });
+          setAgentInvited(false);
+        } else {
+          toast({
+            title: "Agent Connection Failed",
+            description: "Failed to connect the AI agent after 3 attempts. Please try again later.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       console.error("Error inviting agent:", error);
-      toast({
-        title: "Agent Connection Error",
-        description: "Error connecting the AI agent. Please check your connection.",
-        variant: "destructive",
-      });
-      setAgentInvited(false);
+      
+      if (agentInviteAttempts < 3) {
+        toast({
+          title: "Agent Connection Error",
+          description: `Error connecting the AI agent. Retrying... (${agentInviteAttempts}/3)`,
+          variant: "destructive",
+        });
+        setAgentInvited(false);
+      } else {
+        toast({
+          title: "Agent Connection Error",
+          description: "Error connecting the AI agent after 3 attempts. Please check your connection and try again later.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
