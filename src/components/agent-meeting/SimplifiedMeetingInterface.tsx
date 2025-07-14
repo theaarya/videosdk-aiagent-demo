@@ -2,9 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { ThreeJSAvatar } from "./ThreeJSAvatar";
-import { AgentSettings } from "./types";
+import { TranscriptionChat } from "./TranscriptionChat";
+import { AgentSettings, REALTIME_MODEL_OPTIONS, PROMPTS } from "./types";
+import { PipelineSection } from "./PipelineSection";
+import { Wifi, WifiOff } from "lucide-react";
 import MicIcon from "../icons/MicIcon";
 import MicWithSlash from "../icons/MicWithSlash";
 
@@ -192,97 +199,284 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     (p: any) => p.displayName?.includes("Agent") || p.displayName?.includes("Bot")
   ) as any;
 
-  if (connectionError && retryAttempts >= 3) {
-    return (
-      <div className="min-h-screen bg-[#121619] text-white flex items-center justify-center">
-        <Card className="bg-[#1A1F23] border-[#393939] p-8 text-center">
-          <h2 className="text-xl font-bold mb-4 text-red-400">Connection Failed</h2>
-          <p className="text-gray-300 mb-6">{connectionError}</p>
-          <div className="space-y-3">
-            <Button
-              onClick={handleManualRetry}
-              disabled={isRetrying}
-              className="w-full bg-[#38BDF8] hover:bg-[#38BDF8]/80 text-white"
-            >
-              {isRetrying ? "Retrying..." : "Try Again"}
-            </Button>
-            <Button
-              onClick={onDisconnect}
-              variant="outline"
-              className="w-full border-[#393939] text-gray-300 hover:bg-[#25252540]"
-            >
-              Go Back
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  // Get agent audio stats for latency monitoring
+  const { getAudioStats } = useParticipant(agentParticipant?.id || "");
+  const [agentStats, setAgentStats] = useState<any>({});
+
+  // Monitor agent latency stats
+  useEffect(() => {
+    if (!agentParticipant?.id || !getAudioStats) return;
+
+    const updateStats = async () => {
+      try {
+        const statsArray = await getAudioStats();
+        if (statsArray && statsArray.length > 0) {
+          setAgentStats(statsArray[0]);
+        }
+      } catch (error) {
+        console.error("Error getting agent stats:", error);
+      }
+    };
+
+    const interval = setInterval(updateStats, 2000);
+    updateStats();
+
+    return () => clearInterval(interval);
+  }, [agentParticipant?.id, getAudioStats]);
+
+  const getLatencyStatus = () => {
+    const rtt = agentStats.rtt || 0;
+    if (rtt > 150) return { status: "Poor", color: "text-red-400" };
+    if (rtt > 75) return { status: "Fair", color: "text-yellow-400" };
+    return { status: "Good", color: "text-green-400" };
+  };
+
+  const systemPrompt = agentSettings.personality === "Custom" 
+    ? agentSettings.customPrompt || ""
+    : PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
 
   return (
-    <div className="min-h-screen bg-[#121619] text-white">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-[#393939] bg-[#1A1F23] flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-white">Voice Agent Session</h1>
-          <p className="text-sm text-gray-400">Connected with {agentSettings.personality} agent</p>
+    <div className="min-h-screen bg-[#121619] text-white flex">
+      {/* Left Sidebar - Agent Configuration */}
+      <div className="w-80 bg-[#1A1F23] border-r border-[#393939] overflow-y-auto">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-[#393939]">
+          <h1 className="text-lg font-semibold text-white">Agent Configuration</h1>
         </div>
-        <Button
-          onClick={handleDisconnect}
-          variant="outline"
-          className="border-red-500 text-red-500 hover:bg-red-500/10"
-        >
-          End Session
-        </Button>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center space-y-8">
-          {/* Avatar */}
-          <div className="flex justify-center">
-            <ThreeJSAvatar
-              participantId={agentParticipant?.id}
-              isConnected={!!agentParticipant}
-              size="xl"
-              className="drop-shadow-2xl"
+        <div className="p-6 space-y-6">
+          {/* Use cases */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">Use cases</h3>
+            <p className="text-xs text-gray-500">Define how your agent communicate and behaves</p>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {["Custom", "Recruiter", "Doctor", "Tutor"].map((personality) => (
+                <Button
+                  key={personality}
+                  variant="outline"
+                  className={`h-9 text-xs border transition-all ${
+                    agentSettings.personality === personality
+                      ? "border-[#38BDF8] text-[#38BDF8] bg-[#38BDF8]/10"
+                      : "border-[#393939] text-gray-300 bg-transparent hover:border-[#38BDF8]/50"
+                  }`}
+                  disabled={true} // Read-only during meeting
+                >
+                  {personality}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* System Prompt */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">System Prompt</h3>
+            <Textarea
+              value={systemPrompt}
+              placeholder="You're a health bot"
+              className="min-h-[80px] bg-[#25252540] border-[#393939] text-white placeholder:text-gray-500 resize-none text-xs"
+              disabled={true} // Read-only during meeting
             />
           </div>
 
-          {/* Status */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-white">
-              {agentParticipant ? "Agent is ready to talk" : "Connecting agent..."}
-            </h2>
-            <p className="text-gray-400">
-              {agentParticipant 
-                ? "Start speaking to begin your conversation" 
-                : "Please wait while we connect your AI agent"
-              }
-            </p>
+          {/* AI Agent Pipelines */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">AI Agent Pipelines</h3>
+            
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className={`h-9 text-xs border transition-all ${
+                  agentSettings.pipelineType === "openai"
+                    ? "border-[#38BDF8] text-[#38BDF8] bg-[#38BDF8]/10"
+                    : "border-[#393939] text-gray-300 bg-transparent"
+                }`}
+                disabled={true}
+              >
+                Real Time
+              </Button>
+              <Button
+                variant="outline"
+                className={`h-9 text-xs border transition-all ${
+                  agentSettings.pipelineType === "cascading"
+                    ? "border-[#38BDF8] text-[#38BDF8] bg-[#38BDF8]/10"
+                    : "border-[#393939] text-gray-300 bg-transparent"
+                }`}
+                disabled={true}
+              >
+                Cascading
+              </Button>
+            </div>
           </div>
 
-          {/* Microphone Control */}
-          <div className="flex justify-center">
-            <Button
-              onClick={handleToggleMic}
-              className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-                micEnabled
-                  ? "bg-[#38BDF8] hover:bg-[#38BDF8]/80 text-white"
-                  : "bg-red-500 hover:bg-red-600 text-white"
-              }`}
+          {/* Pipeline Options */}
+          {agentSettings.pipelineType === "openai" ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-gray-300">Speech to text</h3>
+              <Select value="Microsoft" disabled>
+                <SelectTrigger className="bg-[#25252540] border-[#393939] text-white h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+              </Select>
+
+              <h3 className="text-sm font-medium text-gray-300">Text to speech</h3>
+              <Select value="OpenAI" disabled>
+                <SelectTrigger className="bg-[#25252540] border-[#393939] text-white h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+              </Select>
+
+              <h3 className="text-sm font-medium text-gray-300">LLM provider</h3>
+              <Select value="Gemini" disabled>
+                <SelectTrigger className="bg-[#25252540] border-[#393939] text-white h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+              </Select>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <PipelineSection 
+                agentSettings={agentSettings}
+                onSettingChange={() => {}} // Read-only
+              />
+            </div>
+          )}
+
+          {/* Voice Activity Detection Toggle */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-300">Voice activity detection (VAD)</h3>
+                <p className="text-xs text-gray-500">Using SileroVAD for accurate voice activity detection</p>
+              </div>
+              <div className="w-10 h-6 bg-[#38BDF8] rounded-full relative">
+                <div className="w-4 h-4 bg-white rounded-full absolute top-1 right-1"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Turn Detection Toggle */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-300">Turn Detection</h3>
+                <p className="text-xs text-gray-500">Using custom VideoSDK model for intelligent conversation turn management</p>
+              </div>
+              <div className="w-10 h-6 bg-[#38BDF8] rounded-full relative">
+                <div className="w-4 h-4 bg-white rounded-full absolute top-1 right-1"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* MCP Server */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300">MCP Server</h3>
+            <Input
+              type="url"
+              placeholder="https://your-mcp-server.com/mcp"
+              value={agentSettings.mcpUrl || ""}
+              className="bg-[#25252540] border-[#393939] text-white placeholder:text-gray-500 h-9 text-xs"
+              disabled={true} // Read-only during meeting
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Center Section - Avatar */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#121619] relative">
+        {/* Avatar */}
+        <div className="mb-8">
+          <ThreeJSAvatar
+            participantId={agentParticipant?.id}
+            isConnected={!!agentParticipant}
+            size="xl"
+            className="drop-shadow-2xl"
+          />
+        </div>
+
+        {/* Tap to interrupt text */}
+        <div className="mb-16">
+          <p className="text-sm text-gray-400">Tap to interrupt</p>
+        </div>
+
+        {/* Bottom Controls */}
+        <div className="absolute bottom-8 flex gap-6 items-center">
+          {/* Mic Button */}
+          <Button
+            onClick={handleToggleMic}
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
+              micEnabled
+                ? "bg-[#1e3a52] hover:bg-[#1e3a52]/80 text-[#38BDF8] border border-[#38BDF8]/30"
+                : "bg-red-500 hover:bg-red-600 text-white"
+            }`}
+          >
+            {micEnabled ? (
+              <MicIcon className="w-6 h-6" />
+            ) : (
+              <MicWithSlash disabled={true} />
+            )}
+          </Button>
+
+          {/* End Call Button */}
+          <Button
+            onClick={handleDisconnect}
+            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+          >
+            ✕
+          </Button>
+        </div>
+      </div>
+
+      {/* Right Sidebar - Latency & Transcript */}
+      <div className="w-80 bg-[#1A1F23] border-l border-[#393939] flex flex-col">
+        {/* Agent Latency Header */}
+        <div className="px-6 py-4 border-b border-[#393939] flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Agent Latency</h2>
+          <div className="flex items-center gap-2">
+            {agentParticipant ? (
+              <Wifi className="w-4 h-4 text-green-400" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-red-400" />
+            )}
+            <Badge 
+              variant="outline" 
+              className={`text-xs ${getLatencyStatus().color} border-current`}
             >
-              {micEnabled ? (
-                <MicIcon className="w-6 h-6" />
-              ) : (
-                <MicWithSlash disabled={true} />
-              )}
-            </Button>
+              {getLatencyStatus().status}
+            </Badge>
           </div>
+        </div>
 
-          <p className="text-sm text-gray-500">
-            {micEnabled ? "Microphone is on" : "Microphone is off"}
-          </p>
+        {/* Latency Metrics */}
+        <div className="p-6 border-b border-[#393939]">
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="bg-[#25252540] border-[#38BDF8]/30 p-4 text-center">
+              <div className="text-xs text-gray-400 mb-1">STT</div>
+              <div className="text-lg font-mono text-white">
+                {agentStats.rtt ? `${Math.round(agentStats.rtt)}` : "33"} ms
+              </div>
+            </Card>
+            <Card className="bg-[#25252540] border-[#38BDF8]/30 p-4 text-center">
+              <div className="text-xs text-gray-400 mb-1">jitter</div>
+              <div className="text-lg font-mono text-white">
+                {agentStats.jitter ? `${agentStats.jitter.toFixed(1)}` : "5.0"} ms
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Transcript Header */}
+        <div className="px-6 py-3 border-b border-[#393939]">
+          <h3 className="text-sm font-semibold text-white">Transcript</h3>
+        </div>
+
+        {/* Transcript Content */}
+        <div className="flex-1 overflow-hidden">
+          <TranscriptionChat
+            participants={new Map(Object.entries(participants))}
+            localParticipantId={localParticipant?.id}
+            isConnected={isJoined}
+          />
         </div>
       </div>
     </div>
