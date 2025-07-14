@@ -19,10 +19,10 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Speech to text</Label>
         <Select value={agentSettings.stt} onValueChange={value => onSettingChange("stt", value)}>
-          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#393939] text-white rounded-lg h-12 focus:border-[#393939]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#393939] rounded-lg z-50">
             <SelectItem value="deepgram" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Deepgram
             </SelectItem>
@@ -40,10 +40,10 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Text to speech</Label>
         <Select value={agentSettings.tts} onValueChange={value => onSettingChange("tts", value)}>
-          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#393939] text-white rounded-lg h-12 focus:border-[#393939]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#393939] rounded-lg z-50">
             <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               OpenAI
             </SelectItem>
@@ -61,10 +61,10 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">LLM provider</Label>
         <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
-          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#393939] text-white rounded-lg h-12 focus:border-[#393939]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#121619] border-[#38BDF8]/30 rounded-lg z-50">
+          <SelectContent className="bg-[#121619] border-[#393939] rounded-lg z-50">
             <SelectItem value="google" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 focus:text-white data-[state=checked]:bg-[#38BDF8]/10 data-[state=checked]:border-l-4 data-[state=checked]:border-l-[#38BDF8] data-[state=checked]:text-white cursor-pointer">
               Gemini
             </SelectItem>
