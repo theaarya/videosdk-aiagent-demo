@@ -150,20 +150,28 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
         (p: any) => p.displayName?.includes("Agent") || p.displayName?.includes("Bot")
       );
       
+      console.log("Agent participant found:", !!agentParticipant);
+      
       if (agentParticipant) {
+        console.log("Calling leaveAgent...");
         await leaveAgent();
+        console.log("Agent removal completed");
       }
       
+      console.log("Ending meeting...");
       await end();
+      console.log("Meeting ended, calling onDisconnect");
       onDisconnect();
     } catch (error) {
       console.error("Error during disconnect:", error);
+      console.log("Disconnect error, calling onDisconnect anyway");
       onDisconnect();
     }
   };
 
   const leaveAgent = async () => {
     try {
+      console.log("Making API call to stop agent...");
       const response = await fetch("https://api.videosdk.live/api/stop-agent", {
         method: "POST",
         headers: {
@@ -174,10 +182,14 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
         }),
       });
 
+      console.log("Agent stop API response status:", response.status);
+      
       if (response.ok) {
-        console.log("Agent removed successfully");
+        const data = await response.json();
+        console.log("Agent removed successfully:", data);
       } else {
-        console.error("Failed to remove agent");
+        const errorText = await response.text();
+        console.error("Failed to remove agent:", errorText);
       }
     } catch (error) {
       console.error("Error removing agent:", error);
