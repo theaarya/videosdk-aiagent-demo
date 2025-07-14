@@ -55,8 +55,8 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                   variant="outline"
                   className={`h-10 text-sm bg-transparent border-2 transition-all ${
                     agentSettings.personality === personality
-                      ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
-                      : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
+                      ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
+                      : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
                   }`}
                   onClick={() => handleSettingChange("personality", personality)}
                 >
@@ -91,8 +91,8 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 variant="outline"
                 className={`h-10 text-sm bg-transparent border-2 transition-all ${
                   agentSettings.pipelineType === "openai"
-                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
-                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
+                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
+                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "openai")}
               >
@@ -102,8 +102,8 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
                 variant="outline"
                 className={`h-10 text-sm bg-transparent border-2 transition-all ${
                   agentSettings.pipelineType === "cascading"
-                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10"
-                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30"
+                    ? "border-[#38BDF8] text-[#38BDF8] hover:bg-[#38BDF8]/10 hover:text-[#38BDF8]"
+                    : "border-[#25252540] text-gray-300 hover:bg-[#25252540] hover:border-[#38BDF8]/30 hover:text-gray-300"
                 }`}
                 onClick={() => handleSettingChange("pipelineType", "cascading")}
               >
