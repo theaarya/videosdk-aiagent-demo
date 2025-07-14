@@ -145,6 +145,17 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     try {
       console.log("Disconnecting from meeting...");
       
+      // Stop all media streams by getting fresh media access and stopping them
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => {
+          console.log("Stopping track:", track.kind);
+          track.stop();
+        });
+      } catch (err) {
+        console.log("No media streams to stop or access denied");
+      }
+      
       // Remove agent if present
       const agentParticipant = Object.values(participants).find(
         (p: any) => p.displayName?.includes("Agent") || p.displayName?.includes("Bot")
@@ -158,9 +169,10 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
         console.log("Agent removal completed");
       }
       
-      console.log("Ending meeting...");
-      await end();
-      console.log("Meeting ended, calling onDisconnect");
+      console.log("Leaving meeting...");
+      await leave();
+      console.log("Meeting left successfully");
+      
       onDisconnect();
     } catch (error) {
       console.error("Error during disconnect:", error);
