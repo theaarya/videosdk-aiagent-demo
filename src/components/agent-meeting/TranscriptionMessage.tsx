@@ -25,13 +25,13 @@ export const TranscriptionMessage: React.FC<TranscriptionMessageProps> = ({
     <div className={cn(
       "flex flex-col space-y-1 p-3 rounded-lg border",
       isUser 
-        ? "bg-gray-800/50 border-cyan-500/30" 
-        : "bg-gray-800/30 border-gray-600/50"
+        ? "bg-[#25252540] border-[#38BDF8]/30" 
+        : "bg-[#25252540] border-[#25252540]"
     )}>
       <div className="flex items-center justify-between">
         <span className={cn(
           "text-xs font-medium",
-          isUser ? "text-cyan-400" : "text-gray-300"
+          isUser ? "text-[#38BDF8]" : "text-gray-300"
         )}>
           {participantName}
         </span>
