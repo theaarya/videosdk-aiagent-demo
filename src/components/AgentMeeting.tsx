@@ -30,6 +30,7 @@ const AgentMeeting: React.FC = () => {
   const createMeeting = async () => {
     try {
       console.log("Creating meeting with token:", VIDEOSDK_TOKEN);
+      console.log("Token length:", VIDEOSDK_TOKEN.length);
 
       const response = await fetch("https://api.videosdk.live/v2/rooms", {
         method: "POST",
@@ -100,6 +101,20 @@ const AgentMeeting: React.FC = () => {
 
   // Render different components based on connection state
   if (meetingId && isConnected) {
+    console.log("=== INITIALIZING MEETING PROVIDER ===");
+    console.log("Meeting ID:", meetingId);
+    console.log("Token for joining:", VIDEOSDK_TOKEN);
+    
+    // Try to decode JWT token to see permissions
+    try {
+      const tokenPayload = JSON.parse(atob(VIDEOSDK_TOKEN.split('.')[1]));
+      console.log("Token payload:", tokenPayload);
+      console.log("Token permissions:", tokenPayload.permissions);
+      console.log("Token expiry:", new Date(tokenPayload.exp * 1000));
+    } catch (e) {
+      console.error("Error decoding token:", e);
+    }
+    
     return (
       <MeetingProvider
         config={{
