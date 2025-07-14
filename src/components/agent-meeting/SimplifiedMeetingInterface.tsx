@@ -394,13 +394,8 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
           />
         </div>
 
-        {/* Tap to interrupt text */}
-        <div className="mb-16">
-          <p className="text-sm text-gray-400">Tap to interrupt</p>
-        </div>
-
-        {/* Bottom Controls */}
-        <div className="absolute bottom-8 flex gap-6 items-center">
+        {/* Control Icons */}
+        <div className="flex gap-6 items-center">
           {/* Mic Button */}
           <Button
             onClick={handleToggleMic}
