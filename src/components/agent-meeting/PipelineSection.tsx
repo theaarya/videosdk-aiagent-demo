@@ -19,7 +19,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Speech to text</Label>
         <Select value={agentSettings.stt} onValueChange={value => onSettingChange("stt", value)}>
-          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
@@ -40,7 +40,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Text to speech</Label>
         <Select value={agentSettings.tts} onValueChange={value => onSettingChange("tts", value)}>
-          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
@@ -61,7 +61,7 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">LLM provider</Label>
         <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
-          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
+          <SelectTrigger className="bg-[#121619] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
