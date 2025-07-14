@@ -19,17 +19,17 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Speech to text</Label>
         <Select value={agentSettings.stt} onValueChange={value => onSettingChange("stt", value)}>
-          <SelectTrigger className="bg-[#2A2A2A] border-[#404040] text-white rounded-lg h-12">
+          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#2A2A2A] border-[#404040] rounded-lg">
-            <SelectItem value="deepgram" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+            <SelectItem value="deepgram" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Deepgram
             </SelectItem>
-            <SelectItem value="openai" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               OpenAI
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Sarvam
             </SelectItem>
           </SelectContent>
@@ -40,17 +40,17 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">Text to speech</Label>
         <Select value={agentSettings.tts} onValueChange={value => onSettingChange("tts", value)}>
-          <SelectTrigger className="bg-[#2A2A2A] border-[#404040] text-white rounded-lg h-12">
+          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#2A2A2A] border-[#404040] rounded-lg">
-            <SelectItem value="openai" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               OpenAI
             </SelectItem>
-            <SelectItem value="elevenlabs" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="elevenlabs" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               ElevenLabs
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Sarvam
             </SelectItem>
           </SelectContent>
@@ -61,17 +61,17 @@ export const PipelineSection: React.FC<PipelineSectionProps> = ({
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-300">LLM provider</Label>
         <Select value={agentSettings.llm} onValueChange={value => onSettingChange("llm", value)}>
-          <SelectTrigger className="bg-[#2A2A2A] border-[#404040] text-white rounded-lg h-12">
+          <SelectTrigger className="bg-[#393939] border-[#38BDF8]/30 text-white rounded-lg h-12 focus:border-[#38BDF8]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#2A2A2A] border-[#404040] rounded-lg">
-            <SelectItem value="google" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+          <SelectContent className="bg-[#393939] border-[#38BDF8]/30 rounded-lg z-50">
+            <SelectItem value="google" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Gemini
             </SelectItem>
-            <SelectItem value="openai" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="openai" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               OpenAI GPT
             </SelectItem>
-            <SelectItem value="sarvam" className="text-white hover:bg-[#3A3A3A] focus:bg-[#3A3A3A] cursor-pointer">
+            <SelectItem value="sarvam" className="text-white hover:bg-[#38BDF8]/20 focus:bg-[#38BDF8]/20 cursor-pointer">
               Sarvam AI
             </SelectItem>
           </SelectContent>
