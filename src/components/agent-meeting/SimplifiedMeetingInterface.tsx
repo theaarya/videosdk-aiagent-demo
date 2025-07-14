@@ -385,41 +385,43 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
 
       {/* Center Section - Avatar */}
       <div className="flex-1 flex flex-col items-center justify-center bg-[#121619] relative">
-        {/* Avatar */}
-        <div className="mb-8">
-          <ThreeJSAvatar
-            participantId={agentParticipant?.id}
-            isConnected={!!agentParticipant}
-            size="xl"
-            className="drop-shadow-2xl"
-          />
-        </div>
+        <div className="flex flex-col items-center gap-8">
+          {/* Avatar */}
+          <div>
+            <ThreeJSAvatar
+              participantId={agentParticipant?.id}
+              isConnected={!!agentParticipant}
+              size="xl"
+              className="drop-shadow-2xl"
+            />
+          </div>
 
-        {/* Control Icons */}
-        <div className="flex gap-6 items-center">
-          {/* Mic Button */}
-          <Button
-            onClick={handleToggleMic}
-            className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-              micEnabled
-                ? "bg-[#1e3a52] hover:bg-[#1e3a52]/80 text-[#38BDF8] border border-[#38BDF8]/30"
-                : "bg-red-500 hover:bg-red-600 text-white"
-            }`}
-          >
-            {micEnabled ? (
-              <MicIcon className="w-6 h-6" />
-            ) : (
-              <MicWithSlash disabled={true} />
-            )}
-          </Button>
+          {/* Control Icons */}
+          <div className="flex gap-6 items-center">
+            {/* Mic Button */}
+            <Button
+              onClick={handleToggleMic}
+              className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
+                micEnabled
+                  ? "bg-[#1e3a52] hover:bg-[#1e3a52]/80 text-[#38BDF8] border border-[#38BDF8]/30"
+                  : "bg-red-500 hover:bg-red-600 text-white"
+              }`}
+            >
+              {micEnabled ? (
+                <MicIcon className="w-6 h-6" />
+              ) : (
+                <MicWithSlash disabled={true} />
+              )}
+            </Button>
 
-          {/* End Call Button */}
-          <Button
-            onClick={handleDisconnect}
-            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
-          >
-            ✕
-          </Button>
+            {/* End Call Button */}
+            <Button
+              onClick={handleDisconnect}
+              className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
+            >
+              ✕
+            </Button>
+          </div>
         </div>
       </div>
 
