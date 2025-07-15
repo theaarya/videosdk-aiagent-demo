@@ -5,6 +5,7 @@ import { AgentSettings, VIDEOSDK_TOKEN } from "./agent-meeting/types";
 import { SimplifiedMeetingInterface } from "./agent-meeting/SimplifiedMeetingInterface";
 import { MeetingInterface } from "./agent-meeting/MeetingInterface";
 import { MeetingContainer } from "./agent-meeting/MeetingContainer";
+import { TopHeader } from "./layout/TopHeader";
 import { Meeting } from "@videosdk.live/react-sdk/dist/types/meeting";
 
 const AgentMeeting: React.FC = () => {
@@ -119,35 +120,41 @@ const AgentMeeting: React.FC = () => {
     }
 
     return (
-      <MeetingProvider
-        config={{
-          meetingId,
-          micEnabled: true,
-          webcamEnabled: false,
-          name: "User",
-          debugMode: true, // Enable debug mode for better logging
-          // multiStream: true, // Enable multistream for better agent suppor
-        }}
-        token={VIDEOSDK_TOKEN}
-        reinitialiseMeetingOnConfigChange={false}
-        joinWithoutUserInteraction={false} // Auto-join for smoother experience
-      >
-        <MeetingInterface
-          meetingId={meetingId}
-          onDisconnect={handleDisconnect}
-          agentSettings={agentSettings}
-        />
-      </MeetingProvider>
+      <>
+        <TopHeader />
+        <MeetingProvider
+          config={{
+            meetingId,
+            micEnabled: true,
+            webcamEnabled: false,
+            name: "User",
+            debugMode: true, // Enable debug mode for better logging
+            // multiStream: true, // Enable multistream for better agent suppor
+          }}
+          token={VIDEOSDK_TOKEN}
+          reinitialiseMeetingOnConfigChange={false}
+          joinWithoutUserInteraction={false} // Auto-join for smoother experience
+        >
+          <MeetingInterface
+            meetingId={meetingId}
+            onDisconnect={handleDisconnect}
+            agentSettings={agentSettings}
+          />
+        </MeetingProvider>
+      </>
     );
   }
 
   return (
-    <MeetingContainer
-      onConnect={handleConnect}
-      agentSettings={agentSettings}
-      isConnecting={isConnecting}
-      onSettingsChange={handleSettingsChange}
-    />
+    <>
+      <TopHeader />
+      <MeetingContainer
+        onConnect={handleConnect}
+        agentSettings={agentSettings}
+        isConnecting={isConnecting}
+        onSettingsChange={handleSettingsChange}
+      />
+    </>
   );
 };
 

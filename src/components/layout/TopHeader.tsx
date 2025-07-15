@@ -1,0 +1,32 @@
+import { Github, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export const TopHeader = () => {
+  return (
+    <div className="fixed top-0 right-0 z-50 p-4">
+      <div className="flex items-center space-x-3">
+        {/* GitHub Link */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 px-4 bg-[#1A1F23] border-[#393939] text-gray-300 hover:bg-[#25252540] hover:text-white shadow-lg"
+          onClick={() => window.open("https://github.com/videosdk-live/agents", "_blank")}
+        >
+          <Github className="w-4 h-4 mr-2" />
+          <span className="text-sm">Open Source</span>
+        </Button>
+
+        {/* ProductHunt Link */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 px-4 bg-[#1A1F23] border-[#393939] text-gray-300 hover:bg-[#25252540] hover:text-white shadow-lg"
+          onClick={() => window.open("https://www.producthunt.com/products/video-sdk", "_blank")}
+        >
+          <ExternalLink className="w-4 h-4 mr-2" />
+          <span className="text-sm">Upvote</span>
+        </Button>
+      </div>
+    </div>
+  );
+};
