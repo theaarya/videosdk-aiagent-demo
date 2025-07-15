@@ -1,10 +1,11 @@
-
 import React, { useState } from "react";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
 import { toast } from "@/hooks/use-toast";
 import { AgentSettings, VIDEOSDK_TOKEN } from "./agent-meeting/types";
 import { SimplifiedMeetingInterface } from "./agent-meeting/SimplifiedMeetingInterface";
+import { MeetingInterface } from "./agent-meeting/MeetingInterface";
 import { MeetingContainer } from "./agent-meeting/MeetingContainer";
+import { Meeting } from "@videosdk.live/react-sdk/dist/types/meeting";
 
 const AgentMeeting: React.FC = () => {
   const [meetingId, setMeetingId] = useState<string | null>(null);
@@ -20,7 +21,7 @@ const AgentMeeting: React.FC = () => {
     topK: 0.8,
     pipelineType: "openai",
     stt: "deepgram",
-    tts: "elevenlabs", 
+    tts: "elevenlabs",
     llm: "openai",
     detection: false,
     agentType: "voice", // Default to voice agent
@@ -41,8 +42,8 @@ const AgentMeeting: React.FC = () => {
         body: JSON.stringify({
           autoCloseConfig: {
             type: "session-end-and-deactivate",
-            duration: 60
-          }
+            duration: 60,
+          },
         }),
       });
 
@@ -106,17 +107,17 @@ const AgentMeeting: React.FC = () => {
     console.log("=== INITIALIZING MEETING PROVIDER ===");
     console.log("Meeting ID:", meetingId);
     console.log("Token for joining:", VIDEOSDK_TOKEN);
-    
+
     // Try to decode JWT token to see permissions
     try {
-      const tokenPayload = JSON.parse(atob(VIDEOSDK_TOKEN.split('.')[1]));
+      const tokenPayload = JSON.parse(atob(VIDEOSDK_TOKEN.split(".")[1]));
       console.log("Token payload:", tokenPayload);
       console.log("Token permissions:", tokenPayload.permissions);
       console.log("Token expiry:", new Date(tokenPayload.exp * 1000));
     } catch (e) {
       console.error("Error decoding token:", e);
     }
-    
+
     return (
       <MeetingProvider
         config={{
@@ -124,14 +125,14 @@ const AgentMeeting: React.FC = () => {
           micEnabled: true,
           webcamEnabled: false,
           name: "User",
-          debugMode: false, // Enable debug mode for better logging
-          multiStream: false, // Enable multistream for better agent support
+          debugMode: true, // Enable debug mode for better logging
+          // multiStream: true, // Enable multistream for better agent suppor
         }}
         token={VIDEOSDK_TOKEN}
         reinitialiseMeetingOnConfigChange={false}
         joinWithoutUserInteraction={false} // Auto-join for smoother experience
       >
-        <SimplifiedMeetingInterface
+        <MeetingInterface
           meetingId={meetingId}
           onDisconnect={handleDisconnect}
           agentSettings={agentSettings}
