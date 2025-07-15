@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export const TopHeader = () => {
   return (
-    <div className="fixed top-0 right-0 z-50 h-16 flex items-center justify-end pr-4">
+    <div className="fixed top-0 right-0 z-50 h-20 flex items-center justify-end pr-6">
       <div className="flex items-center space-x-3">
         {/* GitHub Link */}
         <Button
