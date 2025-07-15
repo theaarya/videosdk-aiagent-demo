@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { useParticipant } from "@videosdk.live/react-sdk";
 import { Volume2, VolumeX } from "lucide-react";
@@ -16,9 +15,8 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [volume, setVolume] = useState(1);
 
-  const { micStream, isActiveSpeaker, displayName, getAudioStats } = useParticipant(
-    participantId,
-    {
+  const { micStream, isActiveSpeaker, displayName, getAudioStats } =
+    useParticipant(participantId, {
       onStreamEnabled: (stream) => {
         console.log("Agent audio stream enabled:", stream);
         if (audioRef.current && stream) {
@@ -33,8 +31,7 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
           audioRef.current.srcObject = null;
         }
       },
-    }
-  );
+    });
 
   useEffect(() => {
     if (audioRef.current && micStream) {
