@@ -14,6 +14,24 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [volume, setVolume] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Helper function to safely play audio
+  const safePlay = async () => {
+    if (!audioRef.current || !isAudioEnabled || isLoading) return;
+
+    try {
+      setIsLoading(true);
+      await audioRef.current.play();
+    } catch (error) {
+      // Ignore AbortError as it's expected when streams change rapidly
+      if (!(error instanceof Error) || !error.name.includes("AbortError")) {
+        console.error("Audio play error:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const { micStream, isActiveSpeaker, displayName, getAudioStats } =
     useParticipant(participantId, {
@@ -22,13 +40,19 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
         if (audioRef.current && stream) {
           const mediaStream = new MediaStream([stream.track]);
           audioRef.current.srcObject = mediaStream;
-          audioRef.current.play().catch(console.error);
+
+          // Wait for the audio to be ready before playing
+          audioRef.current.onloadeddata = () => {
+            safePlay();
+          };
         }
       },
       onStreamDisabled: (stream) => {
         console.log("Agent audio stream disabled:", stream);
         if (audioRef.current) {
+          audioRef.current.pause();
           audioRef.current.srcObject = null;
+          audioRef.current.onloadeddata = null;
         }
       },
     });
@@ -38,21 +62,29 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
       const mediaStream = new MediaStream([micStream.track]);
       audioRef.current.srcObject = mediaStream;
       audioRef.current.volume = volume;
+
       if (isAudioEnabled) {
-        audioRef.current.play().catch(console.error);
+        // Wait for the audio to be ready before playing
+        audioRef.current.onloadeddata = () => {
+          safePlay();
+        };
       }
     }
-  }, [micStream, isAudioEnabled, volume]);
+  }, [micStream, volume]); // Removed isAudioEnabled from dependencies to avoid unnecessary reloads
+
+  // Handle audio enable/disable separately to avoid reloading the stream
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isAudioEnabled) {
+        safePlay();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isAudioEnabled]);
 
   const toggleAudio = () => {
     setIsAudioEnabled(!isAudioEnabled);
-    if (audioRef.current) {
-      if (isAudioEnabled) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(console.error);
-      }
-    }
   };
 
   const handleVolumeChange = (newVolume: number[]) => {

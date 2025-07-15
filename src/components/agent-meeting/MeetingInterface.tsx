@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Badge, MicIcon, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -37,6 +37,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
   const maxRetries = 3;
@@ -132,6 +133,62 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     agentSettings.personality === "Custom"
       ? agentSettings.customPrompt || ""
       : PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
+
+  // Find the agent participant
+  const participantsList = Array.from(participants.values());
+  const agentParticipant = participantsList.find(
+    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
+  );
+
+  // Get agent video stream using useParticipant hook
+  const agentParticipantData = useParticipant(agentParticipant?.id || "", {
+    onStreamEnabled: (stream) => {
+      console.log("Agent video stream enabled:", stream);
+    },
+    onStreamDisabled: (stream) => {
+      console.log("Agent video stream disabled:", stream);
+    },
+  });
+
+  // Create video stream for HTML video element
+  const agentVideoStream = useMemo(() => {
+    if (agentParticipantData?.webcamOn && agentParticipantData?.webcamStream) {
+      const mediaStream = new MediaStream();
+      mediaStream.addTrack(agentParticipantData.webcamStream.track);
+      return mediaStream;
+    }
+    return null;
+  }, [agentParticipantData?.webcamStream, agentParticipantData?.webcamOn]);
+
+  // Ref for video element
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Update video source when stream changes
+  useEffect(() => {
+    if (videoRef.current && agentVideoStream && showVideo) {
+      videoRef.current.srcObject = agentVideoStream;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [agentVideoStream, showVideo]);
+
+  // Handle avatar click to toggle between image and video
+  const handleAvatarClick = () => {
+    if (agentVideoStream) {
+      setShowVideo(!showVideo);
+      toast({
+        title: showVideo ? "Switched to Avatar" : "Switched to Video",
+        description: showVideo
+          ? "Now showing avatar image"
+          : "Now showing live video",
+      });
+    } else {
+      toast({
+        title: "Video Not Available",
+        description: "AI Agent video stream is not available",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Simplified agent invitation - no need to coordinate with transcription
   useEffect(() => {
@@ -329,11 +386,6 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     }
   };
 
-  const participantsList = Array.from(participants.values());
-  const agentParticipant = participantsList.find(
-    (p) => p.displayName?.includes("Agent") || p.displayName?.includes("Haley")
-  );
-
   return (
     <div className="min-h-screen bg-[#121619] text-white flex">
       {/* Left Sidebar - Agent Configuration */}
@@ -506,12 +558,42 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       <div className="flex-1 flex flex-col items-center justify-start pt-32 bg-[#121619] relative">
         <div className="flex flex-col items-center gap-8">
           {/* Avatar */}
-          <div>
-            {agentSettings.agentType === "avatar" ? (
-              <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl">
+          <div onClick={handleAvatarClick}>
+            {showVideo && agentVideoStream ? (
+              <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  onError={(err) => {
+                    console.error("Video error:", err);
+                    setShowVideo(false);
+                    toast({
+                      title: "Video Error",
+                      description: "Could not play AI Agent video.",
+                      variant: "destructive",
+                    });
+                  }}
+                />
+                {/* Voice activity indicator overlay for video */}
+                {agentParticipant && (
+                  <div
+                    className="absolute inset-0 rounded-full border-4 border-transparent transition-all duration-300"
+                    style={{
+                      borderColor: "rgba(56, 189, 248, 0.5)",
+                      boxShadow: "0 0 30px rgba(56, 189, 248, 0.3)",
+                      animation: "pulse 2s ease-in-out infinite",
+                    }}
+                  />
+                )}
+              </div>
+            ) : agentSettings.agentType === "avatar" ? (
+              <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer hover:scale-105 transition-transform duration-200">
                 <img
                   src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png"
-                  alt="AI Avatar"
+                  alt="AI Avatar (Click to toggle video)"
                   className="w-full h-full object-cover"
                 />
                 {/* Voice activity indicator overlay for avatar */}
@@ -525,14 +607,20 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
                     }}
                   />
                 )}
+                {/* Click indicator */}
+                <div className="absolute bottom-2 right-2 bg-black/50 rounded-full p-1">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                </div>
               </div>
             ) : (
-              <ThreeJSAvatar
-                participantId={agentParticipant?.id}
-                isConnected={!!agentParticipant}
-                size="xl"
-                className="drop-shadow-2xl"
-              />
+              <div className="cursor-pointer hover:scale-105 transition-transform duration-200">
+                <ThreeJSAvatar
+                  participantId={agentParticipant?.id}
+                  isConnected={!!agentParticipant}
+                  size="xl"
+                  className="drop-shadow-2xl"
+                />
+              </div>
             )}
           </div>
 
