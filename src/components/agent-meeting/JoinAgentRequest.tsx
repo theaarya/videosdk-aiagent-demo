@@ -1,4 +1,3 @@
-
 import { AgentSettings, PROMPTS, VIDEOSDK_TOKEN } from "./types";
 
 export const joinAgent = async (meetingId: string, agentSettings: AgentSettings, backendUrl: string = "https://aiendpoint.tryvideosdk.live") => {
@@ -11,33 +10,32 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
       systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS] || "";
     }
 
-    // Create base request body matching backend MeetingReqConfig
-    // For Real Time pipelines, use the actual model name as pipeline_type
-    // For Cascading pipelines, use "cascading" as pipeline_type
-    let serverPipelineType = agentSettings.pipelineType;
-    if (agentSettings.pipelineType === "openai") {
-      serverPipelineType = agentSettings.realtimeModel || "gpt-4o-realtime-preview-2025-06-03";
-    }
-    
+    // Create base request body matching backend MeetingReqConfig exactly
     const requestBody: any = {
       meeting_id: meetingId,
       token: VIDEOSDK_TOKEN,
-      pipeline_type: serverPipelineType,
+      pipeline_type: agentSettings.pipelineType === "openai" 
+        ? (agentSettings.realtimeModel || "gpt-4o-realtime-preview-2025-06-03")
+        : agentSettings.pipelineType,
       personality: agentSettings.personality,
       system_prompt: systemPrompt,
-      detection: agentSettings.detection || false,
-      avatar: agentSettings.agentType === 'avatar', // Convert agentType to avatar boolean
-      ...(agentSettings.mcpUrl && { mcp_url: agentSettings.mcpUrl })
+      detection: agentSettings.detection || true, // Default to true as per server model
+      avatar: agentSettings.agentType === 'avatar' // Convert agentType to avatar boolean
     };
 
-    // Only include stt, tts, and llm parameters if pipeline_type is "cascading"
+    // Add optional fields only if they exist and are relevant
     if (agentSettings.pipelineType === "cascading") {
       requestBody.stt = agentSettings.stt;
       requestBody.tts = agentSettings.tts;
       requestBody.llm = agentSettings.llm;
     }
 
-    console.log("Joining agent with request:", requestBody);
+    // Add MCP URL only if provided
+    if (agentSettings.mcpUrl && agentSettings.mcpUrl.trim() !== "") {
+      requestBody.mcp_url = agentSettings.mcpUrl;
+    }
+
+    console.log("Joining agent with request body matching MeetingReqConfig:", requestBody);
 
     const response = await fetch(`${backendUrl}/join-agent`, {
       method: "POST",

@@ -84,6 +84,8 @@ const AgentMeeting: React.FC = () => {
 
     try {
       const roomId = await createMeeting();
+      // Add a small delay to ensure token is ready before VideoSDK initialization
+      await new Promise(resolve => setTimeout(resolve, 100));
       setIsConnected(true);
     } catch (error) {
       setIsConnecting(false);
@@ -124,11 +126,11 @@ const AgentMeeting: React.FC = () => {
           webcamEnabled: false,
           name: "User",
           debugMode: true, // Enable debug mode for better logging
-          // multiStream: true, // Enable multistream for better agent support
+          // multiStream: true, // Enable multistream for better agent suppor
         }}
         token={VIDEOSDK_TOKEN}
         reinitialiseMeetingOnConfigChange={false}
-        joinWithoutUserInteraction={true} // Auto-join for smoother experience
+        joinWithoutUserInteraction={false} // Auto-join for smoother experience
       >
         <MeetingInterface
           meetingId={meetingId}
