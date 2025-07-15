@@ -1,7 +1,7 @@
 
 import { AgentSettings, PROMPTS, VIDEOSDK_TOKEN } from "./types";
 
-export const joinAgent = async (meetingId: string, agentSettings: AgentSettings, backendUrl: string = "http://localhost:8000") => {
+export const joinAgent = async (meetingId: string, agentSettings: AgentSettings, backendUrl: string = "https://aiendpoint.tryvideosdk.live") => {
   try {
     // Determine the system prompt based on personality
     let systemPrompt = "";
@@ -62,7 +62,7 @@ export const joinAgent = async (meetingId: string, agentSettings: AgentSettings,
   }
 };
 
-export const leaveAgent = async (meetingId: string, backendUrl: string = "http://localhost:8000") => {
+export const leaveAgent = async (meetingId: string, backendUrl: string = "https://aiendpoint.tryvideosdk.live") => {
   try {
     const requestBody = {
       meeting_id: meetingId
