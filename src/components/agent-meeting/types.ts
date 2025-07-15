@@ -16,7 +16,7 @@ export interface AgentSettings {
   realtimeModel?: string;
 }
 
-export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MGVmOGQ1MC1kOWMwLTQ1ZDYtYWJjMS0xOTIzYjZjOTYzNTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc0OTYyMTQ2NywiZXhwIjoxNzgxMTU3NDY3fQ.aIMJNPGjMu8wKEl_hr07wKPw4NhSbng2XH9qai1RH1o";
+export const VIDEOSDK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI1MzE0YzVkZC0wN2MzLTRjZTgtYThmYi03ZmY0ZDZiMDdhYTIiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1MTI2MTQ4MCwiZXhwIjoxNzgyNzk3NDgwfQ.yMH2talasjiL7ftJt2hl9h6_L96G1YU_tjujycAEi9M";
 
 export const AVAILABLE_VOICES = ["Puck", "Charon", "Kore", "Fenrir", "Aoede"];
 
