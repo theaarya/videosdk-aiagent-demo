@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { ThreeJSAvatar } from "./ThreeJSAvatar";
 import { TranscriptionChat } from "./TranscriptionChat";
+import { AgentAudioPlayer } from "./AgentAudioPlayer";
 import { AgentSettings, REALTIME_MODEL_OPTIONS, PROMPTS } from "./types";
 import { PipelineSection } from "./PipelineSection";
 import { joinAgent, leaveAgent } from "./JoinAgentRequest";
@@ -58,6 +59,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     },
     onParticipantJoined: (participant: any) => {
       console.log("=== PARTICIPANT JOINED ===", participant.displayName || participant.id);
+      console.log("Participant streams:", participant.streams);
       if (participant.displayName?.includes("Agent") || participant.displayName?.includes("Haley")) {
         toast({
           title: "AI Agent Connected",
@@ -505,6 +507,13 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
             isConnected={isJoined}
           />
         </div>
+
+        {/* Agent Audio Player - Hidden but needed for audio playback */}
+        {agentParticipant && (
+          <div className="hidden">
+            <AgentAudioPlayer participantId={agentParticipant.id} />
+          </div>
+        )}
       </div>
     </div>
   );

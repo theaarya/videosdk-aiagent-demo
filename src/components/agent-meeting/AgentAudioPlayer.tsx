@@ -21,10 +21,16 @@ export const AgentAudioPlayer: React.FC<AgentAudioPlayerProps> = ({
     {
       onStreamEnabled: (stream) => {
         console.log("Agent audio stream enabled:", stream);
-        if (audioRef.current && stream) {
+        console.log("Stream details:", { track: stream?.track, kind: stream?.track?.kind });
+        if (audioRef.current && stream && stream.track) {
           const mediaStream = new MediaStream([stream.track]);
           audioRef.current.srcObject = mediaStream;
-          audioRef.current.play().catch(console.error);
+          audioRef.current.volume = volume;
+          if (isAudioEnabled) {
+            audioRef.current.play().catch((error) => {
+              console.error("Error playing agent audio:", error);
+            });
+          }
         }
       },
       onStreamDisabled: (stream) => {
