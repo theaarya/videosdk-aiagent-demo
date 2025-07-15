@@ -192,7 +192,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       console.log("Agent invited status:", agentInvited);
       
       // Use localhost for development, you can make this configurable
-      const backendUrl = "http://localhost:8000";
+      const backendUrl = "https://aiendpoint.tryvideosdk.live";
       console.log("Calling leave-agent API with URL:", `${backendUrl}/leave-agent`);
       
       const responseData = await leaveAgentAPI(meetingId, backendUrl);
@@ -266,7 +266,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     try {
       console.log("Sending agent settings:", agentSettings);
       
-      const backendUrl = "http://localhost:8000";
+      const backendUrl = "https://aiendpoint.tryvideosdk.live";
       const responseData = await joinAgent(meetingId, agentSettings, backendUrl);
       
       console.log("Agent invite successful:", responseData);

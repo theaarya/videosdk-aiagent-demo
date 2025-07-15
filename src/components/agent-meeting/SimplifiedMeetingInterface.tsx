@@ -125,7 +125,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
     console.log("Agent Settings:", agentSettings);
     
     try {
-      const backendUrl = "http://localhost:8000";
+      const backendUrl = "https://aiendpoint.tryvideosdk.live";
       const data = await joinAgent(meetingId, agentSettings, backendUrl);
       console.log("=== AGENT INVITATION SUCCESS ===", data);
       
@@ -168,7 +168,7 @@ export const SimplifiedMeetingInterface: React.FC<SimplifiedMeetingInterfaceProp
       // Remove agent first if present
       if (agentInvited) {
         console.log("=== REMOVING AGENT ===");
-        const backendUrl = "http://localhost:8000";
+        const backendUrl = "https://aiendpoint.tryvideosdk.live";
         await leaveAgent(meetingId, backendUrl);
         console.log("=== AGENT REMOVED ===");
       }
