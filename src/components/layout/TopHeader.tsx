@@ -9,7 +9,7 @@ export const TopHeader = () => {
         <Button
           variant="outline"
           size="sm"
-          className="h-10 px-4 bg-[#1A1F23] border-[#393939] text-gray-300 hover:bg-[#25252540] hover:text-white shadow-lg flex items-center mb-4"
+          className="h-10 px-4 bg-[#1A1F23] border-[#393939] text-gray-300 hover:bg-[#25252540] hover:text-white shadow-lg flex items-center mb-6"
           onClick={() => window.open("https://github.com/videosdk-live/agents", "_blank")}
         >
           <Github className="w-4 h-4 mr-2" />
@@ -20,7 +20,7 @@ export const TopHeader = () => {
         <Button
           variant="outline"
           size="sm"
-          className="h-10 px-4 bg-[#1A1F23] border-[#ff6154] text-[#ff6154] hover:bg-[#ff6154]/10 hover:text-[#ff6154] shadow-lg flex items-center"
+          className="h-10 px-4 bg-[#1A1F23] border-[#ff6154] text-[#ff6154] hover:bg-[#ff6154]/10 hover:text-[#ff6154] shadow-lg flex items-center mb-6"
           onClick={() => window.open("https://www.producthunt.com/products/video-sdk", "_blank")}
         >
           <Trophy className="w-4 h-4 mr-2" />
