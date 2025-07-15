@@ -83,6 +83,8 @@ const AgentMeeting: React.FC = () => {
 
     try {
       const roomId = await createMeeting();
+      // Add a small delay to ensure token is ready before VideoSDK initialization
+      await new Promise(resolve => setTimeout(resolve, 100));
       setIsConnected(true);
     } catch (error) {
       setIsConnecting(false);
