@@ -160,33 +160,79 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
     return null;
   }, [agentParticipantData?.webcamStream, agentParticipantData?.webcamOn]);
 
-  // Ref for video element
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // Refs for video elements
+  const avatarVideoRef = useRef<HTMLVideoElement>(null);
+  const voiceVideoRef = useRef<HTMLVideoElement>(null);
 
   // Update video source when stream changes
   useEffect(() => {
-    if (videoRef.current && agentVideoStream && showVideo) {
-      videoRef.current.srcObject = agentVideoStream;
-      videoRef.current.play().catch(console.error);
+    if (agentVideoStream) {
+      // For avatar type: show video by default (!showVideo means show video)
+      // For voice type: show video only when showVideo is true
+      const shouldShowVideoOnAvatar =
+        agentSettings.agentType === "avatar" && !showVideo;
+      const shouldShowVideoOnVoice =
+        agentSettings.agentType === "voice" && showVideo;
+
+      // Handle avatar video
+      if (avatarVideoRef.current) {
+        if (shouldShowVideoOnAvatar) {
+          avatarVideoRef.current.srcObject = agentVideoStream;
+          avatarVideoRef.current.play().catch(console.error);
+        } else {
+          avatarVideoRef.current.srcObject = null;
+        }
+      }
+
+      // Handle voice video
+      if (voiceVideoRef.current) {
+        if (shouldShowVideoOnVoice) {
+          voiceVideoRef.current.srcObject = agentVideoStream;
+          voiceVideoRef.current.play().catch(console.error);
+        } else {
+          voiceVideoRef.current.srcObject = null;
+        }
+      }
     }
-  }, [agentVideoStream, showVideo]);
+  }, [agentVideoStream, showVideo, agentSettings.agentType]);
 
   // Handle avatar click to toggle between image and video
   const handleAvatarClick = () => {
-    if (agentVideoStream) {
-      setShowVideo(!showVideo);
-      toast({
-        title: showVideo ? "Switched to Avatar" : "Switched to Video",
-        description: showVideo
-          ? "Now showing avatar image"
-          : "Now showing live video",
-      });
+    if (agentSettings.agentType === "avatar") {
+      if (agentVideoStream) {
+        setShowVideo(!showVideo);
+        toast({
+          title: !showVideo
+            ? "Switched to Avatar Image"
+            : "Switched to Video Stream",
+          description: !showVideo
+            ? "Now showing static avatar image"
+            : "Now showing live video stream",
+        });
+      } else {
+        toast({
+          title: "Video Not Available",
+          description: "AI Agent video stream is not available yet",
+          variant: "destructive",
+        });
+      }
     } else {
-      toast({
-        title: "Video Not Available",
-        description: "AI Agent video stream is not available",
-        variant: "destructive",
-      });
+      // For voice agent type, try to show video if available
+      if (agentVideoStream) {
+        setShowVideo(!showVideo);
+        toast({
+          title: showVideo ? "Switched to Voice Avatar" : "Switched to Video",
+          description: showVideo
+            ? "Now showing voice avatar"
+            : "Now showing live video",
+        });
+      } else {
+        toast({
+          title: "Video Not Available",
+          description: "AI Agent video stream is not available",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -559,10 +605,72 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         <div className="flex flex-col items-center gap-8">
           {/* Avatar */}
           <div onClick={handleAvatarClick}>
-            {showVideo && agentVideoStream ? (
+            {agentSettings.agentType === "avatar" ? (
+              agentVideoStream && !showVideo ? (
+                // Show video stream when avatar type is selected and stream is available
+                <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer">
+                  <video
+                    ref={avatarVideoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                    onError={(err) => {
+                      console.error("Video error:", err);
+                      toast({
+                        title: "Video Error",
+                        description:
+                          "Could not play AI Agent video, showing static avatar.",
+                        variant: "destructive",
+                      });
+                    }}
+                  />
+                  {/* Voice activity indicator overlay for video */}
+                  {agentParticipant && (
+                    <div
+                      className="absolute inset-0 rounded-full border-4 border-transparent transition-all duration-300"
+                      style={{
+                        borderColor: "rgba(56, 189, 248, 0.5)",
+                        boxShadow: "0 0 30px rgba(56, 189, 248, 0.3)",
+                        animation: "pulse 2s ease-in-out infinite",
+                      }}
+                    />
+                  )}
+                  {/* Click indicator for video */}
+                  <div className="absolute bottom-2 right-2 bg-black/50 rounded-full p-1">
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              ) : (
+                // Fallback to static image when no video stream or user clicked to show image
+                <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer hover:scale-105 transition-transform duration-200">
+                  <img
+                    src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png"
+                    alt="AI Avatar (Click to toggle video)"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Voice activity indicator overlay for avatar */}
+                  {agentParticipant && (
+                    <div
+                      className="absolute inset-0 rounded-full border-4 border-transparent transition-all duration-300"
+                      style={{
+                        borderColor: "rgba(56, 189, 248, 0.5)",
+                        boxShadow: "0 0 30px rgba(56, 189, 248, 0.3)",
+                        animation: "pulse 2s ease-in-out infinite",
+                      }}
+                    />
+                  )}
+                  {/* Click indicator */}
+                  <div className="absolute bottom-2 right-2 bg-black/50 rounded-full p-1">
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+              )
+            ) : // Voice agent type - show video if user clicked to toggle, otherwise show ThreeJSAvatar
+            showVideo && agentVideoStream ? (
               <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer">
                 <video
-                  ref={videoRef}
+                  ref={voiceVideoRef}
                   autoPlay
                   playsInline
                   muted
@@ -588,31 +696,13 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
                     }}
                   />
                 )}
-              </div>
-            ) : agentSettings.agentType === "avatar" ? (
-              <div className="w-[200px] h-[200px] rounded-full overflow-hidden relative drop-shadow-2xl cursor-pointer hover:scale-105 transition-transform duration-200">
-                <img
-                  src="/lovable-uploads/e489886e-34c3-40eb-99bc-32a381273eb5.png"
-                  alt="AI Avatar (Click to toggle video)"
-                  className="w-full h-full object-cover"
-                />
-                {/* Voice activity indicator overlay for avatar */}
-                {agentParticipant && (
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-transparent transition-all duration-300"
-                    style={{
-                      borderColor: "rgba(56, 189, 248, 0.5)",
-                      boxShadow: "0 0 30px rgba(56, 189, 248, 0.3)",
-                      animation: "pulse 2s ease-in-out infinite",
-                    }}
-                  />
-                )}
-                {/* Click indicator */}
+                {/* Click indicator for video */}
                 <div className="absolute bottom-2 right-2 bg-black/50 rounded-full p-1">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                 </div>
               </div>
             ) : (
+              // Show ThreeJSAvatar for voice agent type
               <div className="cursor-pointer hover:scale-105 transition-transform duration-200">
                 <ThreeJSAvatar
                   participantId={agentParticipant?.id}
